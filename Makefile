@@ -21,7 +21,7 @@ fclean:		clean
 
 re:			fclean all
 
-format:
+fmt:
 			@clang-format -i $(SRCS) $(INCS)
 
-.PHONY:		all clean fclean re format
+.PHONY:		all clean fclean re fmt
