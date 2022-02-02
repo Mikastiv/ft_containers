@@ -6,14 +6,15 @@
 /*   By: mleblanc <mleblanc@student.42quebec.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/01 15:27:15 by mleblanc          #+#    #+#             */
-/*   Updated: 2022/02/02 17:39:54 by mleblanc         ###   ########.fr       */
+/*   Updated: 2022/02/02 18:40:27 by mleblanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
 
-#include <iterator.hpp>
 #include <memory>
+
+#include "iterator.hpp"
 
 namespace ft {
 template <typename T, typename Alloc = std::allocator<T> >
@@ -38,12 +39,13 @@ class vector {
     explicit vector(const allocator_type& alloc);
     explicit vector(
         size_type count, const T& value = T(), const allocator_type& alloc = allocator_type());
-    template <template It>
+    template <typename It>
     vector(It first, It last, const allocator_type& alloc = allocator_type());
 
   public:
-    size_type size() const { return static_cast<size_type>(end_ - start_); }
-    size_type capacity() const { return static_cast<size_type>(end_capacity_ - start_); }
+    allocator_type get_allocator() const { return alloc_; }
+    size_type      size() const { return static_cast<size_type>(end_ - start_); }
+    size_type      capacity() const { return static_cast<size_type>(end_capacity_ - start_); }
 
   private:
     allocator_type alloc_;

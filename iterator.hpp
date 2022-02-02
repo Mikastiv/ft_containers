@@ -6,7 +6,7 @@
 /*   By: mleblanc <mleblanc@student.42quebec.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/02 12:33:36 by mleblanc          #+#    #+#             */
-/*   Updated: 2022/02/02 17:38:14 by mleblanc         ###   ########.fr       */
+/*   Updated: 2022/02/02 18:35:52 by mleblanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,8 +14,11 @@
 
 #include <cstddef>
 
+#include "type_traits.hpp"
+
 namespace ft {
-struct bidirectional_iterator_tag {};
+struct forward_iterator_tag {};
+struct bidirectional_iterator_tag : public forward_iterator_tag {};
 struct random_access_iterator_tag : public bidirectional_iterator_tag {};
 
 template <typename It>
@@ -61,6 +64,11 @@ class normal_iterator {
   public:
     normal_iterator() : elem_(iterator_type()) {}
     explicit normal_iterator(const iterator_type& it) : elem_(it) {}
+    template <typename Iter>
+    normal_iterator(const normal_iterator<Iter,
+        typename enable_if<(is_same<Iter, typename Container::pointer>::value), Container>::type>&
+            it)
+        : elem_(it.base()) {}
 
   public:
     const iterator_type& base() const { return elem_; }
