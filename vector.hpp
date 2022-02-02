@@ -6,7 +6,7 @@
 /*   By: mleblanc <mleblanc@student.42quebec.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/01 15:27:15 by mleblanc          #+#    #+#             */
-/*   Updated: 2022/02/01 17:01:47 by mleblanc         ###   ########.fr       */
+/*   Updated: 2022/02/02 12:47:06 by mleblanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,29 +17,33 @@
 namespace ft {
 template <typename T, typename Alloc = std::allocator<T> >
 class vector {
-public:
-    typedef T      value_type;
-    typedef Alloc  allocator_type;
-    typedef size_t size_type;
+  public:
+    typedef T                                        value_type;
+    typedef Alloc                                    allocator_type;
+    typedef typename allocator_type::size_type       size_type;
+    typedef typename allocator_type::difference_type difference_type;
+    typedef value_type&                              reference;
+    typedef const value_type&                        const_reference;
+    typedef typename allocator_type::pointer         pointer;
+    typedef typename allocator_type::const_pointer   const_pointer;
 
-public:
-    vector() : alloc_(Alloc()), size_(0), capacity_(0), elems_(NULL){};
-    vector(const vector& other)
-        : alloc_(other.alloc_), size_(other.size_), capacity_(other.capacity_) {
-        elems = alloc_.allocate(sizeof(T) * capacity_);
-    };
-    explicit vector(const Alloc& alloc);
-    explicit vector(size_t count, const T& value = T(), const Alloc& alloc = Alloc());
+  public:
+    vector() : alloc_(allocator_type()), start_(NULL), end_(NULL), end_capacity_(NULL){};
+    vector(const vector& other) : alloc_(other.alloc_){};
+    explicit vector(const allocator_type& alloc);
+    explicit vector(
+        size_type count, const T& value = T(), const allocator_type& alloc = allocator_type());
     template <template It>
-    vector(It first, It last, const Alloc& alloc = Alloc());
+    vector(It first, It last, const allocator_type& alloc = allocator_type());
 
-public:
-    size_t capacity() const { return capacity_; }
+  public:
+    size_type size() const { return static_cast<size_type>(end_ - start_); }
+    size_type capacity() const { return static_cast<size_type>(end_capacity_ - start_); }
 
-private:
-    Alloc  alloc_;
-    size_t size_;
-    size_t capacity_;
-    T*     elems_;
+  private:
+    allocator_type alloc_;
+    pointer        start_;
+    pointer        end_;
+    pointer        end_capacity_;
 };
 }

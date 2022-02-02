@@ -1,6 +1,18 @@
 {
     "files.associations": {
         "iosfwd": "cpp",
-        "memory": "cpp"
+        "memory": "cpp",
+        "array": "cpp",
+        "atomic": "cpp",
+        "deque": "cpp",
+        "string": "cpp",
+        "unordered_map": "cpp",
+        "vector": "cpp",
+        "iterator": "cpp",
+        "memory_resource": "cpp",
+        "string_view": "cpp",
+        "initializer_list": "cpp",
+        "type_traits": "cpp",
+        "utility": "cpp"
     }
 }

@@ -1,7 +1,7 @@
 NAME		=	ft_containers
 
 SRCS		=	main.cpp
-INCS		=	vector.hpp
+INCS		=	vector.hpp iterator.hpp
 CXXFLAGS	=	-Wall -Wextra -Werror -Wpedantic -Wfloat-conversion -Wsign-conversion -Wshadow -std=c++98
 CXX			=	clang++
 

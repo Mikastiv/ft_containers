@@ -25,7 +25,7 @@ struct Buffer {
 
 template <typename T>
 class MutantStack : public ft::stack<T> {
-public:
+  public:
     MutantStack() {}
     MutantStack(const MutantStack<T> &src) { *this = src; }
     MutantStack<T> &operator=(const MutantStack<T> &rhs) {
