@@ -6,7 +6,7 @@
 /*   By: mleblanc <mleblanc@student.42quebec.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/01 15:27:15 by mleblanc          #+#    #+#             */
-/*   Updated: 2022/02/02 23:29:10 by mleblanc         ###   ########.fr       */
+/*   Updated: 2022/02/03 13:35:28 by mleblanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,20 +35,24 @@ public:
     typedef ft::reverse_iterator<const_iterator>     const_reverse_iterator;
 
 public:
-    vector() : start_(), end_(), end_capacity_(){};
+    vector() : alloc_(), start_(), end_(), end_capacity_(){};
     vector(const vector& other){};
-    explicit vector(const allocator_type& alloc);
+    explicit vector(const allocator_type& alloc) : alloc_(alloc) {}
     explicit vector(
-        size_type count, const T& value = T(), const allocator_type& alloc = allocator_type());
+        size_type count, const T& value = T(), const allocator_type& alloc = allocator_type())
+        : alloc_(alloc) {}
     template <typename InputIt>
     vector(InputIt first, InputIt last, const allocator_type& alloc = allocator_type());
-    ~vector() { allocator_type().deallocate(data(), capacity()); }
+    ~vector() {
+        destroy_range(start_, end_);
+        get_allocator().deallocate(start_, capacity());
+    }
 
 public:
     template <typename InputIt>
     void           assign(InputIt first, InputIt last) {}
     void           assign(size_type count, const T& value) {}
-    allocator_type get_allocator() const { return allocator_type(); }
+    allocator_type get_allocator() const { return alloc_; }
 
     reference       at(size_type pos) {}
     const_reference at(size_type pos) const {}
@@ -73,7 +77,15 @@ public:
     bool      empty() const { return begin() == end(); }
     size_type size() const { return static_cast<size_type>(end_ - start_); }
     size_type max_size() const { return allocator_type().max_size(); }
-    void      reserve(size_type new_cap) {}
+    void      reserve(size_type new_cap) {
+        if (new_cap > capacity()) {
+            if (new_cap > max_size()) {
+                length_exception();
+            }
+
+            reallocate(new_cap);
+        }
+    }
     size_type capacity() const { return static_cast<size_type>(end_capacity_ - start_); }
 
     template <class InputIt>
@@ -89,7 +101,7 @@ public:
     void     swap(vector& other) {}
 
 private:
-    bool      should_grow() const { return end_ == end_capacity_; }
+    bool      should_grow(size_type new_size) const { return new_size >= capacity(); }
     size_type calculate_growth() const {
         const size_type old_cap = capacity();
         const size_type max = max_size();
@@ -103,18 +115,43 @@ private:
     void grow() {
         const size_type old_cap = capacity();
         if (old_cap == max_size()) {
-            throw std::length_error("vector is at max size and can't grow");
+            length_exception();
         }
 
-        const size_type new_cap = calculate_growth();
         allocator_type  alloc = get_allocator();
-        const_pointer   new_start = alloc.allocate(new_cap);
+        const size_type new_cap = calculate_growth();
+        reallocate(new_cap);
     }
-    void shrink(size_type new_cap) {}
+    void reallocate(size_type n) {
+        allocator_type alloc = get_allocator();
+        pointer        new_start = alloc.allocate(n);
+        pointer        new_end = new_start + size();
+
+        construct_range(new_start, start_, end_);
+        destroy_range(start_, end_);
+        alloc.deallocate(start_, capacity());
+        start_ = new_start;
+        end_ = new_end;
+        end_capacity_ = start_ + n;
+    }
+    void construct_range(pointer dst, const_pointer start, const_pointer end) {
+        allocator_type alloc = get_allocator();
+        for (; start != end; dst++, start++) {
+            alloc.construct(dst, *start);
+        }
+    }
+    void destroy_range(pointer start, pointer end) {
+        allocator_type alloc = get_allocator();
+        for (; start != end; start++) {
+            alloc.destroy(start);
+        }
+    }
+    void length_exception() { throw std::length_error("vector is at max size and can't grow"); }
 
 private:
-    pointer start_;
-    pointer end_;
-    pointer end_capacity_;
+    allocator_type alloc_;
+    pointer        start_;
+    pointer        end_;
+    pointer        end_capacity_;
 };
 }
