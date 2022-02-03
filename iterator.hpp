@@ -6,7 +6,7 @@
 /*   By: mleblanc <mleblanc@student.42quebec.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/02 12:33:36 by mleblanc          #+#    #+#             */
-/*   Updated: 2022/02/02 18:35:52 by mleblanc         ###   ########.fr       */
+/*   Updated: 2022/02/02 19:01:20 by mleblanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,11 +64,12 @@ class normal_iterator {
   public:
     normal_iterator() : elem_(iterator_type()) {}
     explicit normal_iterator(const iterator_type& it) : elem_(it) {}
-    template <typename Iter>
-    normal_iterator(const normal_iterator<Iter,
-        typename enable_if<(is_same<Iter, typename Container::pointer>::value), Container>::type>&
-            it)
-        : elem_(it.base()) {}
+    // template <typename Iter>
+    // normal_iterator(const normal_iterator<Iter,
+    //     typename enable_if<(is_same<Iter, typename Container::pointer>::value),
+    //     Container>::type>&
+    //         it)
+    //     : elem_(it.base()) {}
 
   public:
     const iterator_type& base() const { return elem_; }
