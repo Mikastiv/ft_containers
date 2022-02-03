@@ -6,7 +6,7 @@
 /*   By: mleblanc <mleblanc@student.42quebec.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/01 15:27:15 by mleblanc          #+#    #+#             */
-/*   Updated: 2022/02/03 13:35:28 by mleblanc         ###   ########.fr       */
+/*   Updated: 2022/02/03 16:30:47 by mleblanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,7 +36,18 @@ public:
 
 public:
     vector() : alloc_(), start_(), end_(), end_capacity_(){};
-    vector(const vector& other){};
+    vector(const vector& other) : alloc_(other.alloc) {
+        allocator_type alloc = get_allocator();
+        const cap = other.capacity();
+        const s = other.size();
+        start_ = alloc.allocate(cap);
+        end_ = start_ + s;
+        end_capacity_ = start_ + cap;
+
+        for (size_type n; n < s; n++) {
+            start_[n] = other.start_[s];
+        }
+    };
     explicit vector(const allocator_type& alloc) : alloc_(alloc) {}
     explicit vector(
         size_type count, const T& value = T(), const allocator_type& alloc = allocator_type())
@@ -92,7 +103,10 @@ public:
     void     insert(iterator pos, InputIt first, InputIt last) {}
     iterator insert(iterator pos, const T& value) {}
     void     insert(iterator pos, size_type count, const T& value) {}
-    void     clear() {}
+    void     clear() {
+        destroy_range(start_, end_);
+        end_ = start;
+    }
     iterator erase(iterator pos) {}
     iterator erase(iterator first, iterator last) {}
     void     push_back(const T& value) {}
