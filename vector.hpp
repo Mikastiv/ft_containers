@@ -6,7 +6,7 @@
 /*   By: mleblanc <mleblanc@student.42quebec.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/01 15:27:15 by mleblanc          #+#    #+#             */
-/*   Updated: 2022/02/02 19:46:29 by mleblanc         ###   ########.fr       */
+/*   Updated: 2022/02/02 21:28:45 by mleblanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,20 +35,20 @@ class vector {
     typedef ft::reverse_iterator<const_iterator>     const_reverse_iterator;
 
   public:
-    vector() : alloc_(), start_(), end_(), end_capacity_(){};
-    vector(const vector& other) : alloc_(other.alloc_){};
+    vector() : start_(), end_(), end_capacity_(){};
+    vector(const vector& other){};
     explicit vector(const allocator_type& alloc);
     explicit vector(
         size_type count, const T& value = T(), const allocator_type& alloc = allocator_type());
     template <typename InputIt>
     vector(InputIt first, InputIt last, const allocator_type& alloc = allocator_type());
-    ~vector() { alloc_.deallocate(data(), capacity()); }
+    ~vector() { allocator_type::deallocate(data(), capacity()); }
 
   public:
     template <typename InputIt>
     void           assign(InputIt first, InputIt last) {}
     void           assign(size_type count, const T& value) {}
-    allocator_type get_allocator() const { return alloc_; }
+    allocator_type get_allocator() const { return allocator_type(); }
 
     reference       at(size_type pos) {}
     const_reference at(size_type pos) const {}
@@ -89,9 +89,11 @@ class vector {
     void     swap(vector& other) {}
 
   private:
-    allocator_type alloc_;
-    pointer        start_;
-    pointer        end_;
-    pointer        end_capacity_;
+    void realloc(size_type new_size) {}
+
+  private:
+    pointer start_;
+    pointer end_;
+    pointer end_capacity_;
 };
 }
