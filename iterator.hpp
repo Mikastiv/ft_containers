@@ -50,10 +50,10 @@ struct iterator_traits<const It*> {
 
 template <typename It, typename Container>
 class normal_iterator {
-  protected:
+protected:
     typedef iterator_traits<It> traits_type;
 
-  public:
+public:
     typedef It                                      iterator_type;
     typedef typename traits_type::iterator_category iterator_category;
     typedef typename traits_type::value_type        value_type;
@@ -61,7 +61,7 @@ class normal_iterator {
     typedef typename traits_type::reference         reference;
     typedef typename traits_type::pointer           pointer;
 
-  public:
+public:
     normal_iterator() : elem_(iterator_type()) {}
     explicit normal_iterator(const iterator_type& it) : elem_(it) {}
     // template <typename Iter>
@@ -71,7 +71,7 @@ class normal_iterator {
     //         it)
     //     : elem_(it.base()) {}
 
-  public:
+public:
     const iterator_type& base() const { return elem_; }
     reference            operator*() const { return *elem_; }
     pointer              operator->() const { return elem_; }
@@ -97,7 +97,7 @@ class normal_iterator {
     }
     normal_iterator operator-(difference_type n) { return normal_iterator(elem_ - n); }
 
-  protected:
+protected:
     It elem_;
 };
 
@@ -193,10 +193,10 @@ inline normal_iterator<It, Container> operator+(
 
 template <typename It>
 class reverse_iterator {
-  protected:
+protected:
     typedef iterator_traits<It> traits_type;
 
-  public:
+public:
     typedef It                                      iterator_type;
     typedef typename traits_type::iterator_category iterator_category;
     typedef typename traits_type::value_type        value_type;
@@ -204,14 +204,14 @@ class reverse_iterator {
     typedef typename traits_type::reference         reference;
     typedef typename traits_type::pointer           pointer;
 
-  public:
+public:
     reverse_iterator() : elem_(It()) {}
     reverse_iterator(const iterator_type& it) : elem_(it) {}
     explicit reverse_iterator(iterator_type it) : elem_(it) {}
     template <typename Iter>
     reverse_iterator(const reverse_iterator<Iter>& it) : elem_(it.base()) {}
 
-  public:
+public:
     iterator_type base() const { return elem_; }
     reference     operator*() const {
         It tmp = elem_;
@@ -240,7 +240,7 @@ class reverse_iterator {
     }
     reference operator[](difference_type n) const { return *(*this + n); }
 
-  protected:
+protected:
     It elem_;
 };
 

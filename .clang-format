@@ -6,7 +6,7 @@ AllowShortBlocksOnASingleLine: Empty
 AllowShortFunctionsOnASingleLine: Inline
 AllowShortIfStatementsOnASingleLine: Never
 AllowShortLoopsOnASingleLine: false
-AccessModifierOffset: -2
+AccessModifierOffset: -4
 ColumnLimit: 100
 Cpp11BracedListStyle: false
 FixNamespaceComments: false

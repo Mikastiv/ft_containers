@@ -6,21 +6,21 @@
 /*   By: mleblanc <mleblanc@student.42quebec.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/01 15:27:15 by mleblanc          #+#    #+#             */
-/*   Updated: 2022/02/02 21:28:45 by mleblanc         ###   ########.fr       */
+/*   Updated: 2022/02/02 23:29:10 by mleblanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
 
-#include <cstring>
 #include <memory>
+#include <stdexcept>
 
 #include "iterator.hpp"
 
 namespace ft {
 template <typename T, typename Alloc = std::allocator<T> >
 class vector {
-  public:
+public:
     typedef T                                        value_type;
     typedef Alloc                                    allocator_type;
     typedef typename allocator_type::size_type       size_type;
@@ -34,7 +34,7 @@ class vector {
     typedef ft::reverse_iterator<iterator>           reverse_iterator;
     typedef ft::reverse_iterator<const_iterator>     const_reverse_iterator;
 
-  public:
+public:
     vector() : start_(), end_(), end_capacity_(){};
     vector(const vector& other){};
     explicit vector(const allocator_type& alloc);
@@ -42,9 +42,9 @@ class vector {
         size_type count, const T& value = T(), const allocator_type& alloc = allocator_type());
     template <typename InputIt>
     vector(InputIt first, InputIt last, const allocator_type& alloc = allocator_type());
-    ~vector() { allocator_type::deallocate(data(), capacity()); }
+    ~vector() { allocator_type().deallocate(data(), capacity()); }
 
-  public:
+public:
     template <typename InputIt>
     void           assign(InputIt first, InputIt last) {}
     void           assign(size_type count, const T& value) {}
@@ -88,10 +88,31 @@ class vector {
     void     resize(size_type count, T value = T()) {}
     void     swap(vector& other) {}
 
-  private:
-    void realloc(size_type new_size) {}
+private:
+    bool      should_grow() const { return end_ == end_capacity_; }
+    size_type calculate_growth() const {
+        const size_type old_cap = capacity();
+        const size_type max = max_size();
 
-  private:
+        if (max / 2 < old_cap) {
+            return max;
+        }
+
+        return old_cap * 2;
+    }
+    void grow() {
+        const size_type old_cap = capacity();
+        if (old_cap == max_size()) {
+            throw std::length_error("vector is at max size and can't grow");
+        }
+
+        const size_type new_cap = calculate_growth();
+        allocator_type  alloc = get_allocator();
+        const_pointer   new_start = alloc.allocate(new_cap);
+    }
+    void shrink(size_type new_cap) {}
+
+private:
     pointer start_;
     pointer end_;
     pointer end_capacity_;
