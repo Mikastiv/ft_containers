@@ -6,13 +6,14 @@
 /*   By: mleblanc <mleblanc@student.42quebec.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/01 15:27:15 by mleblanc          #+#    #+#             */
-/*   Updated: 2022/02/07 13:45:15 by mleblanc         ###   ########.fr       */
+/*   Updated: 2022/02/07 14:14:04 by mleblanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
 
 #include <memory>
+#include <sstream>
 #include <stdexcept>
 
 #include "iterator.hpp"
@@ -55,6 +56,9 @@ public:
         }
 
         start_ = alloc.allocate(count);
+        end_ = start_ + count;
+        end_capacity_ = end_;
+        construct_range(start_, end_, value);
     }
     template <typename InputIt>
     vector(InputIt first, InputIt last, const allocator_type& alloc = allocator_type())
@@ -89,8 +93,14 @@ public:
     void           assign(size_type count, const T& value) {}
     allocator_type get_allocator() const { return alloc_; }
 
-    reference       at(size_type pos) {}
-    const_reference at(size_type pos) const {}
+    reference at(size_type pos) {
+        range_check(pos);
+        return (*this)[pos];
+    }
+    const_reference at(size_type pos) const {
+        range_check(pos);
+        return (*this)[pos];
+    }
     reference       operator[](size_type pos) { return *(start_ + pos); }
     const_reference operator[](size_type pos) const { return *(start_ + pos); }
     reference       front() { return *begin(); }
@@ -190,7 +200,20 @@ private:
             alloc.destroy(start);
         }
     }
-    void length_exception() { throw std::length_error("vector is at max size and can't grow"); }
+    void length_exception() {
+        std::stringstream ss;
+
+        ss << "vector is at max size ( " << max_size() << " and can't grow";
+        throw std::length_error(ss.str());
+    }
+    void range_check(size_type n) {
+        if (n >= size()) {
+            std::stringstream ss;
+
+            ss << "Index " << n << " is out of range (size = " << size();
+            throw std::out_of_range(ss.str());
+        }
+    }
 
 private:
     allocator_type alloc_;
