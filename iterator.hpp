@@ -6,7 +6,7 @@
 /*   By: mleblanc <mleblanc@student.42quebec.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/02 12:33:36 by mleblanc          #+#    #+#             */
-/*   Updated: 2022/02/06 21:06:02 by mleblanc         ###   ########.fr       */
+/*   Updated: 2022/02/07 13:52:06 by mleblanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,6 +47,15 @@ struct iterator_traits<const It*> {
     typedef const value_type*          pointer;
     typedef const value_type&          reference;
 };
+
+template <typename T, typename = void>
+struct is_iterator : public false_type {};
+
+template <typename T>
+struct is_iterator<T, typename iterator_traits<T>::iterator_category> : public true_type {};
+
+template <typename T>
+struct is_iterator<T, typename T::iterator_category> : public true_type {};
 
 template <typename It, typename Container>
 class normal_iterator {
@@ -184,6 +193,7 @@ inline typename normal_iterator<It, Container>::difference_type operator-(
     const normal_iterator<It, Container>& lhs, const normal_iterator<It, Container>& rhs) {
     return lhs.base() - rhs.base();
 }
+
 template <typename It, typename Container>
 inline normal_iterator<It, Container> operator+(
     typename normal_iterator<It, Container>::difference_type n,
@@ -193,7 +203,7 @@ inline normal_iterator<It, Container> operator+(
 
 template <typename It>
 inline size_t distance(It first, It last) {
-    It::difference_type diff = last - first;
+    typename It::difference_type diff = last - first;
     return diff < 0 ? 0 : static_cast<size_t>(diff);
 }
 

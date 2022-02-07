@@ -6,7 +6,7 @@
 /*   By: mleblanc <mleblanc@student.42quebec.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/01 15:27:15 by mleblanc          #+#    #+#             */
-/*   Updated: 2022/02/06 21:11:31 by mleblanc         ###   ########.fr       */
+/*   Updated: 2022/02/07 13:45:15 by mleblanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,9 +37,9 @@ public:
 public:
     vector() : alloc_(), start_(), end_(), end_capacity_(){};
     vector(const vector& other) : alloc_(other.alloc) {
-        allocator_type alloc = get_allocator();
-        const cap = other.capacity();
-        const s = other.size();
+        allocator_type  alloc = get_allocator();
+        const size_type cap = other.capacity();
+        const size_type s = other.size();
         start_ = alloc.allocate(cap);
         end_ = start_ + s;
         end_capacity_ = start_ + cap;
@@ -59,7 +59,7 @@ public:
     template <typename InputIt>
     vector(InputIt first, InputIt last, const allocator_type& alloc = allocator_type())
         : alloc_(alloc), start_(), end_(), end_capacity_() {
-        typedef is_integral<InputIt::value_type>::value integral;
+        typedef is_iterator<InputIt> is_iterator;
 
         size_type size = static_cast<size_type>(distance(first, last));
 
