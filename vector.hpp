@@ -6,12 +6,13 @@
 /*   By: mleblanc <mleblanc@student.42quebec.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/01 15:27:15 by mleblanc          #+#    #+#             */
-/*   Updated: 2022/02/07 18:44:08 by mleblanc         ###   ########.fr       */
+/*   Updated: 2022/02/07 18:53:53 by mleblanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
 
+#include <algorithm>
 #include <memory>
 #include <sstream>
 #include <stdexcept>
@@ -152,7 +153,18 @@ public:
     void     push_back(const T& value) {}
     void     pop_back() {}
     void     resize(size_type count, T value = T()) {}
-    void     swap(vector& other) {}
+    void     swap(vector& other) {
+        const_pointer ptr_start = start_;
+        const_pointer ptr_end = end_;
+        const_pointer ptr_end_cap = end_capacity_;
+
+        start_ = other.start_;
+        end_ = other.end_;
+        end_capacity_ = other.end_capacity_;
+        other.start_ = ptr_start;
+        other.end_ = ptr_end;
+        other.end_capacity_ = ptr_end_cap;
+    }
 
 private:
     bool      should_grow(size_type new_size) const { return new_size >= capacity(); }
