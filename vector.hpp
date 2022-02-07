@@ -6,7 +6,7 @@
 /*   By: mleblanc <mleblanc@student.42quebec.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/01 15:27:15 by mleblanc          #+#    #+#             */
-/*   Updated: 2022/02/03 16:30:47 by mleblanc         ###   ########.fr       */
+/*   Updated: 2022/02/06 21:11:31 by mleblanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,17 +43,41 @@ public:
         start_ = alloc.allocate(cap);
         end_ = start_ + s;
         end_capacity_ = start_ + cap;
-
-        for (size_type n; n < s; n++) {
-            start_[n] = other.start_[s];
-        }
+        construct_range(start_, other.start_, other.end_);
     };
-    explicit vector(const allocator_type& alloc) : alloc_(alloc) {}
+    explicit vector(const allocator_type& alloc)
+        : alloc_(alloc), start_(), end_(), end_capacity_() {}
     explicit vector(
         size_type count, const T& value = T(), const allocator_type& alloc = allocator_type())
-        : alloc_(alloc) {}
+        : alloc_(alloc) {
+        if (count > max_size()) {
+            length_exception();
+        }
+
+        start_ = alloc.allocate(count);
+    }
     template <typename InputIt>
-    vector(InputIt first, InputIt last, const allocator_type& alloc = allocator_type());
+    vector(InputIt first, InputIt last, const allocator_type& alloc = allocator_type())
+        : alloc_(alloc), start_(), end_(), end_capacity_() {
+        typedef is_integral<InputIt::value_type>::value integral;
+
+        size_type size = static_cast<size_type>(distance(first, last));
+
+        if (size > max_size()) {
+            length_exception();
+        }
+
+        if (size > 0) {
+            start_ = alloc.allocate(size);
+            end_ = start_ + size;
+            end_capacity_ = end_;
+
+            pointer ptr = start_;
+            for (InputIt it = first; it != last; it++, ptr++) {
+                alloc.construct(ptr, *it);
+            }
+        }
+    }
     ~vector() {
         destroy_range(start_, end_);
         get_allocator().deallocate(start_, capacity());
@@ -105,7 +129,7 @@ public:
     void     insert(iterator pos, size_type count, const T& value) {}
     void     clear() {
         destroy_range(start_, end_);
-        end_ = start;
+        end_ = start_;
     }
     iterator erase(iterator pos) {}
     iterator erase(iterator first, iterator last) {}
@@ -152,6 +176,12 @@ private:
         allocator_type alloc = get_allocator();
         for (; start != end; dst++, start++) {
             alloc.construct(dst, *start);
+        }
+    }
+    void construct_range(pointer dst, const_pointer end, const_reference value) {
+        allocator_type alloc = get_allocator();
+        for (; dst != end; dst++) {
+            alloc.construct(dst, value);
         }
     }
     void destroy_range(pointer start, pointer end) {
