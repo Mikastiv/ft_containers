@@ -6,7 +6,7 @@
 /*   By: mleblanc <mleblanc@student.42quebec.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/01 15:27:15 by mleblanc          #+#    #+#             */
-/*   Updated: 2022/02/07 18:11:28 by mleblanc         ###   ########.fr       */
+/*   Updated: 2022/02/07 18:44:08 by mleblanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,7 +66,7 @@ public:
         typedef typename enable_if<is_iterator<InputIt>::value, InputIt>::type _type;
         (void)_type();
 
-        typename InputIt::difference_type size = ft::distance(first, last);
+        typename iterator_traits<InputIt>::difference_type size = ft::distance(first, last);
 
         if (size <= 0) {
             return;

@@ -6,7 +6,7 @@
 /*   By: mleblanc <mleblanc@student.42quebec.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/02 12:33:36 by mleblanc          #+#    #+#             */
-/*   Updated: 2022/02/07 18:09:10 by mleblanc         ###   ########.fr       */
+/*   Updated: 2022/02/07 18:44:34 by mleblanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -216,7 +216,7 @@ inline normal_iterator<It, Container> operator+(
 }
 
 template <typename It>
-inline typename It::difference_type distance(It first, It last) {
+inline typename iterator_traits<It>::difference_type distance(It first, It last) {
     return last - first;
 }
 
