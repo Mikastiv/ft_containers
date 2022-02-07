@@ -6,7 +6,7 @@
 /*   By: mleblanc <mleblanc@student.42quebec.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/02 12:33:36 by mleblanc          #+#    #+#             */
-/*   Updated: 2022/02/07 13:52:06 by mleblanc         ###   ########.fr       */
+/*   Updated: 2022/02/07 18:09:10 by mleblanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,9 +17,11 @@
 #include "type_traits.hpp"
 
 namespace ft {
+struct input_iterator_tag {};
+struct output_iterator_tag {};
 struct forward_iterator_tag {};
-struct bidirectional_iterator_tag : public forward_iterator_tag {};
-struct random_access_iterator_tag : public bidirectional_iterator_tag {};
+struct bidirectional_iterator_tag {};
+struct random_access_iterator_tag {};
 
 template <typename It>
 struct iterator_traits {
@@ -48,14 +50,26 @@ struct iterator_traits<const It*> {
     typedef const value_type&          reference;
 };
 
-template <typename T, typename = void>
-struct is_iterator : public false_type {};
+template <typename>
+struct is_iterator_type : public false_type {};
+
+template <>
+struct is_iterator_type<input_iterator_tag> : public true_type {};
+
+template <>
+struct is_iterator_type<output_iterator_tag> : public true_type {};
+
+template <>
+struct is_iterator_type<forward_iterator_tag> : public true_type {};
+
+template <>
+struct is_iterator_type<bidirectional_iterator_tag> : public true_type {};
+
+template <>
+struct is_iterator_type<random_access_iterator_tag> : public true_type {};
 
 template <typename T>
-struct is_iterator<T, typename iterator_traits<T>::iterator_category> : public true_type {};
-
-template <typename T>
-struct is_iterator<T, typename T::iterator_category> : public true_type {};
+struct is_iterator : public is_iterator_type<typename iterator_traits<T>::iterator_category> {};
 
 template <typename It, typename Container>
 class normal_iterator {
@@ -202,9 +216,8 @@ inline normal_iterator<It, Container> operator+(
 }
 
 template <typename It>
-inline size_t distance(It first, It last) {
-    typename It::difference_type diff = last - first;
-    return diff < 0 ? 0 : static_cast<size_t>(diff);
+inline typename It::difference_type distance(It first, It last) {
+    return last - first;
 }
 
 template <typename It>

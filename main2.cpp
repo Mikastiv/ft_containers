@@ -1,11 +1,13 @@
 #include <iostream>
+#include <vector>
 
 #include "type_traits.hpp"
 #include "vector.hpp"
 
 int main() {
-    ft::vector<int> test;
+    ft::vector<float> test1(34, 5.0);
+    ft::vector<float> test(test1.begin(), test1.end());
 
-    std::cout << std::boolalpha << ft::is_integral<short>::value << std::endl;
-    std::cout << std::boolalpha << ft::is_same<const short *, short *>::value << std::endl;
+    std::cout << test[5] << std::endl;
+    std::cout << test.size() << std::endl;
 }

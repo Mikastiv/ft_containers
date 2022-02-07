@@ -6,7 +6,7 @@
 /*   By: mleblanc <mleblanc@student.42quebec.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/02 17:59:12 by mleblanc          #+#    #+#             */
-/*   Updated: 2022/02/07 13:51:05 by mleblanc         ###   ########.fr       */
+/*   Updated: 2022/02/07 17:49:05 by mleblanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,5 +74,10 @@ struct is_same : public false_type {};
 
 template <typename T>
 struct is_same<T, T> : public true_type {};
+
+template <typename T>
+struct void_t {
+    typedef T type;
+};
 
 }

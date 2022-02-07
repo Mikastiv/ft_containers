@@ -6,7 +6,7 @@
 /*   By: mleblanc <mleblanc@student.42quebec.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/01 15:27:15 by mleblanc          #+#    #+#             */
-/*   Updated: 2022/02/07 14:14:04 by mleblanc         ###   ########.fr       */
+/*   Updated: 2022/02/07 18:11:28 by mleblanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,7 +36,7 @@ public:
     typedef ft::reverse_iterator<const_iterator>     const_reverse_iterator;
 
 public:
-    vector() : alloc_(), start_(), end_(), end_capacity_(){};
+    vector() : alloc_(), start_(), end_(), end_capacity_() {}
     vector(const vector& other) : alloc_(other.alloc) {
         allocator_type  alloc = get_allocator();
         const size_type cap = other.capacity();
@@ -45,7 +45,7 @@ public:
         end_ = start_ + s;
         end_capacity_ = start_ + cap;
         construct_range(start_, other.start_, other.end_);
-    };
+    }
     explicit vector(const allocator_type& alloc)
         : alloc_(alloc), start_(), end_(), end_capacity_() {}
     explicit vector(
@@ -55,7 +55,7 @@ public:
             length_exception();
         }
 
-        start_ = alloc.allocate(count);
+        start_ = alloc_.allocate(count);
         end_ = start_ + count;
         end_capacity_ = end_;
         construct_range(start_, end_, value);
@@ -63,22 +63,28 @@ public:
     template <typename InputIt>
     vector(InputIt first, InputIt last, const allocator_type& alloc = allocator_type())
         : alloc_(alloc), start_(), end_(), end_capacity_() {
-        typedef is_iterator<InputIt> is_iterator;
+        typedef typename enable_if<is_iterator<InputIt>::value, InputIt>::type _type;
+        (void)_type();
 
-        size_type size = static_cast<size_type>(distance(first, last));
+        typename InputIt::difference_type size = ft::distance(first, last);
 
-        if (size > max_size()) {
+        if (size <= 0) {
+            return;
+        }
+
+        size_type cap = static_cast<size_type>(size);
+        if (cap > max_size()) {
             length_exception();
         }
 
         if (size > 0) {
-            start_ = alloc.allocate(size);
+            start_ = alloc_.allocate(cap);
             end_ = start_ + size;
             end_capacity_ = end_;
 
             pointer ptr = start_;
             for (InputIt it = first; it != last; it++, ptr++) {
-                alloc.construct(ptr, *it);
+                alloc_.construct(ptr, *it);
             }
         }
     }
