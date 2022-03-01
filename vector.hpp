@@ -6,7 +6,7 @@
 /*   By: mleblanc <mleblanc@student.42quebec.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/01 15:27:15 by mleblanc          #+#    #+#             */
-/*   Updated: 2022/03/01 12:12:30 by mleblanc         ###   ########.fr       */
+/*   Updated: 2022/03/01 12:29:42 by mleblanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -96,8 +96,25 @@ public:
 
 public:
     template <typename InputIt>
-    void           assign(InputIt first, InputIt last) {}
-    void           assign(size_type count, const T& value) {}
+    void assign(InputIt first, InputIt last) {}
+    void assign(size_type count, const T& value) {
+        if (count > capacity()) {
+            vector tmp(count, value, get_allocator());
+            tmp.swap(*this);
+        } else if (count > size()) {
+            const size_type extra = count - size();
+
+            std::fill(begin(), end(), value);
+            construct_range(end_, end_ + extra, value);
+            end_ += extra;
+        } else {
+            const_pointer new_end = begin() + count;
+
+            std::fill_n(begin(), count, value);
+            destroy_range(new_end, end());
+            end_ = new_end;
+        }
+    }
     allocator_type get_allocator() const { return alloc_; }
 
     reference at(size_type pos) {
