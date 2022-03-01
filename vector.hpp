@@ -6,7 +6,7 @@
 /*   By: mleblanc <mleblanc@student.42quebec.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/01 15:27:15 by mleblanc          #+#    #+#             */
-/*   Updated: 2022/02/07 18:53:53 by mleblanc         ###   ########.fr       */
+/*   Updated: 2022/03/01 12:12:30 by mleblanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -128,7 +128,7 @@ public:
 
     bool      empty() const { return begin() == end(); }
     size_type size() const { return static_cast<size_type>(end_ - start_); }
-    size_type max_size() const { return allocator_type().max_size(); }
+    size_type max_size() const { return get_allocator().max_size(); }
     void      reserve(size_type new_cap) {
         if (new_cap > capacity()) {
             if (new_cap > max_size()) {
@@ -151,9 +151,12 @@ public:
     iterator erase(iterator pos) {}
     iterator erase(iterator first, iterator last) {}
     void     push_back(const T& value) {}
-    void     pop_back() {}
-    void     resize(size_type count, T value = T()) {}
-    void     swap(vector& other) {
+    void     pop_back() {
+        --end_;
+        alloc_.destroy(end_);
+    }
+    void resize(size_type count, T value = T()) {}
+    void swap(vector& other) {
         const_pointer ptr_start = start_;
         const_pointer ptr_end = end_;
         const_pointer ptr_end_cap = end_capacity_;

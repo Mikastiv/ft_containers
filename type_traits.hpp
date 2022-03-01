@@ -6,7 +6,7 @@
 /*   By: mleblanc <mleblanc@student.42quebec.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/02 17:59:12 by mleblanc          #+#    #+#             */
-/*   Updated: 2022/02/07 17:49:05 by mleblanc         ###   ########.fr       */
+/*   Updated: 2022/02/25 16:52:28 by mleblanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,8 @@ struct integral_constant {
 
     static const T value = v;
 
-                     operator value_type() const { return value; }
+    operator value_type() const { return value; }
+
     const value_type operator()() const { return value; }
 };
 
@@ -74,10 +75,5 @@ struct is_same : public false_type {};
 
 template <typename T>
 struct is_same<T, T> : public true_type {};
-
-template <typename T>
-struct void_t {
-    typedef T type;
-};
 
 }
