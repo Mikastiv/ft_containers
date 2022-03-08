@@ -6,7 +6,7 @@
 /*   By: mleblanc <mleblanc@student.42quebec.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/01 15:27:15 by mleblanc          #+#    #+#             */
-/*   Updated: 2022/03/01 13:04:06 by mleblanc         ###   ########.fr       */
+/*   Updated: 2022/03/08 02:33:14 by mleblanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,26 +67,8 @@ public:
         typedef typename enable_if<is_iterator<InputIt>::value, InputIt>::type _type;
         (void)_type();
 
-        typename iterator_traits<InputIt>::difference_type size = ft::distance(first, last);
-
-        if (size <= 0) {
-            return;
-        }
-
-        size_type cap = static_cast<size_type>(size);
-        if (cap > max_size()) {
-            length_exception();
-        }
-
-        if (size > 0) {
-            start_ = alloc_.allocate(cap);
-            end_ = start_ + size;
-            end_capacity_ = end_;
-
-            pointer ptr = start_;
-            for (InputIt it = first; it != last; it++, ptr++) {
-                alloc_.construct(ptr, *it);
-            }
+        for (; first != last; ++first) {
+            push_back(*first);
         }
     }
     ~vector() {
@@ -99,6 +81,8 @@ public:
     void assign(InputIt first, InputIt last) {
         typedef typename enable_if<is_iterator<InputIt>::value, InputIt>::type _type;
         (void)_type();
+
+        const size_type n = std::distance(first, last);
     }
     void assign(size_type count, const T& value) {
         if (count > capacity()) {
