@@ -6,7 +6,7 @@
 /*   By: mleblanc <mleblanc@student.42quebec.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/01 15:27:15 by mleblanc          #+#    #+#             */
-/*   Updated: 2022/03/08 02:33:14 by mleblanc         ###   ########.fr       */
+/*   Updated: 2022/03/08 03:04:25 by mleblanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,9 +52,9 @@ public:
     explicit vector(
         size_type count, const T& value = T(), const allocator_type& alloc = allocator_type())
         : alloc_(alloc) {
-        if (count > max_size()) {
-            length_exception();
-        }
+        // if (count > max_size()) {
+        //     length_exception();
+        // }
 
         start_ = alloc_.allocate(count);
         end_ = start_ + count;
@@ -154,8 +154,15 @@ public:
     }
     iterator erase(iterator pos) {}
     iterator erase(iterator first, iterator last) {}
-    void     push_back(const T& value) {}
-    void     pop_back() {
+    void     push_back(const T& value) {
+        if (end_ == end_capacity_) {
+            grow();
+        }
+
+        *end_ = value;
+        ++end_;
+    }
+    void pop_back() {
         --end_;
         alloc_.destroy(end_);
     }
@@ -174,7 +181,6 @@ public:
     }
 
 private:
-    bool      should_grow(size_type new_size) const { return new_size >= capacity(); }
     size_type calculate_growth() const {
         const size_type old_cap = capacity();
         const size_type max = max_size();
