@@ -6,7 +6,7 @@
 /*   By: mleblanc <mleblanc@student.42quebec.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/01 15:27:15 by mleblanc          #+#    #+#             */
-/*   Updated: 2022/03/01 12:29:42 by mleblanc         ###   ########.fr       */
+/*   Updated: 2022/03/01 13:04:06 by mleblanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -96,7 +96,10 @@ public:
 
 public:
     template <typename InputIt>
-    void assign(InputIt first, InputIt last) {}
+    void assign(InputIt first, InputIt last) {
+        typedef typename enable_if<is_iterator<InputIt>::value, InputIt>::type _type;
+        (void)_type();
+    }
     void assign(size_type count, const T& value) {
         if (count > capacity()) {
             vector tmp(count, value, get_allocator());
