@@ -6,7 +6,7 @@
 /*   By: mleblanc <mleblanc@student.42quebec.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/01 15:27:15 by mleblanc          #+#    #+#             */
-/*   Updated: 2022/03/09 02:20:35 by mleblanc         ###   ########.fr       */
+/*   Updated: 2022/03/09 02:52:03 by mleblanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -145,7 +145,10 @@ public:
     size_type capacity() const { return static_cast<size_type>(end_capacity_ - start_); }
 
     template <class InputIt>
-    void     insert(iterator pos, InputIt first, InputIt last) {}
+    void insert(iterator pos, InputIt first, InputIt last) {
+        typedef typename enable_if<is_iterator<InputIt>::value, InputIt>::type _type;
+        (void)_type();
+    }
     iterator insert(iterator pos, const T& value) {}
     void     insert(iterator pos, size_type count, const T& value) {}
     void     clear() {
