@@ -6,7 +6,7 @@
 /*   By: mleblanc <mleblanc@student.42quebec.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/01 15:27:15 by mleblanc          #+#    #+#             */
-/*   Updated: 2022/03/08 03:04:25 by mleblanc         ###   ########.fr       */
+/*   Updated: 2022/03/09 00:31:29 by mleblanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -189,7 +189,7 @@ private:
             return max;
         }
 
-        return old_cap * 2;
+        return old_cap == 0 ? 2 : old_cap * 2;
     }
     void grow() {
         const size_type old_cap = capacity();
@@ -207,8 +207,10 @@ private:
         pointer        new_end = new_start + size();
 
         construct_range(new_start, start_, end_);
-        destroy_range(start_, end_);
-        alloc.deallocate(start_, capacity());
+        if (capacity() > 0) {
+            destroy_range(start_, end_);
+            alloc.deallocate(start_, capacity());
+        }
         start_ = new_start;
         end_ = new_end;
         end_capacity_ = start_ + n;

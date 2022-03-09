@@ -65,6 +65,12 @@
         "streambuf": "cpp",
         "system_error": "cpp",
         "typeinfo": "cpp",
-        "*.tcc": "cpp"
+        "*.tcc": "cpp",
+        "clocale": "cpp",
+        "compare": "cpp",
+        "concepts": "cpp",
+        "numeric": "cpp",
+        "random": "cpp",
+        "numbers": "cpp"
     }
 }
