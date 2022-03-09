@@ -6,7 +6,7 @@
 /*   By: mleblanc <mleblanc@student.42quebec.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/01 15:27:15 by mleblanc          #+#    #+#             */
-/*   Updated: 2022/03/09 00:31:29 by mleblanc         ###   ########.fr       */
+/*   Updated: 2022/03/09 02:20:35 by mleblanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,9 +52,9 @@ public:
     explicit vector(
         size_type count, const T& value = T(), const allocator_type& alloc = allocator_type())
         : alloc_(alloc) {
-        // if (count > max_size()) {
-        //     length_exception();
-        // }
+        if (count > max_size()) {
+            length_exception();
+        }
 
         start_ = alloc_.allocate(count);
         end_ = start_ + count;
@@ -234,10 +234,7 @@ private:
         }
     }
     void length_exception() {
-        std::stringstream ss;
-
-        ss << "vector is at max size ( " << max_size() << " and can't grow";
-        throw std::length_error(ss.str());
+        throw std::length_error("cannot create std::vector larger than max_size()");
     }
     void range_check(size_type n) {
         if (n >= size()) {
