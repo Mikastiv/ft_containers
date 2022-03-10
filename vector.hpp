@@ -6,7 +6,7 @@
 /*   By: mleblanc <mleblanc@student.42quebec.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/01 15:27:15 by mleblanc          #+#    #+#             */
-/*   Updated: 2022/03/09 02:52:03 by mleblanc         ###   ########.fr       */
+/*   Updated: 2022/03/09 19:51:28 by mleblanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -155,9 +155,28 @@ public:
         destroy_range(start_, end_);
         end_ = start_;
     }
-    iterator erase(iterator pos) {}
-    iterator erase(iterator first, iterator last) {}
-    void     push_back(const T& value) {
+    iterator erase(iterator pos) {
+        if (pos + 1 != end()) {
+            std::copy(pos + 1, end(), pos);
+        }
+        --end_;
+        get_allocator().destroy(end_);
+        return pos;
+    }
+    iterator erase(iterator first, iterator last) {
+        if (first != last) {
+            if (last != end()) {
+                std::copy(last, end(), first);
+            }
+            pointer new_end = first.base() + (end() - last);
+            if (end_ - new_end > 0) {
+                destroy_range(new_end, end());
+                end_ = new_end;
+            }
+        }
+        return first;
+    }
+    void push_back(const T& value) {
         if (end_ == end_capacity_) {
             grow();
         }
