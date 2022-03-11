@@ -6,7 +6,7 @@
 /*   By: mleblanc <mleblanc@student.42quebec.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/01 15:27:15 by mleblanc          #+#    #+#             */
-/*   Updated: 2022/03/10 13:55:51 by mleblanc         ###   ########.fr       */
+/*   Updated: 2022/03/10 23:37:14 by mleblanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -149,8 +149,28 @@ public:
         typedef typename enable_if<is_iterator<InputIt>::value, InputIt>::type _type;
         (void)_type();
     }
-    iterator insert(iterator pos, const T& value) {}
-    void     insert(iterator pos, size_type count, const T& value) {}
+    iterator insert(iterator pos, const T& value) {
+        const size_type n = pos - begin();
+        if (should_grow()) {
+            grow();
+        }
+
+        pos = iterator(start_ + n);
+        if (pos == end()) {
+            get_allocator().construct(end_, value);
+            ++end_;
+        } else {
+            get_allocator().construct(end_, *(end_ - 1));
+            std::copy_backward(pos, end_ - 2, end_ - 1);
+            *pos = value;
+        }
+        return pos;
+    }
+    void insert(iterator pos, size_type count, const T& value) {
+        if (count != 0) {
+            if (n <= size_type(end_capacity_ - end_)) {}
+        }
+    }
     void     clear() { erase_at_end(start_); }
     iterator erase(iterator pos) {
         if (pos + 1 != end()) {
@@ -171,11 +191,11 @@ public:
         return first;
     }
     void push_back(const T& value) {
-        if (end_ == end_capacity_) {
+        if (should_grow()) {
             grow();
         }
 
-        *end_ = value;
+        get_allocator().construct(end_, value);
         ++end_;
     }
     void pop_back() {
@@ -197,6 +217,7 @@ public:
     }
 
 private:
+    bool should_grow() const { return end_ == end_capacity_; }
     void erase_at_end(pointer pos) {
         pointer n = end_ - pos;
         if (n > 0) {
@@ -256,10 +277,10 @@ private:
             alloc.destroy(start);
         }
     }
-    void length_exception() {
+    void length_exception() const {
         throw std::length_error("cannot create std::vector larger than max_size()");
     }
-    void range_check(size_type n) {
+    void range_check(size_type n) const {
         if (n >= size()) {
             std::stringstream ss;
 
