@@ -6,7 +6,7 @@
 /*   By: mleblanc <mleblanc@student.42quebec.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/01 15:27:15 by mleblanc          #+#    #+#             */
-/*   Updated: 2022/03/09 19:51:28 by mleblanc         ###   ########.fr       */
+/*   Updated: 2022/03/10 13:55:51 by mleblanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -151,10 +151,7 @@ public:
     }
     iterator insert(iterator pos, const T& value) {}
     void     insert(iterator pos, size_type count, const T& value) {}
-    void     clear() {
-        destroy_range(start_, end_);
-        end_ = start_;
-    }
+    void     clear() { erase_at_end(start_); }
     iterator erase(iterator pos) {
         if (pos + 1 != end()) {
             std::copy(pos + 1, end(), pos);
@@ -169,10 +166,7 @@ public:
                 std::copy(last, end(), first);
             }
             pointer new_end = first.base() + (end() - last);
-            if (end_ - new_end > 0) {
-                destroy_range(new_end, end());
-                end_ = new_end;
-            }
+            erase_at_end(new_end);
         }
         return first;
     }
@@ -203,6 +197,13 @@ public:
     }
 
 private:
+    void erase_at_end(pointer pos) {
+        pointer n = end_ - pos;
+        if (n > 0) {
+            destroy_range(pos, end_);
+            end_ = pos;
+        }
+    }
     size_type calculate_growth() const {
         const size_type old_cap = capacity();
         const size_type max = max_size();
