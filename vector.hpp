@@ -6,7 +6,7 @@
 /*   By: mleblanc <mleblanc@student.42quebec.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/01 15:27:15 by mleblanc          #+#    #+#             */
-/*   Updated: 2022/03/10 23:37:14 by mleblanc         ###   ########.fr       */
+/*   Updated: 2022/03/14 14:32:26 by mleblanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,6 +77,7 @@ public:
     }
 
 public:
+    // TODO:
     template <typename InputIt>
     void assign(InputIt first, InputIt last) {
         typedef typename enable_if<is_iterator<InputIt>::value, InputIt>::type _type;
@@ -144,6 +145,7 @@ public:
     }
     size_type capacity() const { return static_cast<size_type>(end_capacity_ - start_); }
 
+    // TODO:
     template <class InputIt>
     void insert(iterator pos, InputIt first, InputIt last) {
         typedef typename enable_if<is_iterator<InputIt>::value, InputIt>::type _type;
@@ -166,9 +168,14 @@ public:
         }
         return pos;
     }
+    // TODO:
     void insert(iterator pos, size_type count, const T& value) {
         if (count != 0) {
-            if (n <= size_type(end_capacity_ - end_)) {}
+            if (n <= size_type(end_capacity_ - end_)) {
+                
+            } else {
+                
+            }
         }
     }
     void     clear() { erase_at_end(start_); }
@@ -202,6 +209,7 @@ public:
         --end_;
         alloc_.destroy(end_);
     }
+    // TODO:
     void resize(size_type count, T value = T()) {}
     void swap(vector& other) {
         const_pointer ptr_start = start_;
