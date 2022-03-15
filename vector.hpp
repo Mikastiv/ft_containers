@@ -6,7 +6,7 @@
 /*   By: mleblanc <mleblanc@student.42quebec.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/01 15:27:15 by mleblanc          #+#    #+#             */
-/*   Updated: 2022/03/14 14:32:26 by mleblanc         ###   ########.fr       */
+/*   Updated: 2022/03/14 22:01:09 by mleblanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -168,14 +168,16 @@ public:
         }
         return pos;
     }
-    // TODO:
     void insert(iterator pos, size_type count, const T& value) {
         if (count != 0) {
-            if (n <= size_type(end_capacity_ - end_)) {
-                
-            } else {
-                
+            if (n > size_type(end_capacity_ - end_)) {
+                const size_type new_size = check_length(count);
+                reallocate(new_size);
             }
+            const size_type count_after = end() - pos;
+            construct_range_backward(end_ + count, pos, end());
+            end_ += count;
+            std::fill_n(pos, count, value);
         }
     }
     void     clear() { erase_at_end(start_); }
@@ -267,16 +269,27 @@ private:
         end_ = new_end;
         end_capacity_ = start_ + n;
     }
-    void construct_range(pointer dst, const_pointer start, const_pointer end) {
+    void construct_range(const_pointer dst, const_pointer start, const_pointer end) {
         allocator_type alloc = get_allocator();
-        for (; start != end; dst++, start++) {
-            alloc.construct(dst, *start);
+        pointer        cur = dst;
+        for (; start != end; cur++, start++) {
+            alloc.construct(cur, *start);
         }
     }
-    void construct_range(pointer dst, const_pointer end, const_reference value) {
+    void construct_range(const_pointer dst, const_pointer end, const_reference value) {
         allocator_type alloc = get_allocator();
-        for (; dst != end; dst++) {
-            alloc.construct(dst, value);
+        pointer        cur = dst;
+        for (; cur != end; cur++) {
+            alloc.construct(cur, value);
+        }
+    }
+    void construct_range_backward(const_pointer dst, const_pointer start, const_pointer end) {
+        allocator_type  alloc = get_allocator();
+        const size_type count = end - start;
+        pointer         cur = dst + count;
+        --end;
+        for (; end != start - ; --cur, --end) {
+            alloc.construct(cur, *end);
         }
     }
     void destroy_range(pointer start, pointer end) {
@@ -286,7 +299,15 @@ private:
         }
     }
     void length_exception() const {
-        throw std::length_error("cannot create std::vector larger than max_size()");
+        throw std::length_error("cannot create ft::vector larger than max_size()");
+    }
+    size_type check_length(size_type count) const {
+        if (max_size() - size() < count) {
+            length_exception();
+        }
+
+        const size_type length = size() + std::max(size(), n);
+        return (length < size() || len > max_size()) ? max_size() : length;
     }
     void range_check(size_type n) const {
         if (n >= size()) {
