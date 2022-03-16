@@ -11,6 +11,7 @@ void test_ctor() {
 
         assert(v.size() == 64);
         assert(v2.size() == 64);
+        assert(v.end() - v.begin() == 64);
         assert(std::accumulate(v.begin(), v.end(), 0) == 0);
 
         assert(v.capacity() == 64);
