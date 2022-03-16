@@ -6,7 +6,7 @@
 /*   By: mleblanc <mleblanc@student.42quebec.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/01 15:27:15 by mleblanc          #+#    #+#             */
-/*   Updated: 2022/03/15 00:23:16 by mleblanc         ###   ########.fr       */
+/*   Updated: 2022/03/16 02:32:41 by mleblanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,6 +75,10 @@ public:
         destroy_range(start_, end_);
         get_allocator().deallocate(start_, capacity());
     }
+    vector& operator=(const vector& other) : alloc_(alloc), start_(), end_(), end_capacity_() {
+        vector tmp(other);
+        tmp.swap(*this);
+    }
 
 public:
     // TODO:
@@ -83,7 +87,7 @@ public:
         typedef typename enable_if<is_iterator<InputIt>::value, InputIt>::type _type;
         (void)_type();
 
-        const size_type n = std::distance(first, last);
+        const size_type count = std::distance(first, last);
     }
     void assign(size_type count, const T& value) {
         if (count > capacity()) {
@@ -144,12 +148,23 @@ public:
         }
     }
     size_type capacity() const { return static_cast<size_type>(end_capacity_ - start_); }
-
-    // TODO:
     template <class InputIt>
     void insert(iterator pos, InputIt first, InputIt last) {
         typedef typename enable_if<is_iterator<InputIt>::value, InputIt>::type _type;
         (void)_type();
+
+        const size_type count = std::distance(first, last);
+
+        if (count != 0) {
+            if (count > size_type(end_capacity_ - end_)) {
+                const size_type new_size = check_length(count);
+                reallocate(new_size);
+            }
+            const size_type count_after = end() - pos;
+            construct_range_backward(end_ + count, pos, end());
+            end_ += count;
+            std::copy(first, last, pos);
+        }
     }
     iterator insert(iterator pos, const T& value) {
         const size_type n = pos - begin();
