@@ -13,5 +13,5 @@ int main() {
     std::cout << test2[5] << std::endl;
     std::cout << test2.size() << std::endl;
 
-    ft::vector<char> vec(1024 * 1000000 * 4);
+    ft::vector<char> vec(1024);
 }
