@@ -35,6 +35,6 @@ fclean:		clean
 re:			fclean all
 
 fmt:
-			@clang-format -i $(SRCS) $(INCS)
+			@clang-format -i $(SRCS) $(INCS) $(TEST_SRCS)
 
 .PHONY:		all clean fclean re fmt
