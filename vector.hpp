@@ -6,7 +6,7 @@
 /*   By: mleblanc <mleblanc@student.42quebec.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/01 15:27:15 by mleblanc          #+#    #+#             */
-/*   Updated: 2022/03/16 08:57:56 by mleblanc         ###   ########.fr       */
+/*   Updated: 2022/03/16 10:16:54 by mleblanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -286,7 +286,6 @@ private:
             length_exception();
         }
 
-        allocator_type  alloc = get_allocator();
         const size_type new_cap = calculate_growth();
         reallocate(new_cap);
     }
