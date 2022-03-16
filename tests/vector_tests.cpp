@@ -17,6 +17,14 @@ void test_ctor() {
         assert(v.capacity() == 64);
         assert(v2.capacity() == 64);
     }
+    try {
+        ft::vector<int> v(ft::vector<int>().max_size());
+        assert(false);
+    } catch (...) {}
+
+    {
+        
+    }
 }
 
 int main() {
