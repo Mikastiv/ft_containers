@@ -22,10 +22,6 @@ all:		$(NAME)
 $(NAME):	$(OBJS)
 			$(CXX) $(OBJS) -o $(NAME)
 
-test:		$(TEST_OBJS)
-			$(CXX) $(TEST_OBJS) -o tests_bin
-			./tests_bin
-
 clean:
 			@rm -rf $(OBJS) $(TEST_OBJS)
 
