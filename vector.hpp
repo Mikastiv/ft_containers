@@ -6,7 +6,7 @@
 /*   By: mleblanc <mleblanc@student.42quebec.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/01 15:27:15 by mleblanc          #+#    #+#             */
-/*   Updated: 2022/03/25 17:07:59 by mleblanc         ###   ########.fr       */
+/*   Updated: 2022/03/25 20:12:59 by mleblanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,7 +62,8 @@ public:
         construct_range(start_, end_, value);
     }
     template <typename InputIt>
-    vector(InputIt first, InputIt last, const allocator_type& alloc = allocator_type())
+    vector(typename enable_if<!is_integral<InputIt>::value, InputIt>::type first, InputIt last,
+        const allocator_type& alloc = allocator_type())
         : alloc_(alloc), start_(), end_(), end_capacity_() {
         typedef typename enable_if<is_iterator<InputIt>::value, InputIt>::type _type;
         (void)_type();
@@ -317,7 +318,7 @@ private:
         }
     }
     void construct_range_backward(pointer dst, const_pointer start, const_pointer end) {
-        allocator_type  alloc = get_allocator();
+        allocator_type alloc = get_allocator();
 
         --end;
         for (; end != start - 1; --dst, --end) {
