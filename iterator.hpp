@@ -6,23 +6,18 @@
 /*   By: mleblanc <mleblanc@student.42quebec.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/02 12:33:36 by mleblanc          #+#    #+#             */
-/*   Updated: 2022/03/08 02:27:33 by mleblanc         ###   ########.fr       */
+/*   Updated: 2022/03/27 14:06:32 by mleblanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
 
 #include <cstddef>
+#include <iterator>
 
 #include "type_traits.hpp"
 
 namespace ft {
-struct input_iterator_tag {};
-struct output_iterator_tag {};
-struct forward_iterator_tag {};
-struct bidirectional_iterator_tag {};
-struct random_access_iterator_tag {};
-
 template <typename It>
 struct iterator_traits {
     typedef typename It::iterator_category iterator_category;
@@ -34,39 +29,39 @@ struct iterator_traits {
 
 template <typename It>
 struct iterator_traits<It*> {
-    typedef random_access_iterator_tag iterator_category;
-    typedef It                         value_type;
-    typedef ptrdiff_t                  difference_type;
-    typedef value_type*                pointer;
-    typedef value_type&                reference;
+    typedef std::random_access_iterator_tag iterator_category;
+    typedef It                              value_type;
+    typedef ptrdiff_t                       difference_type;
+    typedef value_type*                     pointer;
+    typedef value_type&                     reference;
 };
 
 template <typename It>
 struct iterator_traits<const It*> {
-    typedef random_access_iterator_tag iterator_category;
-    typedef It                         value_type;
-    typedef ptrdiff_t                  difference_type;
-    typedef const value_type*          pointer;
-    typedef const value_type&          reference;
+    typedef std::random_access_iterator_tag iterator_category;
+    typedef It                              value_type;
+    typedef ptrdiff_t                       difference_type;
+    typedef const value_type*               pointer;
+    typedef const value_type&               reference;
 };
 
 template <typename>
 struct is_iterator_type : public false_type {};
 
 template <>
-struct is_iterator_type<input_iterator_tag> : public true_type {};
+struct is_iterator_type<std::input_iterator_tag> : public true_type {};
 
 template <>
-struct is_iterator_type<output_iterator_tag> : public true_type {};
+struct is_iterator_type<std::output_iterator_tag> : public true_type {};
 
 template <>
-struct is_iterator_type<forward_iterator_tag> : public true_type {};
+struct is_iterator_type<std::forward_iterator_tag> : public true_type {};
 
 template <>
-struct is_iterator_type<bidirectional_iterator_tag> : public true_type {};
+struct is_iterator_type<std::bidirectional_iterator_tag> : public true_type {};
 
 template <>
-struct is_iterator_type<random_access_iterator_tag> : public true_type {};
+struct is_iterator_type<std::random_access_iterator_tag> : public true_type {};
 
 template <typename T>
 struct is_iterator : public is_iterator_type<typename iterator_traits<T>::iterator_category> {};

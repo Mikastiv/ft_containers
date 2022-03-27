@@ -6,7 +6,7 @@
 /*   By: mleblanc <mleblanc@student.42quebec.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/01 15:27:15 by mleblanc          #+#    #+#             */
-/*   Updated: 2022/03/25 20:12:59 by mleblanc         ###   ########.fr       */
+/*   Updated: 2022/03/27 14:11:47 by mleblanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,12 +62,9 @@ public:
         construct_range(start_, end_, value);
     }
     template <typename InputIt>
-    vector(typename enable_if<!is_integral<InputIt>::value, InputIt>::type first, InputIt last,
+    vector(typename enable_if<is_iterator<InputIt>::value, InputIt>::type first, InputIt last,
         const allocator_type& alloc = allocator_type())
         : alloc_(alloc), start_(), end_(), end_capacity_() {
-        typedef typename enable_if<is_iterator<InputIt>::value, InputIt>::type _type;
-        (void)_type();
-
         for (; first != last; ++first) {
             push_back(*first);
         }
@@ -83,10 +80,8 @@ public:
 
 public:
     template <typename InputIt>
-    void assign(InputIt first, InputIt last) {
-        typedef typename enable_if<is_iterator<InputIt>::value, InputIt>::type _type;
-        (void)_type();
-
+    void assign(
+        typename enable_if<is_iterator<InputIt>::value, InputIt>::type first, InputIt last) {
         pointer cur = start_;
         for (; first != last && cur != end_; ++cur, ++first) {
             *cur = *first;
