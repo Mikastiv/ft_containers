@@ -6,7 +6,7 @@
 /*   By: mleblanc <mleblanc@student.42quebec.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/01 15:27:15 by mleblanc          #+#    #+#             */
-/*   Updated: 2022/03/27 14:11:47 by mleblanc         ###   ########.fr       */
+/*   Updated: 2022/03/27 20:50:02 by mleblanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -185,11 +185,8 @@ public:
         }
     }
     template <class InputIt>
-    void insert(iterator pos, typename enable_if<!is_integral<InputIt>::value, InputIt>::type first,
+    void insert(iterator pos, typename enable_if<is_iterator<InputIt>::value, InputIt>::type first,
         InputIt last) {
-        typedef typename enable_if<is_iterator<InputIt>::value, InputIt>::type _type;
-        (void)_type();
-
         const size_type count = std::distance(first, last);
 
         if (count != 0) {
