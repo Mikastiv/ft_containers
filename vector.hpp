@@ -288,8 +288,8 @@ private:
         reallocate(new_cap);
     }
     void reallocate(size_type n) {
-        pointer        new_start = alloc_.allocate(n);
-        pointer        new_end = new_start + size();
+        pointer new_start = alloc_.allocate(n);
+        pointer new_end = new_start + size();
 
         construct_range(new_start, start_, end_);
         if (capacity() > 0) {
