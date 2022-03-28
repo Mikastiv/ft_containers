@@ -6,7 +6,7 @@
 /*   By: mleblanc <mleblanc@student.42quebec.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/01 15:27:15 by mleblanc          #+#    #+#             */
-/*   Updated: 2022/03/28 01:58:32 by mleblanc         ###   ########.fr       */
+/*   Updated: 2022/03/28 17:25:22 by mleblanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,10 +39,9 @@ public:
 public:
     vector() : alloc_(), start_(), end_(), end_capacity_() {}
     vector(const vector& other) : alloc_(other.alloc_) {
-        allocator_type  alloc = get_allocator();
         const size_type cap = other.capacity();
         const size_type s = other.size();
-        start_ = alloc.allocate(cap);
+        start_ = alloc_.allocate(cap);
         end_ = start_ + s;
         end_capacity_ = start_ + cap;
         construct_range(start_, other.start_, other.end_);
@@ -64,17 +63,19 @@ public:
     template <typename InputIt>
     vector(typename enable_if<!is_integral<InputIt>::value, InputIt>::type first, InputIt last,
         const allocator_type& alloc = allocator_type())
-        : alloc_(alloc), start_(), end_(), end_capacity_() {
+        : alloc_(alloc) {
         typename enable_if<is_iterator<InputIt>::value, InputIt>::type it;
         (void)it;
 
-        for (; first != last; ++first) {
-            push_back(*first);
-        }
+        const size_type n = std::distance(first, last);
+        start_ = alloc_.allocate(n);
+        end_ = start_ + n;
+        end_capacity_ = end_;
+        construct_range(start_, first, last);
     }
     ~vector() {
         destroy_range(start_, end_);
-        get_allocator().deallocate(start_, capacity());
+        alloc_.deallocate(start_, capacity());
     }
     vector& operator=(const vector& other) {
         vector tmp(other);
@@ -143,7 +144,7 @@ public:
 
     bool      empty() const { return begin() == end(); }
     size_type size() const { return static_cast<size_type>(end_ - start_); }
-    size_type max_size() const { return get_allocator().max_size(); }
+    size_type max_size() const { return alloc_.max_size(); }
     void      reserve(size_type new_cap) {
         if (new_cap > capacity()) {
             if (new_cap > max_size()) {
@@ -162,10 +163,10 @@ public:
 
         pos = iterator(start_ + n);
         if (pos == end()) {
-            get_allocator().construct(end_, value);
+            alloc_.construct(end_, value);
             ++end_;
         } else {
-            get_allocator().construct(end_, *(end_ - 1));
+            alloc_.construct(end_, *(end_ - 1));
             std::copy_backward(pos, end_ - 2, end_ - 1);
             *pos = value;
         }
@@ -213,7 +214,7 @@ public:
             std::copy(pos + 1, end(), pos);
         }
         --end_;
-        get_allocator().destroy(end_);
+        alloc_.destroy(end_);
         return pos;
     }
     iterator erase(iterator first, iterator last) {
@@ -231,7 +232,7 @@ public:
             grow();
         }
 
-        get_allocator().construct(end_, value);
+        alloc_.construct(end_, value);
         ++end_;
     }
     void pop_back() {
@@ -287,43 +288,38 @@ private:
         reallocate(new_cap);
     }
     void reallocate(size_type n) {
-        allocator_type alloc = get_allocator();
-        pointer        new_start = alloc.allocate(n);
+        pointer        new_start = alloc_.allocate(n);
         pointer        new_end = new_start + size();
 
         construct_range(new_start, start_, end_);
         if (capacity() > 0) {
             destroy_range(start_, end_);
-            alloc.deallocate(start_, capacity());
+            alloc_.deallocate(start_, capacity());
         }
         start_ = new_start;
         end_ = new_end;
         end_capacity_ = start_ + n;
     }
-    void construct_range(pointer dst, const_pointer start, const_pointer end) {
-        allocator_type alloc = get_allocator();
+    template <typename It>
+    void construct_range(pointer dst, It start, It end) {
         for (; start != end; ++dst, ++start) {
-            alloc.construct(dst, *start);
+            alloc_.construct(dst, *start);
         }
     }
     void construct_range(pointer dst, const_pointer end, const_reference value) {
-        allocator_type alloc = get_allocator();
         for (; dst != end; ++dst) {
-            alloc.construct(dst, value);
+            alloc_.construct(dst, value);
         }
     }
     void construct_range_backward(pointer dst, const_pointer start, const_pointer end) {
-        allocator_type alloc = get_allocator();
-
         --end;
         for (; end != start - 1; --dst, --end) {
-            alloc.construct(dst, *end);
+            alloc_.construct(dst, *end);
         }
     }
     void destroy_range(pointer start, pointer end) {
-        allocator_type alloc = get_allocator();
         for (; start != end; start++) {
-            alloc.destroy(start);
+            alloc_.destroy(start);
         }
     }
     void length_exception() const {
