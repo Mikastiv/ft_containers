@@ -6,7 +6,7 @@
 /*   By: mleblanc <mleblanc@student.42quebec.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/01 15:27:15 by mleblanc          #+#    #+#             */
-/*   Updated: 2022/03/28 17:25:22 by mleblanc         ###   ########.fr       */
+/*   Updated: 2022/03/29 16:15:01 by mleblanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,8 +38,12 @@ public:
 
 public:
     vector() : alloc_(), start_(), end_(), end_capacity_() {}
-    vector(const vector& other) : alloc_(other.alloc_) {
+    vector(const vector& other) : alloc_(other.alloc_), start_(), end_(), end_capacity_() {
         const size_type cap = other.capacity();
+        if (cap == 0) {
+            return;
+        }
+
         const size_type s = other.size();
         start_ = alloc_.allocate(cap);
         end_ = start_ + s;
@@ -50,7 +54,10 @@ public:
         : alloc_(alloc), start_(), end_(), end_capacity_() {}
     explicit vector(
         size_type count, const T& value = T(), const allocator_type& alloc = allocator_type())
-        : alloc_(alloc) {
+        : alloc_(alloc), start_(), end_(), end_capacity_() {
+        if (count == 0) {
+            return;
+        }
         if (count > max_size()) {
             length_exception();
         }
@@ -63,19 +70,25 @@ public:
     template <typename InputIt>
     vector(typename enable_if<!is_integral<InputIt>::value, InputIt>::type first, InputIt last,
         const allocator_type& alloc = allocator_type())
-        : alloc_(alloc) {
+        : alloc_(alloc), start_(), end_(), end_capacity_() {
         typename enable_if<is_iterator<InputIt>::value, InputIt>::type it;
         (void)it;
 
         const size_type n = std::distance(first, last);
+        if (n == 0) {
+            return;
+        }
+
         start_ = alloc_.allocate(n);
         end_ = start_ + n;
         end_capacity_ = end_;
         construct_range(start_, first, last);
     }
     ~vector() {
-        destroy_range(start_, end_);
-        alloc_.deallocate(start_, capacity());
+        if (capacity() > 0) {
+            destroy_range(start_, end_);
+            alloc_.deallocate(start_, capacity());
+        }
     }
     vector& operator=(const vector& other) {
         vector tmp(other);
