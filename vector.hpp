@@ -6,7 +6,7 @@
 /*   By: mleblanc <mleblanc@student.42quebec.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/01 15:27:15 by mleblanc          #+#    #+#             */
-/*   Updated: 2022/03/29 16:15:01 by mleblanc         ###   ########.fr       */
+/*   Updated: 2022/03/29 20:43:59 by mleblanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,8 +37,8 @@ public:
     typedef ft::reverse_iterator<const_iterator>     const_reverse_iterator;
 
 public:
-    vector() : alloc_(), start_(), end_(), end_capacity_() {}
-    vector(const vector& other) : alloc_(other.alloc_), start_(), end_(), end_capacity_() {
+    vector() : alloc_(), start_(), end_(), end_cap_() {}
+    vector(const vector& other) : alloc_(other.alloc_), start_(), end_(), end_cap_() {
         const size_type cap = other.capacity();
         if (cap == 0) {
             return;
@@ -47,14 +47,13 @@ public:
         const size_type s = other.size();
         start_ = alloc_.allocate(cap);
         end_ = start_ + s;
-        end_capacity_ = start_ + cap;
+        end_cap_ = start_ + cap;
         construct_range(start_, other.start_, other.end_);
     }
-    explicit vector(const allocator_type& alloc)
-        : alloc_(alloc), start_(), end_(), end_capacity_() {}
+    explicit vector(const allocator_type& alloc) : alloc_(alloc), start_(), end_(), end_cap_() {}
     explicit vector(
         size_type count, const T& value = T(), const allocator_type& alloc = allocator_type())
-        : alloc_(alloc), start_(), end_(), end_capacity_() {
+        : alloc_(alloc), start_(), end_(), end_cap_() {
         if (count == 0) {
             return;
         }
@@ -64,13 +63,13 @@ public:
 
         start_ = alloc_.allocate(count);
         end_ = start_ + count;
-        end_capacity_ = end_;
+        end_cap_ = end_;
         construct_range(start_, end_, value);
     }
     template <typename InputIt>
     vector(typename enable_if<!is_integral<InputIt>::value, InputIt>::type first, InputIt last,
         const allocator_type& alloc = allocator_type())
-        : alloc_(alloc), start_(), end_(), end_capacity_() {
+        : alloc_(alloc), start_(), end_(), end_cap_() {
         typename enable_if<is_iterator<InputIt>::value, InputIt>::type it;
         (void)it;
 
@@ -81,7 +80,7 @@ public:
 
         start_ = alloc_.allocate(n);
         end_ = start_ + n;
-        end_capacity_ = end_;
+        end_cap_ = end_;
         construct_range(start_, first, last);
     }
     ~vector() {
@@ -91,8 +90,27 @@ public:
         }
     }
     vector& operator=(const vector& other) {
-        vector tmp(other);
-        tmp.swap(*this);
+        if (&other == this) {
+            return *this;
+        }
+
+        const size_type len = other.size();
+        if (len > capacity()) {
+            pointer new_start = alloc_.allocate(len);
+            construct_range(new_start, other.start_, other.end_);
+            destroy_range(start_, end_);
+            alloc_.deallocate(start_, capacity());
+            start_ = new_start;
+            end_cap_ = start_ + len;
+        } else if (size() >= len) {
+            iterator it = std::copy(other.begin(), other.end(), begin());
+            destroy_range(it.base(), end_);
+        } else {
+            std::copy(other.start_, other.start_ + size(), start_);
+            construct_range(end_, other.start_ + size(), other.end_);
+        }
+        end_ = start_ + len;
+        return *this;
     }
 
 public:
@@ -167,7 +185,7 @@ public:
             reallocate(new_cap);
         }
     }
-    size_type capacity() const { return static_cast<size_type>(end_capacity_ - start_); }
+    size_type capacity() const { return static_cast<size_type>(end_cap_ - start_); }
     iterator  insert(iterator pos, const T& value) {
         const size_type n = pos - begin();
         if (should_grow()) {
@@ -188,7 +206,7 @@ public:
     void insert(iterator pos, size_type count, const T& value) {
         if (count != 0) {
             const size_type index = pos - begin();
-            if (count > size_type(end_capacity_ - end_)) {
+            if (count > size_type(end_cap_ - end_)) {
                 const size_type new_size = check_length(count);
                 reallocate(new_size);
             }
@@ -207,7 +225,7 @@ public:
         const size_type count = std::distance(first, last);
 
         if (count != 0) {
-            if (count > size_type(end_capacity_ - end_)) {
+            if (count > size_type(end_cap_ - end_)) {
                 const size_type new_size = check_length(count);
                 reallocate(new_size);
             }
@@ -260,20 +278,20 @@ public:
         }
     }
     void swap(vector& other) {
-        const_pointer ptr_start = start_;
-        const_pointer ptr_end = end_;
-        const_pointer ptr_end_cap = end_capacity_;
+        pointer ptr_start = start_;
+        pointer ptr_end = end_;
+        pointer ptr_end_cap = end_cap_;
 
         start_ = other.start_;
         end_ = other.end_;
-        end_capacity_ = other.end_capacity_;
+        end_cap_ = other.end_cap_;
         other.start_ = ptr_start;
         other.end_ = ptr_end;
-        other.end_capacity_ = ptr_end_cap;
+        other.end_cap_ = ptr_end_cap;
     }
 
 private:
-    bool should_grow() const { return end_ == end_capacity_; }
+    bool should_grow() const { return end_ == end_cap_; }
     void erase_at_end(pointer pos) {
         pointer n = end_ - pos;
         if (n > 0) {
@@ -311,7 +329,7 @@ private:
         }
         start_ = new_start;
         end_ = new_end;
-        end_capacity_ = start_ + n;
+        end_cap_ = start_ + n;
     }
     template <typename It>
     void construct_range(pointer dst, It start, It end) {
@@ -359,6 +377,6 @@ private:
     allocator_type alloc_;
     pointer        start_;
     pointer        end_;
-    pointer        end_capacity_;
+    pointer        end_cap_;
 };
 }
