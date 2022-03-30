@@ -6,7 +6,7 @@
 /*   By: mleblanc <mleblanc@student.42quebec.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/01 15:27:15 by mleblanc          #+#    #+#             */
-/*   Updated: 2022/03/30 14:30:35 by mleblanc         ###   ########.fr       */
+/*   Updated: 2022/03/30 14:52:31 by mleblanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -110,7 +110,10 @@ public:
 public:
     template <typename InputIt>
     void assign(
-        typename enable_if<is_iterator<InputIt>::value, InputIt>::type first, InputIt last) {
+        typename enable_if<!is_integral<InputIt>::value, InputIt>::type first, InputIt last) {
+        typename enable_if<is_iterator<InputIt>::value, InputIt>::type type;
+        (void)type;
+
         pointer cur = start_;
         for (; first != last && cur != end_; ++cur, ++first) {
             *cur = *first;
@@ -123,21 +126,20 @@ public:
     }
     void assign(size_type count, const T& value) {
         if (count > capacity()) {
-            vector tmp(count, value, get_allocator());
-            tmp.swap(*this);
+            pointer new_start = alloc_.allocate(count);
+            construct_range(new_start, new_start + count, value);
+            dealloc_buffer();
+            start_ = new_start;
+            end_cap_ = start_ + count;
         } else if (count > size()) {
             const size_type extra = count - size();
-
             std::fill(begin(), end(), value);
             construct_range(end_, end_ + extra, value);
-            end_ += extra;
         } else {
-            const_pointer new_end = begin() + count;
-
             std::fill_n(begin(), count, value);
-            destroy_range(new_end, end());
-            end_ = new_end;
+            destroy_range(start_ + count, end_);
         }
+        end_ = start_ + count;
     }
     allocator_type get_allocator() const { return alloc_; }
 
