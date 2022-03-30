@@ -6,7 +6,7 @@
 /*   By: mleblanc <mleblanc@student.42quebec.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/01 15:27:15 by mleblanc          #+#    #+#             */
-/*   Updated: 2022/03/30 14:52:31 by mleblanc         ###   ########.fr       */
+/*   Updated: 2022/03/30 16:24:29 by mleblanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -83,7 +83,7 @@ public:
         end_cap_ = end_;
         construct_range(start_, first, last);
     }
-    ~vector() { dealloc_buffer(); }
+    ~vector() { deallocatev(); }
     vector& operator=(const vector& other) {
         if (&other == this) {
             return *this;
@@ -93,7 +93,7 @@ public:
         if (len > capacity()) {
             pointer new_start = alloc_.allocate(len);
             construct_range(new_start, other.start_, other.end_);
-            dealloc_buffer();
+            deallocatev();
             start_ = new_start;
             end_cap_ = start_ + len;
         } else if (size() >= len) {
@@ -114,21 +114,28 @@ public:
         typename enable_if<is_iterator<InputIt>::value, InputIt>::type type;
         (void)type;
 
-        pointer cur = start_;
-        for (; first != last && cur != end_; ++cur, ++first) {
-            *cur = *first;
-        }
-        if (first == last) {
-            erase_at_end(cur);
+        const size_type count = std::distance(first, last);
+        if (count > capacity()) {
+            pointer new_start = alloc_.allocate(count);
+            construct_range(new_start, first, last);
+            deallocatev();
+            start_ = new_start;
+            end_cap_ = start_ + count;
+        } else if (count > size()) {
+            const size_type extra = count - size();
+            iterator it = std::copy(first, last - extra, begin());
+            construct_range(it.base(), last - extra, last);
         } else {
-            insert(end(), first, last);
+            iterator it = std::copy(first, last, begin());
+            destroy_range(it.base(), end_);
         }
+        end_ = start_ + count;
     }
     void assign(size_type count, const T& value) {
         if (count > capacity()) {
             pointer new_start = alloc_.allocate(count);
             construct_range(new_start, new_start + count, value);
-            dealloc_buffer();
+            deallocatev();
             start_ = new_start;
             end_cap_ = start_ + count;
         } else if (count > size()) {
@@ -216,8 +223,11 @@ public:
         }
     }
     template <class InputIt>
-    void insert(iterator pos, typename enable_if<is_iterator<InputIt>::value, InputIt>::type first,
+    void insert(iterator pos, typename enable_if<!is_integral<InputIt>::value, InputIt>::type first,
         InputIt last) {
+        typename enable_if<is_iterator<InputIt>::value, InputIt>::type type;
+        (void)type;
+
         const size_type count = std::distance(first, last);
 
         if (count != 0) {
@@ -226,8 +236,7 @@ public:
                 reallocate(new_size);
             }
             if (pos != end()) {
-                const size_type count_after = end() - pos;
-                construct_range_backward(end_ + count, pos, end());
+                construct_range_backward(end_ + count, pos.base(), end_);
                 end_ += count;
                 std::copy(first, last, pos);
             } else {
@@ -289,7 +298,7 @@ public:
 private:
     bool should_grow() const { return end_ == end_cap_; }
     void erase_at_end(pointer pos) {
-        pointer n = end_ - pos;
+        size_type n = end_ - pos;
         if (n > 0) {
             destroy_range(pos, end_);
             end_ = pos;
@@ -368,7 +377,7 @@ private:
             throw std::out_of_range(ss.str());
         }
     }
-    void dealloc_buffer() {
+    void deallocatev() {
         if (capacity() > 0) {
             destroy_range(start_, end_);
             alloc_.deallocate(start_, capacity());
