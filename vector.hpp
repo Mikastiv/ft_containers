@@ -6,7 +6,7 @@
 /*   By: mleblanc <mleblanc@student.42quebec.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/01 15:27:15 by mleblanc          #+#    #+#             */
-/*   Updated: 2022/03/29 20:43:59 by mleblanc         ###   ########.fr       */
+/*   Updated: 2022/03/30 14:30:35 by mleblanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -83,12 +83,7 @@ public:
         end_cap_ = end_;
         construct_range(start_, first, last);
     }
-    ~vector() {
-        if (capacity() > 0) {
-            destroy_range(start_, end_);
-            alloc_.deallocate(start_, capacity());
-        }
-    }
+    ~vector() { dealloc_buffer(); }
     vector& operator=(const vector& other) {
         if (&other == this) {
             return *this;
@@ -98,8 +93,7 @@ public:
         if (len > capacity()) {
             pointer new_start = alloc_.allocate(len);
             construct_range(new_start, other.start_, other.end_);
-            destroy_range(start_, end_);
-            alloc_.deallocate(start_, capacity());
+            dealloc_buffer();
             start_ = new_start;
             end_cap_ = start_ + len;
         } else if (size() >= len) {
@@ -370,6 +364,12 @@ private:
 
             ss << "Index " << n << " is out of range (size = " << size();
             throw std::out_of_range(ss.str());
+        }
+    }
+    void dealloc_buffer() {
+        if (capacity() > 0) {
+            destroy_range(start_, end_);
+            alloc_.deallocate(start_, capacity());
         }
     }
 
