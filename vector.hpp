@@ -6,7 +6,7 @@
 /*   By: mleblanc <mleblanc@student.42quebec.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/01 15:27:15 by mleblanc          #+#    #+#             */
-/*   Updated: 2022/03/30 16:24:29 by mleblanc         ###   ########.fr       */
+/*   Updated: 2022/04/03 20:25:28 by mleblanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -83,7 +83,7 @@ public:
         end_cap_ = end_;
         construct_range(start_, first, last);
     }
-    ~vector() { deallocatev(); }
+    ~vector() { deallocate_v(); }
     vector& operator=(const vector& other) {
         if (&other == this) {
             return *this;
@@ -93,7 +93,7 @@ public:
         if (len > capacity()) {
             pointer new_start = alloc_.allocate(len);
             construct_range(new_start, other.start_, other.end_);
-            deallocatev();
+            deallocate_v();
             start_ = new_start;
             end_cap_ = start_ + len;
         } else if (size() >= len) {
@@ -118,12 +118,12 @@ public:
         if (count > capacity()) {
             pointer new_start = alloc_.allocate(count);
             construct_range(new_start, first, last);
-            deallocatev();
+            deallocate_v();
             start_ = new_start;
             end_cap_ = start_ + count;
         } else if (count > size()) {
             const size_type extra = count - size();
-            iterator it = std::copy(first, last - extra, begin());
+            iterator        it = std::copy(first, last - extra, begin());
             construct_range(it.base(), last - extra, last);
         } else {
             iterator it = std::copy(first, last, begin());
@@ -135,7 +135,7 @@ public:
         if (count > capacity()) {
             pointer new_start = alloc_.allocate(count);
             construct_range(new_start, new_start + count, value);
-            deallocatev();
+            deallocate_v();
             start_ = new_start;
             end_cap_ = start_ + count;
         } else if (count > size()) {
@@ -377,7 +377,7 @@ private:
             throw std::out_of_range(ss.str());
         }
     }
-    void deallocatev() {
+    void deallocate_v() {
         if (capacity() > 0) {
             destroy_range(start_, end_);
             alloc_.deallocate(start_, capacity());
