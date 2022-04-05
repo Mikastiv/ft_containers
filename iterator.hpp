@@ -6,7 +6,7 @@
 /*   By: mleblanc <mleblanc@student.42quebec.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/02 12:33:36 by mleblanc          #+#    #+#             */
-/*   Updated: 2022/03/27 14:06:32 by mleblanc         ###   ########.fr       */
+/*   Updated: 2022/04/05 19:33:48 by mleblanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -224,8 +224,8 @@ public:
     typedef typename traits_type::pointer           pointer;
 
 public:
-    reverse_iterator() : elem_(It()) {}
-    reverse_iterator(const iterator_type& it) : elem_(it) {}
+    reverse_iterator() : elem_() {}
+    reverse_iterator(const reverse_iterator& it) : elem_(it.elem_) {}
     explicit reverse_iterator(iterator_type it) : elem_(it) {}
     template <typename Iter>
     reverse_iterator(const reverse_iterator<Iter>& it) : elem_(it.base()) {}
