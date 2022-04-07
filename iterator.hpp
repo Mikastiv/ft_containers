@@ -6,7 +6,7 @@
 /*   By: mleblanc <mleblanc@student.42quebec.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/02 12:33:36 by mleblanc          #+#    #+#             */
-/*   Updated: 2022/04/07 18:36:48 by mleblanc         ###   ########.fr       */
+/*   Updated: 2022/04/07 18:45:06 by mleblanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,6 +88,10 @@ public:
             Container>::type>& it)
         : elem_(it.base()) {}
     ~normal_iterator(){};
+    normal_iterator& operator=(const normal_iterator& other) {
+        elem_ = other.elem_;
+        return *this;
+    }
 
 public:
     const iterator_type& base() const { return elem_; }
@@ -233,6 +237,11 @@ public:
     explicit reverse_iterator(iterator_type it) : elem_(it) {}
     template <typename Iter>
     reverse_iterator(const reverse_iterator<Iter>& it) : elem_(it.base()) {}
+    ~reverse_iterator() {}
+    reverse_iterator& operator=(const reverse_iterator& other) {
+        elem_ = other.elem_;
+        return *this;
+    }
 
 public:
     iterator_type base() const { return elem_; }
