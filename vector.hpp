@@ -6,7 +6,7 @@
 /*   By: mleblanc <mleblanc@student.42quebec.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/01 15:27:15 by mleblanc          #+#    #+#             */
-/*   Updated: 2022/04/05 21:18:39 by mleblanc         ###   ########.fr       */
+/*   Updated: 2022/04/06 17:33:34 by mleblanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -176,7 +176,7 @@ public:
     reverse_iterator       rend() { return reverse_iterator(begin()); }
     const_reverse_iterator rend() const { return const_reverse_iterator(begin()); }
 
-    bool      empty() const { return begin() == end(); }
+    bool      empty() const { return start_ == end_; }
     size_type size() const { return static_cast<size_type>(end_ - start_); }
     size_type max_size() const { return alloc_.max_size(); }
     void      reserve(size_type new_cap) {
