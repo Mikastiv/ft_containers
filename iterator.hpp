@@ -6,7 +6,7 @@
 /*   By: mleblanc <mleblanc@student.42quebec.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/02 12:33:36 by mleblanc          #+#    #+#             */
-/*   Updated: 2022/04/06 19:29:55 by mleblanc         ###   ########.fr       */
+/*   Updated: 2022/04/07 18:36:48 by mleblanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -87,7 +87,7 @@ public:
         typename ft::enable_if<ft::is_same<Iter, typename Container::pointer>::value,
             Container>::type>& it)
         : elem_(it.base()) {}
-    ~normal_iterator() {};
+    ~normal_iterator(){};
 
 public:
     const iterator_type& base() const { return elem_; }
@@ -108,12 +108,12 @@ public:
         elem_ += n;
         return *this;
     }
-    normal_iterator  operator+(difference_type n) { return normal_iterator(elem_ + n); }
+    normal_iterator  operator+(difference_type n) const { return normal_iterator(elem_ + n); }
     normal_iterator& operator-=(difference_type n) {
         elem_ -= n;
         return *this;
     }
-    normal_iterator operator-(difference_type n) { return normal_iterator(elem_ - n); }
+    normal_iterator operator-(difference_type n) const { return normal_iterator(elem_ - n); }
 
 protected:
     It elem_;
