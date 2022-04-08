@@ -6,7 +6,7 @@
 /*   By: mleblanc <mleblanc@student.42quebec.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/01 15:27:15 by mleblanc          #+#    #+#             */
-/*   Updated: 2022/04/08 08:53:14 by mleblanc         ###   ########.fr       */
+/*   Updated: 2022/04/08 13:42:53 by mleblanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -200,7 +200,7 @@ public:
             pointer         new_end = new_start;
 
             new_end = construct_range(new_start, old_start, old_start + index);
-            alloc_.construct(new_start, value);
+            alloc_.construct(new_end, value);
             ++new_end;
             new_end = construct_range(new_end, old_start + index, old_end);
             destroy_range(old_start, old_end);
