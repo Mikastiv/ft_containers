@@ -6,7 +6,7 @@
 /*   By: mleblanc <mleblanc@student.42quebec.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/01 15:27:15 by mleblanc          #+#    #+#             */
-/*   Updated: 2022/04/08 13:42:53 by mleblanc         ###   ########.fr       */
+/*   Updated: 2022/04/08 16:08:44 by mleblanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -190,21 +190,19 @@ public:
     }
     size_type capacity() const { return static_cast<size_type>(end_cap_ - start_); }
     iterator  insert(iterator pos, const T& value) {
-        const size_type n = pos - begin();
+        const size_type index = pos - begin();
         if (should_grow()) {
             const size_type new_size = calculate_growth();
             const size_type index = pos - begin();
-            pointer         old_start = start_;
-            pointer         old_end = end_;
             pointer         new_start = alloc_.allocate(new_size);
             pointer         new_end = new_start;
 
-            new_end = construct_range(new_start, old_start, old_start + index);
+            new_end = construct_range(new_start, start_, start_ + index);
             alloc_.construct(new_end, value);
             ++new_end;
-            new_end = construct_range(new_end, old_start + index, old_end);
-            destroy_range(old_start, old_end);
-            alloc_.deallocate(old_start, capacity());
+            new_end = construct_range(new_end, start_ + index, end_);
+            destroy_range(start_, end_);
+            alloc_.deallocate(start_, capacity());
             start_ = new_start;
             end_ = new_end;
             end_cap_ = new_start + new_size;
@@ -219,21 +217,38 @@ public:
             }
         }
 
-        return iterator(start_ + n);
+        return iterator(start_ + index);
     }
     void insert(iterator pos, size_type count, const T& value) {
         if (count != 0) {
-            const size_type index = pos - begin();
-            if (count > size_type(end_cap_ - end_)) {
-                const size_type new_size = check_length(count);
-                reallocate(new_size);
-            }
-            if (start_ + index != end_) {
-                construct_range_backward(end_ + count, start_ + index, end_);
-                end_ += count;
-                std::fill_n(start_ + index, count, value);
+            const size_type extra_space = end_cap_ - end_;
+            pointer         old_end = end_;
+            if (extra_space >= count) {
+                const size_type elems_after = end() - pos;
+                if (elems_after > count) {
+                    end_ = construct_range(end_, end_ - count, end_);
+                    std::copy_backward(pos.base(), old_end - count, old_end);
+                    std::fill_n(pos, count, value);
+                } else {
+                    end_ = construct_range(end_, end_ + (count - elems_after), value);
+                    end_ = construct_range(end_, pos.base(), old_end);
+                    std::fill(pos.base(), old_end, value);
+                }
             } else {
-                construct_range(end_, end_ + count, value);
+                const size_type new_size = check_length(count);
+                const size_type index = pos - begin();
+                pointer         new_start = alloc_.allocate(new_size);
+                pointer         new_end = new_start;
+
+                construct_range(new_start, start_, pos.base());
+                new_end = construct_range(new_start + index, new_start + index + count, value);
+                new_end = construct_range(new_end, pos.base(), end_);
+
+                destroy_range(start_, end_);
+                alloc_.deallocate(start_, capacity());
+                start_ = new_start;
+                end_ = new_end;
+                end_cap_ = new_start + new_size;
             }
         }
     }
