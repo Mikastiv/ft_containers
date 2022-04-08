@@ -6,7 +6,7 @@
 /*   By: mleblanc <mleblanc@student.42quebec.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/01 15:27:15 by mleblanc          #+#    #+#             */
-/*   Updated: 2022/04/08 16:08:44 by mleblanc         ###   ########.fr       */
+/*   Updated: 2022/04/08 17:29:30 by mleblanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,18 +23,18 @@ namespace ft {
 template <typename T, typename Alloc = std::allocator<T> >
 class vector {
 public:
-    typedef T                                          value_type;
-    typedef Alloc                                      allocator_type;
-    typedef typename allocator_type::size_type         size_type;
-    typedef typename allocator_type::difference_type   difference_type;
-    typedef value_type&                                reference;
-    typedef const value_type&                          const_reference;
-    typedef typename allocator_type::pointer           pointer;
-    typedef typename allocator_type::const_pointer     const_pointer;
-    typedef ft::normal_iterator<pointer, vector>       iterator;
-    typedef ft::normal_iterator<const_pointer, vector> const_iterator;
-    typedef ft::reverse_iterator<iterator>             reverse_iterator;
-    typedef ft::reverse_iterator<const_iterator>       const_reverse_iterator;
+    typedef T                                        value_type;
+    typedef Alloc                                    allocator_type;
+    typedef typename allocator_type::size_type       size_type;
+    typedef typename allocator_type::difference_type difference_type;
+    typedef value_type&                              reference;
+    typedef const value_type&                        const_reference;
+    typedef typename allocator_type::pointer         pointer;
+    typedef typename allocator_type::const_pointer   const_pointer;
+    typedef normal_iterator<pointer, vector>         iterator;
+    typedef normal_iterator<const_pointer, vector>   const_iterator;
+    typedef ft::reverse_iterator<iterator>           reverse_iterator;
+    typedef ft::reverse_iterator<const_iterator>     const_reverse_iterator;
 
 public:
     vector() : alloc_(), start_(), end_(), end_cap_() {}
@@ -67,10 +67,10 @@ public:
         construct_range(start_, end_, value);
     }
     template <typename InputIt>
-    vector(typename ft::enable_if<!ft::is_integral<InputIt>::value, InputIt>::type first,
-        InputIt last, const allocator_type& alloc = allocator_type())
+    vector(typename enable_if<!is_integral<InputIt>::value, InputIt>::type first, InputIt last,
+        const allocator_type& alloc = allocator_type())
         : alloc_(alloc), start_(), end_(), end_cap_() {
-        typename ft::enable_if<ft::is_iterator<InputIt>::value, InputIt>::type it;
+        typename enable_if<is_iterator<InputIt>::value, InputIt>::type it;
         (void)it;
 
         const size_type n = std::distance(first, last);
@@ -109,9 +109,9 @@ public:
 
 public:
     template <typename InputIt>
-    void assign(typename ft::enable_if<!ft::is_integral<InputIt>::value, InputIt>::type first,
-        InputIt                                                                         last) {
-        typename ft::enable_if<ft::is_iterator<InputIt>::value, InputIt>::type type;
+    void assign(
+        typename enable_if<!is_integral<InputIt>::value, InputIt>::type first, InputIt last) {
+        typename enable_if<is_iterator<InputIt>::value, InputIt>::type type;
         (void)type;
 
         const size_type count = std::distance(first, last);
@@ -225,6 +225,7 @@ public:
             pointer         old_end = end_;
             if (extra_space >= count) {
                 const size_type elems_after = end() - pos;
+
                 if (elems_after > count) {
                     end_ = construct_range(end_, end_ - count, end_);
                     std::copy_backward(pos.base(), old_end - count, old_end);
@@ -253,10 +254,9 @@ public:
         }
     }
     template <class InputIt>
-    void insert(iterator                                                        pos,
-        typename ft::enable_if<!ft::is_integral<InputIt>::value, InputIt>::type first,
-        InputIt                                                                 last) {
-        typename ft::enable_if<ft::is_iterator<InputIt>::value, InputIt>::type type;
+    void insert(iterator pos, typename enable_if<!is_integral<InputIt>::value, InputIt>::type first,
+        InputIt last) {
+        typename enable_if<is_iterator<InputIt>::value, InputIt>::type type;
         (void)type;
 
         const size_type count = std::distance(first, last);
