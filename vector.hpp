@@ -6,7 +6,7 @@
 /*   By: mleblanc <mleblanc@student.42quebec.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/01 15:27:15 by mleblanc          #+#    #+#             */
-/*   Updated: 2022/04/08 06:09:27 by mleblanc         ###   ########.fr       */
+/*   Updated: 2022/04/08 08:53:14 by mleblanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -192,19 +192,34 @@ public:
     iterator  insert(iterator pos, const T& value) {
         const size_type n = pos - begin();
         if (should_grow()) {
-            grow();
+            const size_type new_size = calculate_growth();
+            const size_type index = pos - begin();
+            pointer         old_start = start_;
+            pointer         old_end = end_;
+            pointer         new_start = alloc_.allocate(new_size);
+            pointer         new_end = new_start;
+
+            new_end = construct_range(new_start, old_start, old_start + index);
+            alloc_.construct(new_start, value);
+            ++new_end;
+            new_end = construct_range(new_end, old_start + index, old_end);
+            destroy_range(old_start, old_end);
+            alloc_.deallocate(old_start, capacity());
+            start_ = new_start;
+            end_ = new_end;
+            end_cap_ = new_start + new_size;
+        } else {
+            if (pos == end()) {
+                alloc_.construct(end_, value);
+                ++end_;
+            } else {
+                alloc_.construct(end_, *(end_ - 1));
+                std::copy_backward(pos.base(), end_ - 2, end_ - 1);
+                *pos = value;
+            }
         }
 
-        pos = iterator(start_ + n);
-        if (pos == end()) {
-            alloc_.construct(end_, value);
-            ++end_;
-        } else {
-            alloc_.construct(end_, *(end_ - 1));
-            std::copy_backward(pos.base(), end_ - 2, end_ - 1);
-            *pos = value;
-        }
-        return pos;
+        return iterator(start_ + n);
     }
     void insert(iterator pos, size_type count, const T& value) {
         if (count != 0) {
@@ -313,7 +328,7 @@ private:
             return max;
         }
 
-        return old_cap == 0 ? 2 : old_cap * 2;
+        return old_cap == 0 ? 1 : old_cap * 2;
     }
     void grow() {
         const size_type old_cap = capacity();
@@ -338,15 +353,17 @@ private:
         end_cap_ = start_ + n;
     }
     template <typename It>
-    void construct_range(pointer dst, It start, It end) {
+    pointer construct_range(pointer dst, It start, It end) {
         for (; start != end; ++dst, ++start) {
             alloc_.construct(dst, *start);
         }
+        return dst;
     }
-    void construct_range(pointer dst, const_pointer end, const_reference value) {
+    pointer construct_range(pointer dst, const_pointer end, const_reference value) {
         for (; dst != end; ++dst) {
             alloc_.construct(dst, value);
         }
+        return dst;
     }
     void construct_range_backward(pointer dst, const_pointer start, const_pointer end) {
         --end;
