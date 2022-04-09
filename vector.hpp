@@ -6,7 +6,7 @@
 /*   By: mleblanc <mleblanc@student.42quebec.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/01 15:27:15 by mleblanc          #+#    #+#             */
-/*   Updated: 2022/04/09 14:57:43 by mleblanc         ###   ########.fr       */
+/*   Updated: 2022/04/09 16:04:36 by mleblanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -92,23 +92,7 @@ public:
         typedef typename is_integral<InputIt>::type integral;
         assign_dispatch(first, last, integral());
     }
-    void assign(size_type count, const T& value) {
-        if (count > capacity()) {
-            pointer new_start = alloc_.allocate(count);
-            construct_range(new_start, new_start + count, value);
-            deallocate_v();
-            start_ = new_start;
-            end_cap_ = start_ + count;
-        } else if (count > size()) {
-            const size_type extra = count - size();
-            std::fill(begin(), end(), value);
-            construct_range(end_, end_ + extra, value);
-        } else {
-            std::fill_n(begin(), count, value);
-            destroy_range(start_ + count, end_);
-        }
-        end_ = start_ + count;
-    }
+    void           assign(size_type count, const T& value) { fill_assign(count, value); }
     allocator_type get_allocator() const { return alloc_; }
 
     reference at(size_type pos) {
@@ -180,81 +164,11 @@ public:
 
         return iterator(start_ + index);
     }
-    void insert(iterator pos, size_type count, const T& value) {
-        if (count != 0) {
-            const size_type extra_space = end_cap_ - end_;
-
-            if (extra_space >= count) {
-                const size_type elems_after = end() - pos;
-                pointer         old_end = end_;
-
-                if (elems_after > count) {
-                    end_ = construct_range(end_, end_ - count, end_);
-                    std::copy_backward(pos.base(), old_end - count, old_end);
-                    std::fill_n(pos, count, value);
-                } else {
-                    end_ = construct_range(end_, end_ + (count - elems_after), value);
-                    end_ = construct_range(end_, pos.base(), old_end);
-                    std::fill(pos.base(), old_end, value);
-                }
-            } else {
-                const size_type new_size = check_length(count);
-                pointer         new_start = alloc_.allocate(new_size);
-                pointer         new_end = new_start;
-
-                new_end = construct_range(new_start, start_, pos.base());
-                new_end = construct_range(new_end, new_end + count, value);
-                new_end = construct_range(new_end, pos.base(), end_);
-
-                destroy_range(start_, end_);
-                alloc_.deallocate(start_, capacity());
-                start_ = new_start;
-                end_ = new_end;
-                end_cap_ = new_start + new_size;
-            }
-        }
-    }
+    void insert(iterator pos, size_type count, const T& value) { fill_insert(pos, count, value); }
     template <class InputIt>
-    void insert(iterator pos, typename enable_if<!is_integral<InputIt>::value, InputIt>::type first,
-        InputIt last) {
-        typename enable_if<is_iterator<InputIt>::value, InputIt>::type type;
-        (void)type;
-
-        if (first != last) {
-            const size_type count = std::distance(first, last);
-            const size_type extra_space = end_cap_ - end_;
-
-            if (extra_space >= count) {
-                const size_type elems_after = end() - pos;
-                pointer         old_end = end_;
-
-                if (elems_after > count) {
-                    end_ = construct_range(end_, end_ - count, end_);
-                    std::copy_backward(pos.base(), old_end - count, old_end);
-                    std::copy(first, last, pos);
-                } else {
-                    InputIt mid = first;
-                    std::advance(mid, elems_after);
-                    end_ = construct_range(end_, mid, last);
-                    end_ = construct_range(end_, pos.base(), old_end);
-                    std::copy(first, mid, pos);
-                }
-            } else {
-                const size_type new_size = check_length(count);
-                pointer         new_start = alloc_.allocate(new_size);
-                pointer         new_end = new_start;
-
-                new_end = construct_range(new_start, start_, pos.base());
-                new_end = construct_range(new_end, first, last);
-                new_end = construct_range(new_end, pos.base(), end_);
-
-                destroy_range(start_, end_);
-                alloc_.deallocate(start_, capacity());
-                start_ = new_start;
-                end_ = new_end;
-                end_cap_ = new_start + new_size;
-            }
-        }
+    void insert(iterator pos, InputIt first, InputIt last) {
+        typedef typename is_integral<InputIt>::type integral;
+        insert_dispatch(pos, first, last, integral());
     }
     void     clear() { erase_at_end(start_); }
     iterator erase(iterator pos) {
@@ -314,7 +228,7 @@ private:
     }
     template <typename InputIt>
     void size_ctor_dispatch(InputIt first, InputIt last, false_type) {
-        typedef typename ft::iterator_traits<InputIt>::iterator_category category;
+        typedef typename iterator_traits<InputIt>::iterator_category category;
         range_init(first, last, category());
     }
     void fill_init(size_type count, const T& value) {
@@ -355,7 +269,7 @@ private:
     }
     template <typename InputIt>
     void assign_dispatch(InputIt first, InputIt last, false_type) {
-        typedef typename ft::iterator_traits<InputIt>::iterator_category category;
+        typedef typename iterator_traits<InputIt>::iterator_category category;
         assign_spec(first, last, category());
     }
     void fill_assign(size_type count, const T& value) {
@@ -401,6 +315,98 @@ private:
             std::advance(it, size());
             std::copy(first, it, begin());
             insert(end(), it, last);
+        }
+    }
+    template <typename Integer>
+    void insert_dispatch(iterator pos, Integer count, Integer value, true_type) {
+        fill_insert(pos, static_cast<size_type>(count), value);
+    }
+    template <typename InputIt>
+    void insert_dispatch(iterator pos, InputIt first, InputIt last, false_type) {
+        typedef typename iterator_traits<InputIt>::iterator_category category;
+        range_insert(pos, first, last, category());
+    }
+    void fill_insert(iterator pos, size_type count, const T& value) {
+        if (count != 0) {
+            const size_type extra_space = end_cap_ - end_;
+
+            if (extra_space >= count) {
+                const size_type elems_after = end() - pos;
+                pointer         old_end = end_;
+
+                if (elems_after > count) {
+                    end_ = construct_range(end_, end_ - count, end_);
+                    std::copy_backward(pos.base(), old_end - count, old_end);
+                    std::fill_n(pos, count, value);
+                } else {
+                    end_ = construct_range(end_, end_ + (count - elems_after), value);
+                    end_ = construct_range(end_, pos.base(), old_end);
+                    std::fill(pos.base(), old_end, value);
+                }
+            } else {
+                const size_type new_size = check_length(count);
+                pointer         new_start = alloc_.allocate(new_size);
+                pointer         new_end = new_start;
+
+                new_end = construct_range(new_start, start_, pos.base());
+                new_end = construct_range(new_end, new_end + count, value);
+                new_end = construct_range(new_end, pos.base(), end_);
+
+                destroy_range(start_, end_);
+                alloc_.deallocate(start_, capacity());
+                start_ = new_start;
+                end_ = new_end;
+                end_cap_ = new_start + new_size;
+            }
+        }
+    }
+    template <typename InputIt>
+    void range_insert(iterator pos, InputIt first, InputIt last, std::input_iterator_tag) {
+        if (pos == end()) {
+            for (; first != last; ++first) {
+                insert(end(), *first);
+            }
+        } else if (first != last) {
+            vector tmp(first, last);
+            insert(pos, tmp.begin(), tmp.end());
+        }
+    }
+    template <typename ForwardIt>
+    void range_insert(iterator pos, ForwardIt first, ForwardIt last, std::forward_iterator_tag) {
+        if (first != last) {
+            const size_type count = std::distance(first, last);
+            const size_type extra_space = end_cap_ - end_;
+
+            if (extra_space >= count) {
+                const size_type elems_after = end() - pos;
+                pointer         old_end = end_;
+
+                if (elems_after > count) {
+                    end_ = construct_range(end_, end_ - count, end_);
+                    std::copy_backward(pos.base(), old_end - count, old_end);
+                    std::copy(first, last, pos);
+                } else {
+                    ForwardIt mid = first;
+                    std::advance(mid, elems_after);
+                    end_ = construct_range(end_, mid, last);
+                    end_ = construct_range(end_, pos.base(), old_end);
+                    std::copy(first, mid, pos);
+                }
+            } else {
+                const size_type new_size = check_length(count);
+                pointer         new_start = alloc_.allocate(new_size);
+                pointer         new_end = new_start;
+
+                new_end = construct_range(new_start, start_, pos.base());
+                new_end = construct_range(new_end, first, last);
+                new_end = construct_range(new_end, pos.base(), end_);
+
+                destroy_range(start_, end_);
+                alloc_.deallocate(start_, capacity());
+                start_ = new_start;
+                end_ = new_end;
+                end_cap_ = new_start + new_size;
+            }
         }
     }
     bool should_grow() const { return end_ == end_cap_; }
