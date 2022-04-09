@@ -6,7 +6,7 @@
 /*   By: mleblanc <mleblanc@student.42quebec.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/01 15:27:15 by mleblanc          #+#    #+#             */
-/*   Updated: 2022/04/08 22:20:50 by mleblanc         ###   ########.fr       */
+/*   Updated: 2022/04/08 23:37:02 by mleblanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,30 +57,14 @@ public:
         if (count == 0) {
             return;
         }
-        if (count > max_size()) {
-            length_exception();
-        }
 
-        start_ = alloc_.allocate(count);
-        end_ = start_ + count;
-        end_cap_ = end_;
-        construct_range(start_, end_, value);
+        fill_init(count, value);
     }
     template <typename InputIt>
-    vector(typename enable_if<!is_integral<InputIt>::value, InputIt>::type first, InputIt last,
-        const allocator_type& alloc = allocator_type())
+    vector(InputIt first, InputIt last, const allocator_type& alloc = allocator_type())
         : alloc_(alloc), start_(), end_(), end_cap_() {
-        typename enable_if<is_iterator<InputIt>::value, InputIt>::type it;
-        (void)it;
-
-        const size_type n = std::distance(first, last);
-        if (n == 0) {
-            return;
-        }
-
-        start_ = alloc_.allocate(n);
-        end_cap_ = start_ + n;
-        end_ = construct_range(start_, first, last);
+        typedef typename is_integral<InputIt>::type integral;
+        init_dispatch(first, last, integral());
     }
     ~vector() { deallocate_v(); }
     vector& operator=(const vector& other) {
@@ -345,6 +329,39 @@ public:
     }
 
 private:
+    template <typename Integer>
+    void init_dispatch(Integer count, Integer value, true_type) {
+        const size_type n = static_cast<size_type>(count);
+        if (n == 0) {
+            return;
+        }
+
+        fill_init(n, value);
+    }
+    template <typename InputIt>
+    void init_dispatch(InputIt first, InputIt last, false_type) {
+        const size_type n = std::distance(first, last);
+        if (n == 0) {
+            return;
+        }
+        if (n > max_size()) {
+            length_exception();
+        }
+
+        start_ = alloc_.allocate(n);
+        end_ = start_ + n;
+        end_cap_ = end_;
+        construct_range(start_, first, last);
+    }
+    void fill_init(size_type count, const T& value) {
+        if (count > max_size()) {
+            length_exception();
+        }
+        start_ = alloc_.allocate(count);
+        end_ = start_ + count;
+        end_cap_ = end_;
+        construct_range(start_, end_, value);
+    }
     bool should_grow() const { return end_ == end_cap_; }
     void erase_at_end(pointer pos) {
         size_type n = end_ - pos;

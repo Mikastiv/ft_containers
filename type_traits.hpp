@@ -6,7 +6,7 @@
 /*   By: mleblanc <mleblanc@student.42quebec.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/02 17:59:12 by mleblanc          #+#    #+#             */
-/*   Updated: 2022/02/25 16:52:28 by mleblanc         ###   ########.fr       */
+/*   Updated: 2022/04/08 23:06:55 by mleblanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,20 +22,15 @@ struct enable_if<true, T> {
     typedef T type;
 };
 
-template <typename T, T v>
-struct integral_constant {
-    typedef T                 value_type;
-    typedef integral_constant type;
-
-    static const T value = v;
-
-    operator value_type() const { return value; }
-
-    const value_type operator()() const { return value; }
+struct true_type {
+    enum { value = true };
+    typedef true_type type;
 };
 
-typedef integral_constant<bool, true>  true_type;
-typedef integral_constant<bool, false> false_type;
+struct false_type {
+    enum { value = false };
+    typedef false_type type;
+};
 
 template <typename>
 struct is_integral : public false_type {};
