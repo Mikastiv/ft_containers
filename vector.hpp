@@ -6,7 +6,7 @@
 /*   By: mleblanc <mleblanc@student.42quebec.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/01 15:27:15 by mleblanc          #+#    #+#             */
-/*   Updated: 2022/04/08 23:37:02 by mleblanc         ###   ########.fr       */
+/*   Updated: 2022/04/09 00:31:21 by mleblanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,10 +54,6 @@ public:
     explicit vector(
         size_type count, const T& value = T(), const allocator_type& alloc = allocator_type())
         : alloc_(alloc), start_(), end_(), end_cap_() {
-        if (count == 0) {
-            return;
-        }
-
         fill_init(count, value);
     }
     template <typename InputIt>
@@ -332,14 +328,34 @@ private:
     template <typename Integer>
     void init_dispatch(Integer count, Integer value, true_type) {
         const size_type n = static_cast<size_type>(count);
-        if (n == 0) {
-            return;
-        }
 
         fill_init(n, value);
     }
     template <typename InputIt>
     void init_dispatch(InputIt first, InputIt last, false_type) {
+        typedef typename ft::iterator_traits<InputIt>::iterator_category category;
+        range_init(first, last, category());
+    }
+    void fill_init(size_type count, const T& value) {
+        if (count == 0) {
+            return;
+        }
+        if (count > max_size()) {
+            length_exception();
+        }
+        start_ = alloc_.allocate(count);
+        end_ = start_ + count;
+        end_cap_ = end_;
+        construct_range(start_, end_, value);
+    }
+    template <typename InputIt>
+    void range_init(InputIt first, InputIt last, std::input_iterator_tag) {
+        for (; first != last; ++first) {
+            push_back(*first);
+        }
+    }
+    template <typename ForwardIt>
+    void range_init(ForwardIt first, ForwardIt last, std::forward_iterator_tag) {
         const size_type n = std::distance(first, last);
         if (n == 0) {
             return;
@@ -349,18 +365,8 @@ private:
         }
 
         start_ = alloc_.allocate(n);
-        end_ = start_ + n;
-        end_cap_ = end_;
-        construct_range(start_, first, last);
-    }
-    void fill_init(size_type count, const T& value) {
-        if (count > max_size()) {
-            length_exception();
-        }
-        start_ = alloc_.allocate(count);
-        end_ = start_ + count;
-        end_cap_ = end_;
-        construct_range(start_, end_, value);
+        end_cap_ = start_ + n;
+        end_ = construct_range(start_, first, last);
     }
     bool should_grow() const { return end_ == end_cap_; }
     void erase_at_end(pointer pos) {
