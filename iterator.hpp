@@ -6,7 +6,7 @@
 /*   By: mleblanc <mleblanc@student.42quebec.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/02 12:33:36 by mleblanc          #+#    #+#             */
-/*   Updated: 2022/04/08 17:25:29 by mleblanc         ###   ########.fr       */
+/*   Updated: 2022/04/09 16:22:06 by mleblanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,27 +44,6 @@ struct iterator_traits<const It*> {
     typedef const value_type*               pointer;
     typedef const value_type&               reference;
 };
-
-template <typename>
-struct is_iterator_type : public false_type {};
-
-template <>
-struct is_iterator_type<std::input_iterator_tag> : public true_type {};
-
-template <>
-struct is_iterator_type<std::output_iterator_tag> : public true_type {};
-
-template <>
-struct is_iterator_type<std::forward_iterator_tag> : public true_type {};
-
-template <>
-struct is_iterator_type<std::bidirectional_iterator_tag> : public true_type {};
-
-template <>
-struct is_iterator_type<std::random_access_iterator_tag> : public true_type {};
-
-template <typename T>
-struct is_iterator : public is_iterator_type<typename iterator_traits<T>::iterator_category> {};
 
 template <typename It, typename Container>
 class normal_iterator {
