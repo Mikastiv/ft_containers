@@ -6,7 +6,7 @@
 /*   By: mleblanc <mleblanc@student.42quebec.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/01 15:27:15 by mleblanc          #+#    #+#             */
-/*   Updated: 2022/04/09 16:04:36 by mleblanc         ###   ########.fr       */
+/*   Updated: 2022/04/09 17:37:41 by mleblanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,13 +54,23 @@ public:
     explicit vector(
         size_type count, const T& value = T(), const allocator_type& alloc = allocator_type())
         : alloc_(alloc), start_(), end_(), end_cap_() {
-        fill_init(count, value);
+        if (count == 0) {
+            return;
+        }
+        if (count > max_size()) {
+            length_exception();
+        }
+        start_ = alloc_.allocate(count);
+        end_ = start_ + count;
+        end_cap_ = end_;
+        construct_range(start_, end_, value);
     }
     template <typename InputIt>
-    vector(InputIt first, InputIt last, const allocator_type& alloc = allocator_type())
+    vector(InputIt first, typename enable_if<!is_integral<InputIt>::value, InputIt>::type last,
+        const allocator_type& alloc = allocator_type())
         : alloc_(alloc), start_(), end_(), end_cap_() {
-        typedef typename is_integral<InputIt>::type integral;
-        size_ctor_dispatch(first, last, integral());
+        typedef typename iterator_traits<InputIt>::iterator_category category;
+        range_init(first, last, category());
     }
     ~vector() { deallocate_v(); }
     vector& operator=(const vector& other) {
@@ -88,11 +98,29 @@ public:
 
 public:
     template <typename InputIt>
-    void assign(InputIt first, InputIt last) {
-        typedef typename is_integral<InputIt>::type integral;
-        assign_dispatch(first, last, integral());
+    void assign(
+        InputIt first, typename enable_if<!is_integral<InputIt>::value, InputIt>::type last) {
+        typedef typename iterator_traits<InputIt>::iterator_category category;
+        range_assign(first, last, category());
     }
-    void           assign(size_type count, const T& value) { fill_assign(count, value); }
+    void assign(size_type count, const T& value) {
+        if (count > capacity()) {
+            pointer new_start = alloc_.allocate(count);
+            pointer new_end = new_start + count;
+            construct_range(new_start, new_end, value);
+            deallocate_v();
+            start_ = new_start;
+            end_ = new_end;
+            end_cap_ = new_end;
+        } else if (count > size()) {
+            std::fill(begin(), end(), value);
+            const size_type extra = count - size();
+            end_ = construct_range(end_, end_ + extra, value);
+        } else {
+            pointer it = std::fill_n(start_, count, value);
+            erase_at_end(it);
+        }
+    }
     allocator_type get_allocator() const { return alloc_; }
 
     reference at(size_type pos) {
@@ -164,11 +192,45 @@ public:
 
         return iterator(start_ + index);
     }
-    void insert(iterator pos, size_type count, const T& value) { fill_insert(pos, count, value); }
+    void insert(iterator pos, size_type count, const T& value) {
+        if (count != 0) {
+            const size_type extra_space = end_cap_ - end_;
+
+            if (extra_space >= count) {
+                const size_type elems_after = end() - pos;
+                pointer         old_end = end_;
+
+                if (elems_after > count) {
+                    end_ = construct_range(end_, end_ - count, end_);
+                    std::copy_backward(pos.base(), old_end - count, old_end);
+                    std::fill_n(pos, count, value);
+                } else {
+                    end_ = construct_range(end_, end_ + (count - elems_after), value);
+                    end_ = construct_range(end_, pos.base(), old_end);
+                    std::fill(pos.base(), old_end, value);
+                }
+            } else {
+                const size_type new_size = check_length(count);
+                pointer         new_start = alloc_.allocate(new_size);
+                pointer         new_end = new_start;
+
+                new_end = construct_range(new_start, start_, pos.base());
+                new_end = construct_range(new_end, new_end + count, value);
+                new_end = construct_range(new_end, pos.base(), end_);
+
+                destroy_range(start_, end_);
+                alloc_.deallocate(start_, capacity());
+                start_ = new_start;
+                end_ = new_end;
+                end_cap_ = new_start + new_size;
+            }
+        }
+    }
     template <class InputIt>
-    void insert(iterator pos, InputIt first, InputIt last) {
-        typedef typename is_integral<InputIt>::type integral;
-        insert_dispatch(pos, first, last, integral());
+    void insert(iterator pos, InputIt first,
+        typename enable_if<!is_integral<InputIt>::value, InputIt>::type last) {
+        typedef typename iterator_traits<InputIt>::iterator_category category;
+        range_insert(pos, first, last, category());
     }
     void     clear() { erase_at_end(start_); }
     iterator erase(iterator pos) {
@@ -222,27 +284,6 @@ public:
     }
 
 private:
-    template <typename Integer>
-    void size_ctor_dispatch(Integer count, Integer value, true_type) {
-        fill_init(static_cast<size_type>(count), value);
-    }
-    template <typename InputIt>
-    void size_ctor_dispatch(InputIt first, InputIt last, false_type) {
-        typedef typename iterator_traits<InputIt>::iterator_category category;
-        range_init(first, last, category());
-    }
-    void fill_init(size_type count, const T& value) {
-        if (count == 0) {
-            return;
-        }
-        if (count > max_size()) {
-            length_exception();
-        }
-        start_ = alloc_.allocate(count);
-        end_ = start_ + count;
-        end_cap_ = end_;
-        construct_range(start_, end_, value);
-    }
     template <typename InputIt>
     void range_init(InputIt first, InputIt last, std::input_iterator_tag) {
         for (; first != last; ++first) {
@@ -263,35 +304,8 @@ private:
         end_cap_ = start_ + n;
         end_ = construct_range(start_, first, last);
     }
-    template <typename Integer>
-    void assign_dispatch(Integer count, Integer value, true_type) {
-        fill_assign(static_cast<size_type>(count), value);
-    }
     template <typename InputIt>
-    void assign_dispatch(InputIt first, InputIt last, false_type) {
-        typedef typename iterator_traits<InputIt>::iterator_category category;
-        assign_spec(first, last, category());
-    }
-    void fill_assign(size_type count, const T& value) {
-        if (count > capacity()) {
-            pointer new_start = alloc_.allocate(count);
-            pointer new_end = new_start + count;
-            construct_range(new_start, new_end, value);
-            deallocate_v();
-            start_ = new_start;
-            end_ = new_end;
-            end_cap_ = new_end;
-        } else if (count > size()) {
-            std::fill(begin(), end(), value);
-            const size_type extra = count - size();
-            end_ = construct_range(end_, end_ + extra, value);
-        } else {
-            pointer it = std::fill_n(start_, count, value);
-            erase_at_end(it);
-        }
-    }
-    template <typename InputIt>
-    void assign_spec(InputIt first, InputIt last, std::input_iterator_tag) {
+    void range_assign(InputIt first, InputIt last, std::input_iterator_tag) {
         iterator it = begin();
         for (; first != last && it != end(); ++it, ++first) {
             *it = *first;
@@ -304,7 +318,7 @@ private:
         }
     }
     template <typename ForwardIt>
-    void assign_spec(ForwardIt first, ForwardIt last, std::forward_iterator_tag) {
+    void range_assign(ForwardIt first, ForwardIt last, std::forward_iterator_tag) {
         const size_type count = std::distance(first, last);
 
         if (count < size()) {
@@ -315,49 +329,6 @@ private:
             std::advance(it, size());
             std::copy(first, it, begin());
             insert(end(), it, last);
-        }
-    }
-    template <typename Integer>
-    void insert_dispatch(iterator pos, Integer count, Integer value, true_type) {
-        fill_insert(pos, static_cast<size_type>(count), value);
-    }
-    template <typename InputIt>
-    void insert_dispatch(iterator pos, InputIt first, InputIt last, false_type) {
-        typedef typename iterator_traits<InputIt>::iterator_category category;
-        range_insert(pos, first, last, category());
-    }
-    void fill_insert(iterator pos, size_type count, const T& value) {
-        if (count != 0) {
-            const size_type extra_space = end_cap_ - end_;
-
-            if (extra_space >= count) {
-                const size_type elems_after = end() - pos;
-                pointer         old_end = end_;
-
-                if (elems_after > count) {
-                    end_ = construct_range(end_, end_ - count, end_);
-                    std::copy_backward(pos.base(), old_end - count, old_end);
-                    std::fill_n(pos, count, value);
-                } else {
-                    end_ = construct_range(end_, end_ + (count - elems_after), value);
-                    end_ = construct_range(end_, pos.base(), old_end);
-                    std::fill(pos.base(), old_end, value);
-                }
-            } else {
-                const size_type new_size = check_length(count);
-                pointer         new_start = alloc_.allocate(new_size);
-                pointer         new_end = new_start;
-
-                new_end = construct_range(new_start, start_, pos.base());
-                new_end = construct_range(new_end, new_end + count, value);
-                new_end = construct_range(new_end, pos.base(), end_);
-
-                destroy_range(start_, end_);
-                alloc_.deallocate(start_, capacity());
-                start_ = new_start;
-                end_ = new_end;
-                end_cap_ = new_start + new_size;
-            }
         }
     }
     template <typename InputIt>
