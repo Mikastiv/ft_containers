@@ -6,7 +6,7 @@
 /*   By: mleblanc <mleblanc@student.42quebec.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/01 15:27:15 by mleblanc          #+#    #+#             */
-/*   Updated: 2022/04/08 21:52:11 by mleblanc         ###   ########.fr       */
+/*   Updated: 2022/04/08 22:20:50 by mleblanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -79,9 +79,8 @@ public:
         }
 
         start_ = alloc_.allocate(n);
-        end_ = start_ + n;
-        end_cap_ = end_;
-        construct_range(start_, first, last);
+        end_cap_ = start_ + n;
+        end_ = construct_range(start_, first, last);
     }
     ~vector() { deallocate_v(); }
     vector& operator=(const vector& other) {
