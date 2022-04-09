@@ -6,7 +6,7 @@
 /*   By: mleblanc <mleblanc@student.42quebec.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/01 15:27:15 by mleblanc          #+#    #+#             */
-/*   Updated: 2022/04/08 19:54:28 by mleblanc         ###   ########.fr       */
+/*   Updated: 2022/04/08 21:52:11 by mleblanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -222,9 +222,10 @@ public:
     void insert(iterator pos, size_type count, const T& value) {
         if (count != 0) {
             const size_type extra_space = end_cap_ - end_;
-            pointer         old_end = end_;
+
             if (extra_space >= count) {
                 const size_type elems_after = end() - pos;
+                pointer         old_end = end_;
 
                 if (elems_after > count) {
                     end_ = construct_range(end_, end_ - count, end_);
@@ -237,12 +238,11 @@ public:
                 }
             } else {
                 const size_type new_size = check_length(count);
-                const size_type index = pos - begin();
                 pointer         new_start = alloc_.allocate(new_size);
                 pointer         new_end = new_start;
 
-                construct_range(new_start, start_, pos.base());
-                new_end = construct_range(new_start + index, new_start + index + count, value);
+                new_end = construct_range(new_start, start_, pos.base());
+                new_end = construct_range(new_end, new_end + count, value);
                 new_end = construct_range(new_end, pos.base(), end_);
 
                 destroy_range(start_, end_);
@@ -259,19 +259,38 @@ public:
         typename enable_if<is_iterator<InputIt>::value, InputIt>::type type;
         (void)type;
 
-        const size_type count = std::distance(first, last);
+        if (first != last) {
+            const size_type count = std::distance(first, last);
+            const size_type extra_space = end_cap_ - end_;
 
-        if (count != 0) {
-            if (count > size_type(end_cap_ - end_)) {
-                const size_type new_size = check_length(count);
-                reallocate(new_size);
-            }
-            if (pos != end()) {
-                construct_range_backward(end_ + count, pos.base(), end_);
-                end_ += count;
-                std::copy(first, last, pos);
+            if (extra_space >= count) {
+                const size_type elems_after = end() - pos;
+                pointer         old_end = end_;
+
+                if (elems_after > count) {
+                    end_ = construct_range(end_, end_ - count, end_);
+                    std::copy_backward(pos.base(), old_end - count, old_end);
+                    std::copy(first, last, pos);
+                } else {
+                    InputIt mid = std::advance(first, elems_after);
+                    end_ = construct_range(end_, mid, last);
+                    end_ = construct_range(end_, pos.base(), old_end);
+                    std::copy(first, mid, pos);
+                }
             } else {
-                construct_range(end_, first, last);
+                const size_type new_size = check_length(count);
+                pointer         new_start = alloc_.allocate(new_size);
+                pointer         new_end = new_start;
+
+                construct_range(new_start, start_, pos.base());
+                new_end = construct_range(new_end, first, last);
+                new_end = construct_range(new_end, pos.base(), end_);
+
+                destroy_range(start_, end_);
+                alloc_.deallocate(start_, capacity());
+                start_ = new_start;
+                end_ = new_end;
+                end_cap_ = new_start + new_size;
             }
         }
     }
