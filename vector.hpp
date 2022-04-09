@@ -6,7 +6,7 @@
 /*   By: mleblanc <mleblanc@student.42quebec.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/01 15:27:15 by mleblanc          #+#    #+#             */
-/*   Updated: 2022/04/08 17:29:30 by mleblanc         ###   ########.fr       */
+/*   Updated: 2022/04/08 19:54:28 by mleblanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -330,10 +330,8 @@ private:
     bool should_grow() const { return end_ == end_cap_; }
     void erase_at_end(pointer pos) {
         size_type n = end_ - pos;
-        if (n > 0) {
-            destroy_range(pos, end_);
-            end_ = pos;
-        }
+        destroy_range(pos, end_);
+        end_ = pos;
     }
     size_type calculate_growth() const {
         const size_type old_cap = capacity();
