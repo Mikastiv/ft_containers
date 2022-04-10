@@ -6,7 +6,7 @@
 /*   By: mleblanc <mleblanc@student.42quebec.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/01 15:27:15 by mleblanc          #+#    #+#             */
-/*   Updated: 2022/04/10 03:39:53 by mleblanc         ###   ########.fr       */
+/*   Updated: 2022/04/10 05:50:15 by mleblanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -300,7 +300,6 @@ private:
         end_cap_ = start_ + count;
         end_ = construct_range(start_, first, last);
     }
-
     template <typename InputIt>
     void range_assign(InputIt first, InputIt last, std::input_iterator_tag) {
         iterator it = begin();
@@ -328,7 +327,6 @@ private:
             insert(end(), it, last);
         }
     }
-
     template <typename InputIt>
     void range_insert(iterator pos, InputIt first, InputIt last, std::input_iterator_tag) {
         if (pos == end()) {
@@ -377,16 +375,13 @@ private:
             }
         }
     }
-
     bool should_grow() const { return end_ == end_cap_; }
-
     void deallocate_v() {
         if (capacity() > 0) {
             destroy_range(start_, end_);
             alloc_.deallocate(start_, capacity());
         }
     }
-
     template <typename It>
     pointer construct_range(pointer dst, It start, It end) {
         for (; start != end; ++dst, ++start) {
@@ -400,25 +395,21 @@ private:
         }
         return dst;
     }
-
     void construct_range_backward(pointer dst, const_pointer start, const_pointer end) {
         --end;
         for (; end != start - 1; --dst, --end) {
             alloc_.construct(dst, *end);
         }
     }
-
     void destroy_range(pointer start, pointer end) {
         for (; start != end; start++) {
             alloc_.destroy(start);
         }
     }
-
     void erase_at_end(pointer pos) {
         destroy_range(pos, end_);
         end_ = pos;
     }
-
     void length_exception() const {
         throw std::length_error("cannot create ft::vector larger than max_size()");
     }
