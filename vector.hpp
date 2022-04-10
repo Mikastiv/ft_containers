@@ -6,7 +6,7 @@
 /*   By: mleblanc <mleblanc@student.42quebec.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/01 15:27:15 by mleblanc          #+#    #+#             */
-/*   Updated: 2022/04/09 17:37:41 by mleblanc         ###   ########.fr       */
+/*   Updated: 2022/04/09 23:42:59 by mleblanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -121,6 +121,7 @@ public:
             erase_at_end(it);
         }
     }
+
     allocator_type get_allocator() const { return alloc_; }
 
     reference at(size_type pos) {
@@ -131,6 +132,7 @@ public:
         range_check(pos);
         return (*this)[pos];
     }
+
     reference       operator[](size_type pos) { return *(start_ + pos); }
     const_reference operator[](size_type pos) const { return *(start_ + pos); }
     reference       front() { return *begin(); }
@@ -304,6 +306,7 @@ private:
         end_cap_ = start_ + n;
         end_ = construct_range(start_, first, last);
     }
+
     template <typename InputIt>
     void range_assign(InputIt first, InputIt last, std::input_iterator_tag) {
         iterator it = begin();
@@ -331,6 +334,7 @@ private:
             insert(end(), it, last);
         }
     }
+
     template <typename InputIt>
     void range_insert(iterator pos, InputIt first, InputIt last, std::input_iterator_tag) {
         if (pos == end()) {
@@ -380,11 +384,8 @@ private:
             }
         }
     }
-    bool should_grow() const { return end_ == end_cap_; }
-    void erase_at_end(pointer pos) {
-        destroy_range(pos, end_);
-        end_ = pos;
-    }
+
+    bool      should_grow() const { return end_ == end_cap_; }
     size_type calculate_growth() const {
         const size_type old_cap = capacity();
         const size_type max = max_size();
@@ -404,6 +405,7 @@ private:
         const size_type new_cap = calculate_growth();
         reallocate(new_cap);
     }
+
     void reallocate(size_type n) {
         pointer new_start = alloc_.allocate(n);
         pointer new_end = new_start + size();
@@ -417,6 +419,13 @@ private:
         end_ = new_end;
         end_cap_ = start_ + n;
     }
+    void deallocate_v() {
+        if (capacity() > 0) {
+            destroy_range(start_, end_);
+            alloc_.deallocate(start_, capacity());
+        }
+    }
+
     template <typename It>
     pointer construct_range(pointer dst, It start, It end) {
         for (; start != end; ++dst, ++start) {
@@ -430,17 +439,25 @@ private:
         }
         return dst;
     }
+
     void construct_range_backward(pointer dst, const_pointer start, const_pointer end) {
         --end;
         for (; end != start - 1; --dst, --end) {
             alloc_.construct(dst, *end);
         }
     }
+
     void destroy_range(pointer start, pointer end) {
         for (; start != end; start++) {
             alloc_.destroy(start);
         }
     }
+
+    void erase_at_end(pointer pos) {
+        destroy_range(pos, end_);
+        end_ = pos;
+    }
+
     void length_exception() const {
         throw std::length_error("cannot create ft::vector larger than max_size()");
     }
@@ -458,12 +475,6 @@ private:
 
             ss << "Index " << n << " is out of range (size = " << size();
             throw std::out_of_range(ss.str());
-        }
-    }
-    void deallocate_v() {
-        if (capacity() > 0) {
-            destroy_range(start_, end_);
-            alloc_.deallocate(start_, capacity());
         }
     }
 
