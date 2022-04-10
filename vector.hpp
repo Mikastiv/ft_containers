@@ -6,7 +6,7 @@
 /*   By: mleblanc <mleblanc@student.42quebec.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/01 15:27:15 by mleblanc          #+#    #+#             */
-/*   Updated: 2022/04/10 00:42:40 by mleblanc         ###   ########.fr       */
+/*   Updated: 2022/04/10 02:03:38 by mleblanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -164,7 +164,7 @@ public:
         const size_type index = pos - begin();
 
         if (should_grow()) {
-            const size_type new_size = calculate_growth();
+            const size_type new_size = check_length(size_type(1));
             const size_type index = pos - begin();
             pointer         new_start = alloc_.allocate(new_size);
             pointer         new_end;
@@ -255,7 +255,7 @@ public:
                 length_exception();
             }
 
-            reallocate(calculate_growth());
+            reallocate(check_length(size_type(1)));
         }
 
         alloc_.construct(end_, value);
@@ -383,16 +383,6 @@ private:
     }
 
     bool      should_grow() const { return end_ == end_cap_; }
-    size_type calculate_growth() const {
-        const size_type old_cap = capacity();
-        const size_type max = max_size();
-
-        if (max / 2 < old_cap) {
-            return max;
-        }
-
-        return old_cap == 0 ? 1 : old_cap * 2;
-    }
 
     void reallocate(size_type n) {
         pointer new_start = alloc_.allocate(n);
