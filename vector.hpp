@@ -6,7 +6,7 @@
 /*   By: mleblanc <mleblanc@student.42quebec.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/01 15:27:15 by mleblanc          #+#    #+#             */
-/*   Updated: 2022/04/10 00:38:33 by mleblanc         ###   ########.fr       */
+/*   Updated: 2022/04/10 00:42:04 by mleblanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,7 +59,8 @@ public:
 
         start_ = alloc_.allocate(count);
         end_cap_ = start_ + count;
-        end_ = end_cap_ construct_range(start_, end_, value);
+        end_ = end_cap_;
+        construct_range(start_, end_, value);
     }
     template <typename InputIt>
     vector(InputIt first, typename enable_if<!is_integral<InputIt>::value, InputIt>::type last,
