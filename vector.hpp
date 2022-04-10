@@ -6,7 +6,7 @@
 /*   By: mleblanc <mleblanc@student.42quebec.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/01 15:27:15 by mleblanc          #+#    #+#             */
-/*   Updated: 2022/04/10 02:03:38 by mleblanc         ###   ########.fr       */
+/*   Updated: 2022/04/10 03:39:53 by mleblanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -102,18 +102,11 @@ public:
     }
     void assign(size_type count, const T& value) {
         if (count > capacity()) {
-            pointer new_start = alloc_.allocate(count);
-            pointer new_end = new_start + count;
-
-            construct_range(new_start, new_end, value);
-            deallocate_v();
-            start_ = new_start;
-            end_ = new_end;
-            end_cap_ = new_end;
+            vector tmp(count, value);
+            tmp.swap(*this);
         } else if (count > size()) {
-            const size_type extra = count - size();
-
             std::fill(begin(), end(), value);
+            const size_type extra = count - size();
             end_ = construct_range(end_, end_ + extra, value);
         } else {
             pointer it = std::fill_n(start_, count, value);
@@ -156,16 +149,32 @@ public:
     void      reserve(size_type new_cap) {
         if (new_cap > capacity()) {
             check_new_size(new_cap);
-            reallocate(new_cap);
+
+            pointer new_start = alloc_.allocate(new_cap);
+            pointer new_end;
+
+            new_end = construct_range(new_start, start_, end_);
+            deallocate_v();
+            start_ = new_start;
+            end_ = new_end;
+            end_cap_ = start_ + new_cap;
         }
     }
     size_type capacity() const { return static_cast<size_type>(end_cap_ - start_); }
     iterator  insert(iterator pos, const T& value) {
         const size_type index = pos - begin();
 
-        if (should_grow()) {
+        if (!should_grow()) {
+            if (pos == end()) {
+                alloc_.construct(end_, value);
+                ++end_;
+            } else {
+                alloc_.construct(end_, *(end_ - 1));
+                std::copy_backward(pos.base(), end_ - 2, end_ - 1);
+                *pos = value;
+            }
+        } else {
             const size_type new_size = check_length(size_type(1));
-            const size_type index = pos - begin();
             pointer         new_start = alloc_.allocate(new_size);
             pointer         new_end;
 
@@ -178,15 +187,6 @@ public:
             start_ = new_start;
             end_ = new_end;
             end_cap_ = new_start + new_size;
-        } else {
-            if (pos == end()) {
-                alloc_.construct(end_, value);
-                ++end_;
-            } else {
-                alloc_.construct(end_, *(end_ - 1));
-                std::copy_backward(pos.base(), end_ - 2, end_ - 1);
-                *pos = value;
-            }
         }
 
         return iterator(start_ + index);
@@ -250,16 +250,12 @@ public:
         return first;
     }
     void push_back(const T& value) {
-        if (should_grow()) {
-            if (capacity() == max_size()) {
-                length_exception();
-            }
-
-            reallocate(check_length(size_type(1)));
+        if (!should_grow()) {
+            alloc_.construct(end_, value);
+            ++end_;
+        } else {
+            insert(end(), value);
         }
-
-        alloc_.construct(end_, value);
-        ++end_;
     }
     void pop_back() {
         --end_;
@@ -382,18 +378,8 @@ private:
         }
     }
 
-    bool      should_grow() const { return end_ == end_cap_; }
+    bool should_grow() const { return end_ == end_cap_; }
 
-    void reallocate(size_type n) {
-        pointer new_start = alloc_.allocate(n);
-        pointer new_end;
-
-        new_end = construct_range(new_start, start_, end_);
-        deallocate_v();
-        start_ = new_start;
-        end_ = new_end;
-        end_cap_ = start_ + n;
-    }
     void deallocate_v() {
         if (capacity() > 0) {
             destroy_range(start_, end_);
