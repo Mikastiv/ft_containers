@@ -6,7 +6,7 @@
 /*   By: mleblanc <mleblanc@student.42quebec.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/01 15:27:15 by mleblanc          #+#    #+#             */
-/*   Updated: 2022/04/09 23:42:59 by mleblanc         ###   ########.fr       */
+/*   Updated: 2022/04/10 00:38:33 by mleblanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,11 +44,9 @@ public:
             return;
         }
 
-        const size_type s = other.size();
         start_ = alloc_.allocate(cap);
-        end_ = start_ + s;
         end_cap_ = start_ + cap;
-        construct_range(start_, other.start_, other.end_);
+        end_ = construct_range(start_, other.start_, other.end_);
     }
     explicit vector(const allocator_type& alloc) : alloc_(alloc), start_(), end_(), end_cap_() {}
     explicit vector(
@@ -57,13 +55,11 @@ public:
         if (count == 0) {
             return;
         }
-        if (count > max_size()) {
-            length_exception();
-        }
+        check_new_size(count);
+
         start_ = alloc_.allocate(count);
-        end_ = start_ + count;
-        end_cap_ = end_;
-        construct_range(start_, end_, value);
+        end_cap_ = start_ + count;
+        end_ = end_cap_ construct_range(start_, end_, value);
     }
     template <typename InputIt>
     vector(InputIt first, typename enable_if<!is_integral<InputIt>::value, InputIt>::type last,
@@ -107,14 +103,16 @@ public:
         if (count > capacity()) {
             pointer new_start = alloc_.allocate(count);
             pointer new_end = new_start + count;
+
             construct_range(new_start, new_end, value);
             deallocate_v();
             start_ = new_start;
             end_ = new_end;
             end_cap_ = new_end;
         } else if (count > size()) {
-            std::fill(begin(), end(), value);
             const size_type extra = count - size();
+
+            std::fill(begin(), end(), value);
             end_ = construct_range(end_, end_ + extra, value);
         } else {
             pointer it = std::fill_n(start_, count, value);
@@ -156,28 +154,26 @@ public:
     size_type max_size() const { return alloc_.max_size(); }
     void      reserve(size_type new_cap) {
         if (new_cap > capacity()) {
-            if (new_cap > max_size()) {
-                length_exception();
-            }
-
+            check_new_size(new_cap);
             reallocate(new_cap);
         }
     }
     size_type capacity() const { return static_cast<size_type>(end_cap_ - start_); }
     iterator  insert(iterator pos, const T& value) {
         const size_type index = pos - begin();
+
         if (should_grow()) {
             const size_type new_size = calculate_growth();
             const size_type index = pos - begin();
             pointer         new_start = alloc_.allocate(new_size);
-            pointer         new_end = new_start;
+            pointer         new_end;
 
             new_end = construct_range(new_start, start_, start_ + index);
             alloc_.construct(new_end, value);
             ++new_end;
             new_end = construct_range(new_end, start_ + index, end_);
-            destroy_range(start_, end_);
-            alloc_.deallocate(start_, capacity());
+
+            deallocate_v();
             start_ = new_start;
             end_ = new_end;
             end_cap_ = new_start + new_size;
@@ -214,14 +210,13 @@ public:
             } else {
                 const size_type new_size = check_length(count);
                 pointer         new_start = alloc_.allocate(new_size);
-                pointer         new_end = new_start;
+                pointer         new_end;
 
                 new_end = construct_range(new_start, start_, pos.base());
                 new_end = construct_range(new_end, new_end + count, value);
                 new_end = construct_range(new_end, pos.base(), end_);
 
-                destroy_range(start_, end_);
-                alloc_.deallocate(start_, capacity());
+                deallocate_v();
                 start_ = new_start;
                 end_ = new_end;
                 end_cap_ = new_start + new_size;
@@ -255,7 +250,11 @@ public:
     }
     void push_back(const T& value) {
         if (should_grow()) {
-            grow();
+            if (capacity() == max_size()) {
+                length_exception();
+            }
+
+            reallocate(calculate_growth());
         }
 
         alloc_.construct(end_, value);
@@ -294,16 +293,14 @@ private:
     }
     template <typename ForwardIt>
     void range_init(ForwardIt first, ForwardIt last, std::forward_iterator_tag) {
-        const size_type n = std::distance(first, last);
-        if (n == 0) {
+        const size_type count = std::distance(first, last);
+        if (count == 0) {
             return;
         }
-        if (n > max_size()) {
-            length_exception();
-        }
+        check_new_size(count);
 
-        start_ = alloc_.allocate(n);
-        end_cap_ = start_ + n;
+        start_ = alloc_.allocate(count);
+        end_cap_ = start_ + count;
         end_ = construct_range(start_, first, last);
     }
 
@@ -376,8 +373,7 @@ private:
                 new_end = construct_range(new_end, first, last);
                 new_end = construct_range(new_end, pos.base(), end_);
 
-                destroy_range(start_, end_);
-                alloc_.deallocate(start_, capacity());
+                deallocate_v();
                 start_ = new_start;
                 end_ = new_end;
                 end_cap_ = new_start + new_size;
@@ -396,25 +392,13 @@ private:
 
         return old_cap == 0 ? 1 : old_cap * 2;
     }
-    void grow() {
-        const size_type old_cap = capacity();
-        if (old_cap == max_size()) {
-            length_exception();
-        }
-
-        const size_type new_cap = calculate_growth();
-        reallocate(new_cap);
-    }
 
     void reallocate(size_type n) {
         pointer new_start = alloc_.allocate(n);
-        pointer new_end = new_start + size();
+        pointer new_end;
 
-        construct_range(new_start, start_, end_);
-        if (capacity() > 0) {
-            destroy_range(start_, end_);
-            alloc_.deallocate(start_, capacity());
-        }
+        new_end = construct_range(new_start, start_, end_);
+        deallocate_v();
         start_ = new_start;
         end_ = new_end;
         end_cap_ = start_ + n;
@@ -468,6 +452,11 @@ private:
 
         const size_type length = size() + std::max(size(), count);
         return (length < size() || length > max_size()) ? max_size() : length;
+    }
+    void check_new_size(size_type count) {
+        if (count > max_size()) {
+            length_exception();
+        }
     }
     void range_check(size_type n) const {
         if (n >= size()) {
