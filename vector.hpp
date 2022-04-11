@@ -6,7 +6,7 @@
 /*   By: mleblanc <mleblanc@student.42quebec.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/01 15:27:15 by mleblanc          #+#    #+#             */
-/*   Updated: 2022/04/10 21:55:15 by mleblanc         ###   ########.fr       */
+/*   Updated: 2022/04/11 15:40:38 by mleblanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,7 +55,7 @@ public:
         if (count == 0) {
             return;
         }
-        check_new_size(count);
+        check_size(count);
 
         start_ = alloc_.allocate(count);
         end_cap_ = start_ + count;
@@ -148,7 +148,7 @@ public:
     size_type max_size() const { return alloc_.max_size(); }
     void      reserve(size_type new_cap) {
         if (new_cap > capacity()) {
-            check_new_size(new_cap);
+            check_size(new_cap);
 
             pointer new_start = alloc_.allocate(new_cap);
             pointer new_end;
@@ -174,7 +174,7 @@ public:
                 *pos = value;
             }
         } else {
-            const size_type new_size = check_length(static_cast<size_type>(1));
+            const size_type new_size = calculate_growth(static_cast<size_type>(1));
             pointer         new_start = alloc_.allocate(new_size);
             pointer         new_end;
 
@@ -209,7 +209,7 @@ public:
                     std::fill(pos.base(), old_end, value);
                 }
             } else {
-                const size_type new_size = check_length(count);
+                const size_type new_size = calculate_growth(count);
                 pointer         new_start = alloc_.allocate(new_size);
                 pointer         new_end;
 
@@ -294,7 +294,7 @@ private:
         if (count == 0) {
             return;
         }
-        check_new_size(count);
+        check_size(count);
 
         start_ = alloc_.allocate(count);
         end_cap_ = start_ + count;
@@ -360,7 +360,7 @@ private:
                     std::copy(first, mid, pos);
                 }
             } else {
-                const size_type new_size = check_length(count);
+                const size_type new_size = calculate_growth(count);
                 pointer         new_start = alloc_.allocate(new_size);
                 pointer         new_end = new_start;
 
@@ -413,15 +413,15 @@ private:
     void length_exception() const {
         throw std::length_error("cannot create ft::vector larger than max_size()");
     }
-    size_type check_length(size_type count) const {
-        if (max_size() - size() < count) {
+    size_type calculate_growth(size_type extra) const {
+        if (max_size() - size() < extra) {
             length_exception();
         }
 
-        const size_type length = size() + std::max(size(), count);
+        const size_type length = size() + std::max(size(), extra);
         return (length < size() || length > max_size()) ? max_size() : length;
     }
-    void check_new_size(size_type count) {
+    void check_size(size_type count) {
         if (count > max_size()) {
             length_exception();
         }
