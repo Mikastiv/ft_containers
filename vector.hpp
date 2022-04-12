@@ -6,13 +6,14 @@
 /*   By: mleblanc <mleblanc@student.42quebec.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/01 15:27:15 by mleblanc          #+#    #+#             */
-/*   Updated: 2022/04/11 15:40:38 by mleblanc         ###   ########.fr       */
+/*   Updated: 2022/04/12 00:08:32 by mleblanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
 
 #include <algorithm>
+#include <limits>
 #include <memory>
 #include <sstream>
 #include <stdexcept>
@@ -145,8 +146,11 @@ public:
 
     bool      empty() const { return start_ == end_; }
     size_type size() const { return static_cast<size_type>(end_ - start_); }
-    size_type max_size() const { return alloc_.max_size(); }
-    void      reserve(size_type new_cap) {
+    size_type max_size() const {
+        return std::min(
+            alloc_.max_size(), static_cast<size_type>(std::numeric_limits<difference_type>::max()));
+    }
+    void reserve(size_type new_cap) {
         if (new_cap > capacity()) {
             check_size(new_cap);
 
@@ -174,7 +178,7 @@ public:
                 *pos = value;
             }
         } else {
-            const size_type new_size = calculate_growth(static_cast<size_type>(1));
+            const size_type new_size = calculate_growth(size() + 1);
             pointer         new_start = alloc_.allocate(new_size);
             pointer         new_end;
 
@@ -209,7 +213,7 @@ public:
                     std::fill(pos.base(), old_end, value);
                 }
             } else {
-                const size_type new_size = calculate_growth(count);
+                const size_type new_size = calculate_growth(size() + count);
                 pointer         new_start = alloc_.allocate(new_size);
                 pointer         new_end;
 
@@ -302,15 +306,9 @@ private:
     }
     template <typename InputIt>
     void range_assign(InputIt first, InputIt last, std::input_iterator_tag) {
-        iterator it = begin();
-        for (; first != last && it != end(); ++it, ++first) {
-            *it = *first;
-        }
-
-        if (first == last) {
-            erase_at_end(it.base());
-        } else {
-            insert(end(), first, last);
+        clear();
+        for (; first != last; ++first) {
+            push_back(*first);
         }
     }
     template <typename ForwardIt>
@@ -331,7 +329,7 @@ private:
     void range_insert(iterator pos, InputIt first, InputIt last, std::input_iterator_tag) {
         if (pos == end()) {
             for (; first != last; ++first) {
-                insert(end(), *first);
+                push_back(*first);
             }
         } else if (first != last) {
             vector tmp(first, last);
@@ -360,7 +358,7 @@ private:
                     std::copy(first, mid, pos);
                 }
             } else {
-                const size_type new_size = calculate_growth(count);
+                const size_type new_size = calculate_growth(size() + count);
                 pointer         new_start = alloc_.allocate(new_size);
                 pointer         new_end = new_start;
 
@@ -413,13 +411,18 @@ private:
     void length_exception() const {
         throw std::length_error("cannot create ft::vector larger than max_size()");
     }
-    size_type calculate_growth(size_type extra) const {
-        if (max_size() - size() < extra) {
+    size_type calculate_growth(size_type new_size) const {
+        const size_type max = max_size();
+        if (new_size > max) {
             length_exception();
         }
 
-        const size_type length = size() + std::max(size(), extra);
-        return (length < size() || length > max_size()) ? max_size() : length;
+        const size_type cap = capacity();
+        if (cap >= max / 2) {
+            return max;
+        }
+
+        return std::max(new_size, cap * 2);
     }
     void check_size(size_type count) {
         if (count > max_size()) {
