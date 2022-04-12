@@ -6,7 +6,7 @@
 /*   By: mleblanc <mleblanc@student.42quebec.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/01 15:27:15 by mleblanc          #+#    #+#             */
-/*   Updated: 2022/04/12 18:03:59 by mleblanc         ###   ########.fr       */
+/*   Updated: 2022/04/12 19:01:56 by mleblanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -128,8 +128,8 @@ public:
         return (*this)[pos];
     }
 
-    reference       operator[](size_type pos) { return *(start_ + pos); }
-    const_reference operator[](size_type pos) const { return *(start_ + pos); }
+    reference       operator[](size_type pos) { return start_[pos]; }
+    const_reference operator[](size_type pos) const { return start_[pos]; }
     reference       front() { return *begin(); }
     const_reference front() const { return *begin(); }
     reference       back() { return *(end() - 1); }
