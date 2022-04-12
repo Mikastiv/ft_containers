@@ -6,7 +6,7 @@
 /*   By: mleblanc <mleblanc@student.42quebec.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/02 17:59:12 by mleblanc          #+#    #+#             */
-/*   Updated: 2022/04/08 23:06:55 by mleblanc         ###   ########.fr       */
+/*   Updated: 2022/04/12 18:11:59 by mleblanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,12 +23,12 @@ struct enable_if<true, T> {
 };
 
 struct true_type {
-    enum { value = true };
+    static const bool value = true;
     typedef true_type type;
 };
 
 struct false_type {
-    enum { value = false };
+    static const bool value = false;
     typedef false_type type;
 };
 

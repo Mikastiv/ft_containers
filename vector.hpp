@@ -6,7 +6,7 @@
 /*   By: mleblanc <mleblanc@student.42quebec.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/01 15:27:15 by mleblanc          #+#    #+#             */
-/*   Updated: 2022/04/12 04:53:05 by mleblanc         ###   ########.fr       */
+/*   Updated: 2022/04/12 18:03:59 by mleblanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,8 +38,9 @@ public:
     typedef ft::reverse_iterator<const_iterator>     const_reverse_iterator;
 
 public:
-    vector() : alloc_(), start_(), end_(), end_cap_() {}
-    vector(const vector& other) : alloc_(other.alloc_), start_(), end_(), end_cap_() {
+    vector() : alloc_(), start_(nullptr), end_(nullptr), end_cap_(nullptr) {}
+    vector(const vector& other)
+        : alloc_(other.alloc_), start_(nullptr), end_(nullptr), end_cap_(nullptr) {
         const size_type cap = other.capacity();
         if (cap == 0) {
             return;
@@ -49,7 +50,8 @@ public:
         end_cap_ = start_ + cap;
         end_ = construct_range(start_, other.start_, other.end_);
     }
-    explicit vector(const allocator_type& alloc) : alloc_(alloc), start_(), end_(), end_cap_() {}
+    explicit vector(const allocator_type& alloc)
+        : alloc_(alloc), start_(nullptr), end_(nullptr), end_cap_(nullptr) {}
     explicit vector(
         size_type count, const T& value = T(), const allocator_type& alloc = allocator_type())
         : alloc_(alloc), start_(), end_(), end_cap_() {
@@ -66,7 +68,7 @@ public:
     template <typename InputIt>
     vector(InputIt first, typename enable_if<!is_integral<InputIt>::value, InputIt>::type last,
         const allocator_type& alloc = allocator_type())
-        : alloc_(alloc), start_(), end_(), end_cap_() {
+        : alloc_(alloc), start_(nullptr), end_(nullptr), end_cap_(nullptr) {
         typedef typename iterator_traits<InputIt>::iterator_category category;
         range_init(first, last, category());
     }
@@ -267,7 +269,7 @@ public:
     }
     void resize(size_type count, T value = T()) {
         if (count > size()) {
-            insert(end(), value);
+            insert(end(), count, value);
         } else if (count < size()) {
             erase_at_end(start_ + count);
         }
@@ -376,7 +378,7 @@ private:
     bool should_grow() const { return end_ == end_cap_; }
     void deallocate_v() {
         if (capacity() > 0) {
-            destroy_range(start_, end_);
+            clear();
             alloc_.deallocate(start_, capacity());
         }
     }
