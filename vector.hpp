@@ -6,7 +6,7 @@
 /*   By: mleblanc <mleblanc@student.42quebec.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/01 15:27:15 by mleblanc          #+#    #+#             */
-/*   Updated: 2022/04/12 00:08:32 by mleblanc         ###   ########.fr       */
+/*   Updated: 2022/04/12 04:29:25 by mleblanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -178,7 +178,7 @@ public:
                 *pos = value;
             }
         } else {
-            const size_type new_size = calculate_growth(size() + 1);
+            const size_type new_size = calculate_growth(1);
             pointer         new_start = alloc_.allocate(new_size);
             pointer         new_end;
 
@@ -213,7 +213,7 @@ public:
                     std::fill(pos.base(), old_end, value);
                 }
             } else {
-                const size_type new_size = calculate_growth(size() + count);
+                const size_type new_size = calculate_growth(count);
                 pointer         new_start = alloc_.allocate(new_size);
                 pointer         new_end;
 
@@ -358,7 +358,7 @@ private:
                     std::copy(first, mid, pos);
                 }
             } else {
-                const size_type new_size = calculate_growth(size() + count);
+                const size_type new_size = calculate_growth(count);
                 pointer         new_start = alloc_.allocate(new_size);
                 pointer         new_end = new_start;
 
@@ -411,18 +411,18 @@ private:
     void length_exception() const {
         throw std::length_error("cannot create ft::vector larger than max_size()");
     }
-    size_type calculate_growth(size_type new_size) const {
+    size_type calculate_growth(size_type extra) const {
         const size_type max = max_size();
-        if (new_size > max) {
+        const size_type cap = capacity();
+        if (max - cap < extra) {
             length_exception();
         }
 
-        const size_type cap = capacity();
         if (cap >= max / 2) {
             return max;
         }
 
-        return std::max(new_size, cap * 2);
+        return std::max(size() + extra, cap * 2);
     }
     void check_size(size_type count) {
         if (count > max_size()) {
