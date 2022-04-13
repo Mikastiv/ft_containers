@@ -6,7 +6,7 @@
 /*   By: mleblanc <mleblanc@student.42quebec.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/01 15:27:15 by mleblanc          #+#    #+#             */
-/*   Updated: 2022/04/12 19:01:56 by mleblanc         ###   ########.fr       */
+/*   Updated: 2022/04/12 21:50:58 by mleblanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,9 +38,8 @@ public:
     typedef ft::reverse_iterator<const_iterator>     const_reverse_iterator;
 
 public:
-    vector() : alloc_(), start_(nullptr), end_(nullptr), end_cap_(nullptr) {}
-    vector(const vector& other)
-        : alloc_(other.alloc_), start_(nullptr), end_(nullptr), end_cap_(nullptr) {
+    vector() : alloc_(), start_(NULL), end_(NULL), end_cap_(NULL) {}
+    vector(const vector& other) : alloc_(other.alloc_), start_(NULL), end_(NULL), end_cap_(NULL) {
         const size_type cap = other.capacity();
         if (cap == 0) {
             return;
@@ -51,10 +50,10 @@ public:
         end_ = construct_range(start_, other.start_, other.end_);
     }
     explicit vector(const allocator_type& alloc)
-        : alloc_(alloc), start_(nullptr), end_(nullptr), end_cap_(nullptr) {}
+        : alloc_(alloc), start_(NULL), end_(NULL), end_cap_(NULL) {}
     explicit vector(
         size_type count, const T& value = T(), const allocator_type& alloc = allocator_type())
-        : alloc_(alloc), start_(), end_(), end_cap_() {
+        : alloc_(alloc), start_(NULL), end_(NULL), end_cap_(NULL) {
         if (count == 0) {
             return;
         }
@@ -68,7 +67,7 @@ public:
     template <typename InputIt>
     vector(InputIt first, typename enable_if<!is_integral<InputIt>::value, InputIt>::type last,
         const allocator_type& alloc = allocator_type())
-        : alloc_(alloc), start_(nullptr), end_(nullptr), end_cap_(nullptr) {
+        : alloc_(alloc), start_(NULL), end_(NULL), end_cap_(NULL) {
         typedef typename iterator_traits<InputIt>::iterator_category category;
         range_init(first, last, category());
     }
