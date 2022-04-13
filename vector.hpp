@@ -6,7 +6,7 @@
 /*   By: mleblanc <mleblanc@student.42quebec.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/01 15:27:15 by mleblanc          #+#    #+#             */
-/*   Updated: 2022/04/12 21:50:58 by mleblanc         ###   ########.fr       */
+/*   Updated: 2022/04/13 18:37:22 by mleblanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,26 +20,40 @@
 
 #include "iterator.hpp"
 
-namespace ft {
+namespace ft
+{
 template <typename T, typename Alloc = std::allocator<T> >
-class vector {
-public:
-    typedef T                                        value_type;
-    typedef Alloc                                    allocator_type;
-    typedef typename allocator_type::size_type       size_type;
+class vector
+{
+  public:
+    typedef T value_type;
+    typedef Alloc allocator_type;
+    typedef typename allocator_type::size_type size_type;
     typedef typename allocator_type::difference_type difference_type;
-    typedef value_type&                              reference;
-    typedef const value_type&                        const_reference;
-    typedef typename allocator_type::pointer         pointer;
-    typedef typename allocator_type::const_pointer   const_pointer;
-    typedef normal_iterator<pointer, vector>         iterator;
-    typedef normal_iterator<const_pointer, vector>   const_iterator;
-    typedef ft::reverse_iterator<iterator>           reverse_iterator;
-    typedef ft::reverse_iterator<const_iterator>     const_reverse_iterator;
+    typedef T& reference;
+    typedef const T& const_reference;
+    typedef typename allocator_type::pointer pointer;
+    typedef typename allocator_type::const_pointer const_pointer;
+    typedef normal_iterator<pointer, vector> iterator;
+    typedef normal_iterator<const_pointer, vector> const_iterator;
+    typedef ft::reverse_iterator<iterator> reverse_iterator;
+    typedef ft::reverse_iterator<const_iterator> const_reverse_iterator;
 
-public:
-    vector() : alloc_(), start_(NULL), end_(NULL), end_cap_(NULL) {}
-    vector(const vector& other) : alloc_(other.alloc_), start_(NULL), end_(NULL), end_cap_(NULL) {
+  public:
+    vector()
+        : alloc_(),
+          start_(NULL),
+          end_(NULL),
+          end_cap_(NULL)
+    {
+    }
+
+    vector(const vector& other)
+        : alloc_(other.alloc_),
+          start_(NULL),
+          end_(NULL),
+          end_cap_(NULL)
+    {
         const size_type cap = other.capacity();
         if (cap == 0) {
             return;
@@ -49,11 +63,23 @@ public:
         end_cap_ = start_ + cap;
         end_ = construct_range(start_, other.start_, other.end_);
     }
+
     explicit vector(const allocator_type& alloc)
-        : alloc_(alloc), start_(NULL), end_(NULL), end_cap_(NULL) {}
-    explicit vector(
-        size_type count, const T& value = T(), const allocator_type& alloc = allocator_type())
-        : alloc_(alloc), start_(NULL), end_(NULL), end_cap_(NULL) {
+        : alloc_(alloc),
+          start_(NULL),
+          end_(NULL),
+          end_cap_(NULL)
+    {
+    }
+
+    explicit vector(size_type count,
+                    const T& value = T(),
+                    const allocator_type& alloc = allocator_type())
+        : alloc_(alloc),
+          start_(NULL),
+          end_(NULL),
+          end_cap_(NULL)
+    {
         if (count == 0) {
             return;
         }
@@ -64,15 +90,27 @@ public:
         end_ = end_cap_;
         construct_range(start_, end_, value);
     }
+
     template <typename InputIt>
-    vector(InputIt first, typename enable_if<!is_integral<InputIt>::value, InputIt>::type last,
-        const allocator_type& alloc = allocator_type())
-        : alloc_(alloc), start_(NULL), end_(NULL), end_cap_(NULL) {
+    vector(InputIt first,
+           typename enable_if<!is_integral<InputIt>::value, InputIt>::type last,
+           const allocator_type& alloc = allocator_type())
+        : alloc_(alloc),
+          start_(NULL),
+          end_(NULL),
+          end_cap_(NULL)
+    {
         typedef typename iterator_traits<InputIt>::iterator_category category;
         range_init(first, last, category());
     }
-    ~vector() { deallocate_v(); }
-    vector& operator=(const vector& other) {
+
+    ~vector()
+    {
+        deallocate_v();
+    }
+
+    vector& operator=(const vector& other)
+    {
         if (&other == this) {
             return *this;
         }
@@ -95,14 +133,16 @@ public:
         return *this;
     }
 
-public:
+  public:
     template <typename InputIt>
-    void assign(
-        InputIt first, typename enable_if<!is_integral<InputIt>::value, InputIt>::type last) {
+    void assign(InputIt first, typename enable_if<!is_integral<InputIt>::value, InputIt>::type last)
+    {
         typedef typename iterator_traits<InputIt>::iterator_category category;
         range_assign(first, last, category());
     }
-    void assign(size_type count, const T& value) {
+
+    void assign(size_type count, const T& value)
+    {
         if (count > capacity()) {
             vector tmp(count, value);
             tmp.swap(*this);
@@ -116,42 +156,121 @@ public:
         }
     }
 
-    allocator_type get_allocator() const { return alloc_; }
+    allocator_type get_allocator() const
+    {
+        return alloc_;
+    }
 
-    reference at(size_type pos) {
+    reference at(size_type pos)
+    {
         range_check(pos);
         return (*this)[pos];
     }
-    const_reference at(size_type pos) const {
+
+    const_reference at(size_type pos) const
+    {
         range_check(pos);
         return (*this)[pos];
     }
 
-    reference       operator[](size_type pos) { return start_[pos]; }
-    const_reference operator[](size_type pos) const { return start_[pos]; }
-    reference       front() { return *begin(); }
-    const_reference front() const { return *begin(); }
-    reference       back() { return *(end() - 1); }
-    const_reference back() const { return *(end() - 1); }
-    pointer         data() { return start_; }
-    const_pointer   data() const { return start_; }
-
-    iterator               begin() { return iterator(start_); }
-    const_iterator         begin() const { return const_iterator(start_); }
-    iterator               end() { return iterator(end_); }
-    const_iterator         end() const { return const_iterator(end_); }
-    reverse_iterator       rbegin() { return reverse_iterator(end()); }
-    const_reverse_iterator rbegin() const { return const_reverse_iterator(end()); }
-    reverse_iterator       rend() { return reverse_iterator(begin()); }
-    const_reverse_iterator rend() const { return const_reverse_iterator(begin()); }
-
-    bool      empty() const { return start_ == end_; }
-    size_type size() const { return static_cast<size_type>(end_ - start_); }
-    size_type max_size() const {
-        return std::min(
-            alloc_.max_size(), static_cast<size_type>(std::numeric_limits<difference_type>::max()));
+    reference operator[](size_type pos)
+    {
+        return start_[pos];
     }
-    void reserve(size_type new_cap) {
+
+    const_reference operator[](size_type pos) const
+    {
+        return start_[pos];
+    }
+
+    reference front()
+    {
+        return *begin();
+    }
+
+    const_reference front() const
+    {
+        return *begin();
+    }
+
+    reference back()
+    {
+        return *(end() - 1);
+    }
+
+    const_reference back() const
+    {
+        return *(end() - 1);
+    }
+
+    pointer data()
+    {
+        return start_;
+    }
+
+    const_pointer data() const
+    {
+        return start_;
+    }
+
+    iterator begin()
+    {
+        return iterator(start_);
+    }
+
+    const_iterator begin() const
+    {
+        return const_iterator(start_);
+    }
+
+    iterator end()
+    {
+        return iterator(end_);
+    }
+
+    const_iterator end() const
+    {
+        return const_iterator(end_);
+    }
+
+    reverse_iterator rbegin()
+    {
+        return reverse_iterator(end());
+    }
+
+    const_reverse_iterator rbegin() const
+    {
+        return const_reverse_iterator(end());
+    }
+
+    reverse_iterator rend()
+    {
+        return reverse_iterator(begin());
+    }
+
+    const_reverse_iterator rend() const
+    {
+        return const_reverse_iterator(begin());
+    }
+
+    bool empty() const
+    {
+        return start_ == end_;
+    }
+
+    size_type size() const
+    {
+        return static_cast<size_type>(end_ - start_);
+    }
+
+    size_type max_size() const
+    {
+        return std::min(alloc_.max_size(),
+                        static_cast<size_type>(std::numeric_limits<difference_type>::max()));
+    }
+
+    void reserve(size_type new_cap)
+    {
         if (new_cap > capacity()) {
             check_size(new_cap);
 
@@ -165,8 +284,14 @@ public:
             end_cap_ = start_ + new_cap;
         }
     }
-    size_type capacity() const { return static_cast<size_type>(end_cap_ - start_); }
-    iterator  insert(iterator pos, const T& value) {
+
+    size_type capacity() const
+    {
+        return static_cast<size_type>(end_cap_ - start_);
+    }
+
+    iterator insert(iterator pos, const T& value)
+    {
         const size_type index = pos - begin();
 
         if (!should_grow()) {
@@ -180,8 +305,8 @@ public:
             }
         } else {
             const size_type new_size = calculate_growth(static_cast<size_type>(1));
-            pointer         new_start = alloc_.allocate(new_size);
-            pointer         new_end;
+            pointer new_start = alloc_.allocate(new_size);
+            pointer new_end;
 
             new_end = construct_range(new_start, start_, start_ + index);
             alloc_.construct(new_end, value);
@@ -196,13 +321,15 @@ public:
 
         return iterator(start_ + index);
     }
-    void insert(iterator pos, size_type count, const T& value) {
+
+    void insert(iterator pos, size_type count, const T& value)
+    {
         if (count != 0) {
             const size_type extra_space = end_cap_ - end_;
 
             if (extra_space >= count) {
                 const size_type elems_after = end() - pos;
-                pointer         old_end = end_;
+                pointer old_end = end_;
 
                 if (elems_after > count) {
                     end_ = construct_range(end_, end_ - count, end_);
@@ -215,8 +342,8 @@ public:
                 }
             } else {
                 const size_type new_size = calculate_growth(count);
-                pointer         new_start = alloc_.allocate(new_size);
-                pointer         new_end;
+                pointer new_start = alloc_.allocate(new_size);
+                pointer new_end;
 
                 new_end = construct_range(new_start, start_, pos.base());
                 new_end = construct_range(new_end, new_end + count, value);
@@ -229,14 +356,23 @@ public:
             }
         }
     }
+
     template <class InputIt>
-    void insert(iterator pos, InputIt first,
-        typename enable_if<!is_integral<InputIt>::value, InputIt>::type last) {
+    void insert(iterator pos,
+                InputIt first,
+                typename enable_if<!is_integral<InputIt>::value, InputIt>::type last)
+    {
         typedef typename iterator_traits<InputIt>::iterator_category category;
         range_insert(pos, first, last, category());
     }
-    void     clear() { erase_at_end(start_); }
-    iterator erase(iterator pos) {
+
+    void clear()
+    {
+        erase_at_end(start_);
+    }
+
+    iterator erase(iterator pos)
+    {
         if (pos + 1 != end()) {
             std::copy(pos + 1, end(), pos);
         }
@@ -244,7 +380,9 @@ public:
         alloc_.destroy(end_);
         return pos;
     }
-    iterator erase(iterator first, iterator last) {
+
+    iterator erase(iterator first, iterator last)
+    {
         if (first != last) {
             if (last != end()) {
                 std::copy(last, end(), first);
@@ -254,7 +392,9 @@ public:
         }
         return first;
     }
-    void push_back(const T& value) {
+
+    void push_back(const T& value)
+    {
         if (!should_grow()) {
             alloc_.construct(end_, value);
             ++end_;
@@ -262,18 +402,24 @@ public:
             insert(end(), value);
         }
     }
-    void pop_back() {
+
+    void pop_back()
+    {
         --end_;
         alloc_.destroy(end_);
     }
-    void resize(size_type count, T value = T()) {
+
+    void resize(size_type count, T value = T())
+    {
         if (count > size()) {
             insert(end(), count, value);
         } else if (count < size()) {
             erase_at_end(start_ + count);
         }
     }
-    void swap(vector& other) {
+
+    void swap(vector& other)
+    {
         pointer ptr_start = start_;
         pointer ptr_end = end_;
         pointer ptr_end_cap = end_cap_;
@@ -286,15 +432,18 @@ public:
         other.end_cap_ = ptr_end_cap;
     }
 
-private:
+  private:
     template <typename InputIt>
-    void range_init(InputIt first, InputIt last, std::input_iterator_tag) {
+    void range_init(InputIt first, InputIt last, std::input_iterator_tag)
+    {
         for (; first != last; ++first) {
             push_back(*first);
         }
     }
+
     template <typename ForwardIt>
-    void range_init(ForwardIt first, ForwardIt last, std::forward_iterator_tag) {
+    void range_init(ForwardIt first, ForwardIt last, std::forward_iterator_tag)
+    {
         const size_type count = std::distance(first, last);
         if (count == 0) {
             return;
@@ -305,15 +454,19 @@ private:
         end_cap_ = start_ + count;
         end_ = construct_range(start_, first, last);
     }
+
     template <typename InputIt>
-    void range_assign(InputIt first, InputIt last, std::input_iterator_tag) {
+    void range_assign(InputIt first, InputIt last, std::input_iterator_tag)
+    {
         clear();
         for (; first != last; ++first) {
             push_back(*first);
         }
     }
+
     template <typename ForwardIt>
-    void range_assign(ForwardIt first, ForwardIt last, std::forward_iterator_tag) {
+    void range_assign(ForwardIt first, ForwardIt last, std::forward_iterator_tag)
+    {
         const size_type count = std::distance(first, last);
 
         if (count < size()) {
@@ -326,8 +479,10 @@ private:
             insert(end(), it, last);
         }
     }
+
     template <typename InputIt>
-    void range_insert(iterator pos, InputIt first, InputIt last, std::input_iterator_tag) {
+    void range_insert(iterator pos, InputIt first, InputIt last, std::input_iterator_tag)
+    {
         if (pos == end()) {
             for (; first != last; ++first) {
                 push_back(*first);
@@ -337,15 +492,17 @@ private:
             insert(pos, tmp.begin(), tmp.end());
         }
     }
+
     template <typename ForwardIt>
-    void range_insert(iterator pos, ForwardIt first, ForwardIt last, std::forward_iterator_tag) {
+    void range_insert(iterator pos, ForwardIt first, ForwardIt last, std::forward_iterator_tag)
+    {
         if (first != last) {
             const size_type count = std::distance(first, last);
             const size_type extra_space = end_cap_ - end_;
 
             if (extra_space >= count) {
                 const size_type elems_after = end() - pos;
-                pointer         old_end = end_;
+                pointer old_end = end_;
 
                 if (elems_after > count) {
                     end_ = construct_range(end_, end_ - count, end_);
@@ -360,8 +517,8 @@ private:
                 }
             } else {
                 const size_type new_size = calculate_growth(count);
-                pointer         new_start = alloc_.allocate(new_size);
-                pointer         new_end = new_start;
+                pointer new_start = alloc_.allocate(new_size);
+                pointer new_end = new_start;
 
                 new_end = construct_range(new_start, start_, pos.base());
                 new_end = construct_range(new_end, first, last);
@@ -374,45 +531,65 @@ private:
             }
         }
     }
-    bool should_grow() const { return end_ == end_cap_; }
-    void deallocate_v() {
+
+    bool should_grow() const
+    {
+        return end_ == end_cap_;
+    }
+
+    void deallocate_v()
+    {
         if (capacity() > 0) {
             clear();
             alloc_.deallocate(start_, capacity());
         }
     }
+
     template <typename It>
-    pointer construct_range(pointer dst, It start, It end) {
+    pointer construct_range(pointer dst, It start, It end)
+    {
         for (; start != end; ++dst, ++start) {
             alloc_.construct(dst, *start);
         }
         return dst;
     }
-    pointer construct_range(pointer dst, const_pointer end, const_reference value) {
+
+    pointer construct_range(pointer dst, const_pointer end, const_reference value)
+    {
         for (; dst != end; ++dst) {
             alloc_.construct(dst, value);
         }
         return dst;
     }
-    void construct_range_backward(pointer dst, const_pointer start, const_pointer end) {
+
+    void construct_range_backward(pointer dst, const_pointer start, const_pointer end)
+    {
         --end;
         for (; end != start - 1; --dst, --end) {
             alloc_.construct(dst, *end);
         }
     }
-    void destroy_range(pointer start, pointer end) {
+
+    void destroy_range(pointer start, pointer end)
+    {
         for (; start != end; start++) {
             alloc_.destroy(start);
         }
     }
-    void erase_at_end(pointer pos) {
+
+    void erase_at_end(pointer pos)
+    {
         destroy_range(pos, end_);
         end_ = pos;
     }
-    void length_exception() const {
+
+    void length_exception() const
+    {
         throw std::length_error("cannot create ft::vector larger than max_size()");
     }
-    size_type calculate_growth(size_type extra) const {
+
+    size_type calculate_growth(size_type extra) const
+    {
         const size_type max = max_size();
         const size_type cap = capacity();
         if (max - cap < extra) {
@@ -425,12 +602,16 @@ private:
 
         return std::max(size() + extra, cap * 2);
     }
-    void check_size(size_type count) {
+
+    void check_size(size_type count)
+    {
         if (count > max_size()) {
             length_exception();
         }
     }
-    void range_check(size_type n) const {
+
+    void range_check(size_type n) const
+    {
         if (n >= size()) {
             std::stringstream ss;
 
@@ -439,10 +620,10 @@ private:
         }
     }
 
-private:
+  private:
     allocator_type alloc_;
-    pointer        start_;
-    pointer        end_;
-    pointer        end_cap_;
+    pointer start_;
+    pointer end_;
+    pointer end_cap_;
 };
-}
+} // namespace ft
