@@ -6,7 +6,7 @@
 /*   By: mleblanc <mleblanc@student.42quebec.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/02 12:33:36 by mleblanc          #+#    #+#             */
-/*   Updated: 2022/04/13 18:37:25 by mleblanc         ###   ########.fr       */
+/*   Updated: 2022/04/14 15:18:42 by mleblanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,7 @@ template <typename It>
 struct iterator_traits<It*> {
     typedef std::random_access_iterator_tag iterator_category;
     typedef It value_type;
-    typedef ptrdiff_t difference_type;
+    typedef std::ptrdiff_t difference_type;
     typedef value_type* pointer;
     typedef value_type& reference;
 };
@@ -41,7 +41,7 @@ template <typename It>
 struct iterator_traits<const It*> {
     typedef std::random_access_iterator_tag iterator_category;
     typedef It value_type;
-    typedef ptrdiff_t difference_type;
+    typedef std::ptrdiff_t difference_type;
     typedef const value_type* pointer;
     typedef const value_type& reference;
 };
@@ -302,7 +302,9 @@ class reverse_iterator : public std::iterator<typename iterator_traits<It>::iter
     {
     }
 
-    ~reverse_iterator() {}
+    ~reverse_iterator()
+    {
+    }
 
     reverse_iterator& operator=(const reverse_iterator& other)
     {

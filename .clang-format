@@ -5,7 +5,9 @@ AlignArrayOfStructures: Left
 AlignConsecutiveBitFields: true
 AlignEscapedNewlines: Right
 AllowShortBlocksOnASingleLine: Empty
-AllowShortFunctionsOnASingleLine: Empty
+AllowShortCaseLabelsOnASingleLine: false
+AllowShortEnumsOnASingleLine: false
+AllowShortFunctionsOnASingleLine: None
 AllowShortIfStatementsOnASingleLine: false
 AlwaysBreakTemplateDeclarations: Yes
 BinPackArguments: false
@@ -18,6 +20,7 @@ ColumnLimit: 100
 Cpp11BracedListStyle: false
 EmptyLineBeforeAccessModifier: Always
 FixNamespaceComments: true
+IndentCaseLabels: true
 Language: Cpp
 PackConstructorInitializers: Never
 PointerAlignment: Left

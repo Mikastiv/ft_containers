@@ -6,7 +6,7 @@
 /*   By: mleblanc <mleblanc@student.42quebec.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/01 15:27:15 by mleblanc          #+#    #+#             */
-/*   Updated: 2022/04/13 18:55:36 by mleblanc         ###   ########.fr       */
+/*   Updated: 2022/04/14 15:56:22 by mleblanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -411,9 +411,10 @@ class vector
 
     void resize(size_type count, T value = T())
     {
-        if (count > size()) {
-            insert(end(), count, value);
-        } else if (count < size()) {
+        const size_type len = size();
+        if (count > len) {
+            insert(end(), count - len, value);
+        } else if (count < len) {
             erase_at_end(start_ + count);
         }
     }
