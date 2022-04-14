@@ -4,7 +4,6 @@ IndentWidth: 4
 AlignArrayOfStructures: Left
 AlignConsecutiveBitFields: true
 AlignEscapedNewlines: Right
-AlignTrailingComments: true
 AllowShortBlocksOnASingleLine: Empty
 AllowShortFunctionsOnASingleLine: Empty
 AllowShortIfStatementsOnASingleLine: false
