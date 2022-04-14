@@ -6,7 +6,7 @@
 /*   By: mleblanc <mleblanc@student.42quebec.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/01 15:27:15 by mleblanc          #+#    #+#             */
-/*   Updated: 2022/04/14 15:56:22 by mleblanc         ###   ########.fr       */
+/*   Updated: 2022/04/14 18:06:12 by mleblanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,8 +30,8 @@ class vector
     typedef Alloc allocator_type;
     typedef typename allocator_type::size_type size_type;
     typedef typename allocator_type::difference_type difference_type;
-    typedef T& reference;
-    typedef const T& const_reference;
+    typedef typename allocator_type::reference reference;
+    typedef typename allocator_type::const_reference const_reference;
     typedef typename allocator_type::pointer pointer;
     typedef typename allocator_type::const_pointer const_pointer;
     typedef normal_iterator<pointer, vector> iterator;
@@ -73,7 +73,7 @@ class vector
     }
 
     explicit vector(size_type count,
-                    const T& value = T(),
+                    const value_type& value = value_type(),
                     const allocator_type& alloc = allocator_type())
         : alloc_(alloc),
           start_(NULL),
@@ -290,7 +290,7 @@ class vector
         return static_cast<size_type>(end_cap_ - start_);
     }
 
-    iterator insert(iterator pos, const T& value)
+    iterator insert(iterator pos, const value_type& value)
     {
         const size_type index = pos - begin();
 
@@ -322,7 +322,7 @@ class vector
         return iterator(start_ + index);
     }
 
-    void insert(iterator pos, size_type count, const T& value)
+    void insert(iterator pos, size_type count, const value_type& value)
     {
         if (count != 0) {
             const size_type extra_space = end_cap_ - end_;
@@ -393,7 +393,7 @@ class vector
         return first;
     }
 
-    void push_back(const T& value)
+    void push_back(const value_type& value)
     {
         if (!should_grow()) {
             alloc_.construct(end_, value);
@@ -409,7 +409,7 @@ class vector
         alloc_.destroy(end_);
     }
 
-    void resize(size_type count, T value = T())
+    void resize(size_type count, value_type value = value_type())
     {
         const size_type len = size();
         if (count > len) {
