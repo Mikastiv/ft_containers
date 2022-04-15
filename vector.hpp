@@ -6,7 +6,7 @@
 /*   By: mleblanc <mleblanc@student.42quebec.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/01 15:27:15 by mleblanc          #+#    #+#             */
-/*   Updated: 2022/04/14 18:06:12 by mleblanc         ###   ########.fr       */
+/*   Updated: 2022/04/15 16:43:53 by mleblanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -540,7 +540,7 @@ class vector
 
     void deallocate_v()
     {
-        if (capacity() > 0) {
+        if (start_ != NULL) {
             clear();
             alloc_.deallocate(start_, capacity());
         }
