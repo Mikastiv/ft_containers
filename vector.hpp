@@ -6,7 +6,7 @@
 /*   By: mleblanc <mleblanc@student.42quebec.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/01 15:27:15 by mleblanc          #+#    #+#             */
-/*   Updated: 2022/04/15 16:43:53 by mleblanc         ###   ########.fr       */
+/*   Updated: 2022/04/15 18:10:10 by mleblanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -549,7 +549,7 @@ class vector
     template <typename It>
     pointer construct_range(pointer dst, It start, It end)
     {
-        for (; start != end; ++dst, ++start) {
+        for (; start != end; ++dst, (void)++start) {
             alloc_.construct(dst, *start);
         }
         return dst;
@@ -561,14 +561,6 @@ class vector
             alloc_.construct(dst, value);
         }
         return dst;
-    }
-
-    void construct_range_backward(pointer dst, const_pointer start, const_pointer end)
-    {
-        --end;
-        for (; end != start - 1; --dst, --end) {
-            alloc_.construct(dst, *end);
-        }
     }
 
     void destroy_range(pointer start, pointer end)
@@ -627,4 +619,10 @@ class vector
     pointer end_;
     pointer end_cap_;
 };
+
+template <typename T, typename Alloc>
+void swap(vector<T, Alloc>& x, vector<T, Alloc>& y)
+{
+    x.swap(y);
+}
 } // namespace ft
