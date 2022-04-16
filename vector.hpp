@@ -6,7 +6,7 @@
 /*   By: mleblanc <mleblanc@student.42quebec.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/01 15:27:15 by mleblanc          #+#    #+#             */
-/*   Updated: 2022/04/15 21:54:57 by mleblanc         ###   ########.fr       */
+/*   Updated: 2022/04/15 22:32:40 by mleblanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,7 @@
 #include <stdexcept>
 
 #include "iterator.hpp"
+#include "utility.hpp"
 
 namespace ft
 {
@@ -618,8 +619,45 @@ class vector
 };
 
 template <typename T, typename Alloc>
-void swap(vector<T, Alloc>& x, vector<T, Alloc>& y)
+inline void swap(vector<T, Alloc>& x, vector<T, Alloc>& y)
 {
     x.swap(y);
 }
+
+template <typename T, typename Alloc>
+inline bool operator==(const vector<T, Alloc>& x, const vector<T, Alloc>& y)
+{
+    return (x.size() == y.size()) && ft::equal(x.begin(), x.end(), y.begin(), y.end());
+}
+
+template <typename T, typename Alloc>
+inline bool operator!=(const vector<T, Alloc>& x, const vector<T, Alloc>& y)
+{
+    return !(x == y);
+}
+
+template <typename T, typename Alloc>
+inline bool operator<(const vector<T, Alloc>& x, const vector<T, Alloc>& y)
+{
+    return ft::lexicographical_compare(x.begin(), x.end(), y.begin(), y.end());
+}
+
+template <typename T, typename Alloc>
+inline bool operator<=(const vector<T, Alloc>& x, const vector<T, Alloc>& y)
+{
+    return !(y < x);
+}
+
+template <typename T, typename Alloc>
+inline bool operator>(const vector<T, Alloc>& x, const vector<T, Alloc>& y)
+{
+    return y < x;
+}
+
+template <typename T, typename Alloc>
+inline bool operator>=(const vector<T, Alloc>& x, const vector<T, Alloc>& y)
+{
+    return !(x < y);
+}
+
 } // namespace ft
