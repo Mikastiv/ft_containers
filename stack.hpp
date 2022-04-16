@@ -6,7 +6,7 @@
 /*   By: mleblanc <mleblanc@student.42quebec.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/14 16:51:59 by mleblanc          #+#    #+#             */
-/*   Updated: 2022/04/15 19:42:04 by mleblanc         ###   ########.fr       */
+/*   Updated: 2022/04/15 23:26:58 by mleblanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,7 +78,49 @@ class stack
         c.pop_back();
     }
 
+    template <typename T1, typename C1>
+    friend bool operator==(const stack<T1, C1>& lhs, const stack<T1, C1>& rhs);
+
+    template <typename T1, typename C1>
+    friend bool operator<(const stack<T1, C1>& lhs, const stack<T1, C1>& rhs);
+
   protected:
     container_type c;
 };
+
+template <typename T, typename Container>
+inline bool operator==(const stack<T, Container>& lhs, const stack<T, Container>& rhs)
+{
+    return lhs.c == rhs.c;
+}
+
+template <typename T, typename Container>
+inline bool operator!=(const stack<T, Container>& lhs, const stack<T, Container>& rhs)
+{
+    return !(lhs.c == rhs.c);
+}
+
+template <typename T, typename Container>
+inline bool operator<(const stack<T, Container>& lhs, const stack<T, Container>& rhs)
+{
+    return lhs.c < rhs.c;
+}
+
+template <typename T, typename Container>
+inline bool operator<=(const stack<T, Container>& lhs, const stack<T, Container>& rhs)
+{
+    return !(rhs.c < lhs.c);
+}
+
+template <typename T, typename Container>
+inline bool operator>(const stack<T, Container>& lhs, const stack<T, Container>& rhs)
+{
+    return rhs.c < lhs.c;
+}
+
+template <typename T, typename Container>
+inline bool operator>=(const stack<T, Container>& lhs, const stack<T, Container>& rhs)
+{
+    return !(lhs.c < rhs.c);
+}
 } // namespace ft

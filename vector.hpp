@@ -6,7 +6,7 @@
 /*   By: mleblanc <mleblanc@student.42quebec.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/01 15:27:15 by mleblanc          #+#    #+#             */
-/*   Updated: 2022/04/15 22:32:40 by mleblanc         ###   ########.fr       */
+/*   Updated: 2022/04/15 23:17:44 by mleblanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -625,39 +625,39 @@ inline void swap(vector<T, Alloc>& x, vector<T, Alloc>& y)
 }
 
 template <typename T, typename Alloc>
-inline bool operator==(const vector<T, Alloc>& x, const vector<T, Alloc>& y)
+inline bool operator==(const vector<T, Alloc>& lhs, const vector<T, Alloc>& rhs)
 {
-    return (x.size() == y.size()) && ft::equal(x.begin(), x.end(), y.begin(), y.end());
+    return (lhs.size() == rhs.size()) && ft::equal(lhs.begin(), lhs.end(), rhs.begin(), rhs.end());
 }
 
 template <typename T, typename Alloc>
-inline bool operator!=(const vector<T, Alloc>& x, const vector<T, Alloc>& y)
+inline bool operator!=(const vector<T, Alloc>& lhs, const vector<T, Alloc>& rhs)
 {
-    return !(x == y);
+    return !(lhs == rhs);
 }
 
 template <typename T, typename Alloc>
-inline bool operator<(const vector<T, Alloc>& x, const vector<T, Alloc>& y)
+inline bool operator<(const vector<T, Alloc>& lhs, const vector<T, Alloc>& rhs)
 {
-    return ft::lexicographical_compare(x.begin(), x.end(), y.begin(), y.end());
+    return ft::lexicographical_compare(lhs.begin(), lhs.end(), rhs.begin(), rhs.end());
 }
 
 template <typename T, typename Alloc>
-inline bool operator<=(const vector<T, Alloc>& x, const vector<T, Alloc>& y)
+inline bool operator<=(const vector<T, Alloc>& lhs, const vector<T, Alloc>& rhs)
 {
-    return !(y < x);
+    return !(rhs < lhs);
 }
 
 template <typename T, typename Alloc>
-inline bool operator>(const vector<T, Alloc>& x, const vector<T, Alloc>& y)
+inline bool operator>(const vector<T, Alloc>& lhs, const vector<T, Alloc>& rhs)
 {
-    return y < x;
+    return rhs < lhs;
 }
 
 template <typename T, typename Alloc>
-inline bool operator>=(const vector<T, Alloc>& x, const vector<T, Alloc>& y)
+inline bool operator>=(const vector<T, Alloc>& lhs, const vector<T, Alloc>& rhs)
 {
-    return !(x < y);
+    return !(lhs < rhs);
 }
 
 } // namespace ft
