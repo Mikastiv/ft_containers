@@ -6,7 +6,7 @@
 /*   By: mleblanc <mleblanc@student.42quebec.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/15 16:56:07 by mleblanc          #+#    #+#             */
-/*   Updated: 2022/04/15 21:56:44 by mleblanc         ###   ########.fr       */
+/*   Updated: 2022/04/15 22:04:33 by mleblanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -102,7 +102,7 @@ bool lexicographical_compare(InputIt1 first1, InputIt1 last1, InputIt2 first2, I
         if (first1 == last1 || comp(*first1, *first2)) {
             return true;
         }
-        if (comp(*first1, *first2)) {
+        if (comp(*first2, *first1)) {
             return false;
         }
     }
