@@ -10,8 +10,6 @@ AllowShortEnumsOnASingleLine: false
 AllowShortFunctionsOnASingleLine: None
 AllowShortIfStatementsOnASingleLine: false
 AlwaysBreakTemplateDeclarations: Yes
-BinPackArguments: false
-BinPackParameters: false
 BreakBeforeBraces: Linux
 BreakBeforeConceptDeclarations: true
 BreakConstructorInitializers: BeforeColon

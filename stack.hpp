@@ -6,7 +6,7 @@
 /*   By: mleblanc <mleblanc@student.42quebec.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/14 16:51:59 by mleblanc          #+#    #+#             */
-/*   Updated: 2022/04/15 17:04:37 by mleblanc         ###   ########.fr       */
+/*   Updated: 2022/04/15 19:42:04 by mleblanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,7 @@
 
 namespace ft
 {
-template <typename T, typename Container = ft::vector<T> >
+template <typename T, typename Container = vector<T> >
 class stack
 {
   public:

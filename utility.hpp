@@ -6,7 +6,7 @@
 /*   By: mleblanc <mleblanc@student.42quebec.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/15 16:56:07 by mleblanc          #+#    #+#             */
-/*   Updated: 2022/04/15 18:13:30 by mleblanc         ###   ########.fr       */
+/*   Updated: 2022/04/15 21:56:44 by mleblanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -83,11 +83,29 @@ bool equal(InputIt1 first1, InputIt1 last1, InputIt2 first2, BinaryPredicate p)
 template <typename InputIt1, typename InputIt2>
 bool lexicographical_compare(InputIt1 first1, InputIt1 last1, InputIt2 first2, InputIt2 last2)
 {
+    for (; first2 != last2; ++first1, (void)++first2) {
+        if (first1 == last1 || *first1 < *first2) {
+            return true;
+        }
+        if (*first2 < *first1) {
+            return false;
+        }
+    }
+    return false;
 }
 
 template <typename InputIt1, typename InputIt2, typename Compare>
-bool lexicographical_compare(
-    InputIt1 first1, InputIt1 last1, InputIt2 first2, InputIt2 last2, Compare comp)
+bool lexicographical_compare(InputIt1 first1, InputIt1 last1, InputIt2 first2, InputIt2 last2,
+                             Compare comp)
 {
+    for (; first2 != last2; ++first1, (void)++first2) {
+        if (first1 == last1 || comp(*first1, *first2)) {
+            return true;
+        }
+        if (comp(*first1, *first2)) {
+            return false;
+        }
+    }
+    return false;
 }
 } // namespace ft

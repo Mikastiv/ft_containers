@@ -6,7 +6,7 @@
 /*   By: mleblanc <mleblanc@student.42quebec.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/02 12:33:36 by mleblanc          #+#    #+#             */
-/*   Updated: 2022/04/14 15:18:42 by mleblanc         ###   ########.fr       */
+/*   Updated: 2022/04/15 21:56:40 by mleblanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,10 +72,9 @@ class normal_iterator
     }
 
     template <typename Iter>
-    normal_iterator(
-        const normal_iterator<Iter,
-                              typename enable_if<is_same<Iter, typename Container::pointer>::value,
-                                                 Container>::type>& it)
+    normal_iterator(const normal_iterator<
+                    Iter, typename enable_if<is_same<Iter, typename Container::pointer>::value,
+                                             Container>::type>& it)
         : elem_(it.base())
     {
     }
@@ -264,11 +263,11 @@ operator+(typename normal_iterator<It, Container>::difference_type n,
 }
 
 template <typename It>
-class reverse_iterator : public std::iterator<typename iterator_traits<It>::iterator_category,
-                                              typename iterator_traits<It>::value_type,
-                                              typename iterator_traits<It>::difference_type,
-                                              typename iterator_traits<It>::pointer,
-                                              typename iterator_traits<It>::reference>
+class reverse_iterator
+    : public std::iterator<
+          typename iterator_traits<It>::iterator_category, typename iterator_traits<It>::value_type,
+          typename iterator_traits<It>::difference_type, typename iterator_traits<It>::pointer,
+          typename iterator_traits<It>::reference>
 {
   protected:
     typedef iterator_traits<It> traits_type;

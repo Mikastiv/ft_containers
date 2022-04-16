@@ -6,7 +6,7 @@
 /*   By: mleblanc <mleblanc@student.42quebec.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/01 15:27:15 by mleblanc          #+#    #+#             */
-/*   Updated: 2022/04/15 18:10:10 by mleblanc         ###   ########.fr       */
+/*   Updated: 2022/04/15 21:54:57 by mleblanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,8 +72,7 @@ class vector
     {
     }
 
-    explicit vector(size_type count,
-                    const value_type& value = value_type(),
+    explicit vector(size_type count, const value_type& value = value_type(),
                     const allocator_type& alloc = allocator_type())
         : alloc_(alloc),
           start_(NULL),
@@ -92,8 +91,7 @@ class vector
     }
 
     template <typename InputIt>
-    vector(InputIt first,
-           typename enable_if<!is_integral<InputIt>::value, InputIt>::type last,
+    vector(InputIt first, typename enable_if<!is_integral<InputIt>::value, InputIt>::type last,
            const allocator_type& alloc = allocator_type())
         : alloc_(alloc),
           start_(NULL),
@@ -358,8 +356,7 @@ class vector
     }
 
     template <class InputIt>
-    void insert(iterator pos,
-                InputIt first,
+    void insert(iterator pos, InputIt first,
                 typename enable_if<!is_integral<InputIt>::value, InputIt>::type last)
     {
         typedef typename iterator_traits<InputIt>::iterator_category category;
