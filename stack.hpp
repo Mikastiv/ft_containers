@@ -6,7 +6,7 @@
 /*   By: mleblanc <mleblanc@student.42quebec.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/14 16:51:59 by mleblanc          #+#    #+#             */
-/*   Updated: 2022/04/15 23:26:58 by mleblanc         ###   ########.fr       */
+/*   Updated: 2022/04/18 12:13:13 by mleblanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -97,7 +97,7 @@ inline bool operator==(const stack<T, Container>& lhs, const stack<T, Container>
 template <typename T, typename Container>
 inline bool operator!=(const stack<T, Container>& lhs, const stack<T, Container>& rhs)
 {
-    return !(lhs.c == rhs.c);
+    return !(lhs == rhs);
 }
 
 template <typename T, typename Container>
@@ -109,18 +109,18 @@ inline bool operator<(const stack<T, Container>& lhs, const stack<T, Container>&
 template <typename T, typename Container>
 inline bool operator<=(const stack<T, Container>& lhs, const stack<T, Container>& rhs)
 {
-    return !(rhs.c < lhs.c);
+    return !(rhs < lhs);
 }
 
 template <typename T, typename Container>
 inline bool operator>(const stack<T, Container>& lhs, const stack<T, Container>& rhs)
 {
-    return rhs.c < lhs.c;
+    return rhs < lhs;
 }
 
 template <typename T, typename Container>
 inline bool operator>=(const stack<T, Container>& lhs, const stack<T, Container>& rhs)
 {
-    return !(lhs.c < rhs.c);
+    return !(lhs < rhs);
 }
 } // namespace ft
