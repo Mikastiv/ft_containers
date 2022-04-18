@@ -6,7 +6,7 @@
 /*   By: mleblanc <mleblanc@student.42quebec.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/15 16:56:07 by mleblanc          #+#    #+#             */
-/*   Updated: 2022/04/15 22:04:33 by mleblanc         ###   ########.fr       */
+/*   Updated: 2022/04/18 12:45:52 by mleblanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -108,4 +108,16 @@ bool lexicographical_compare(InputIt1 first1, InputIt1 last1, InputIt2 first2, I
     }
     return false;
 }
+
+template <typename Arg1, typename Arg2, typename Result>
+struct binary_function {
+    typedef Arg1 first_argument_type;
+    typedef Arg2 second_argument_type;
+    typedef Result result_type;
+};
+
+template <typename T>
+struct less : binary_function<T, T, bool> {
+    bool operator()(const T& lhs, const T& rhs) const { return lhs < rhs; };
+};
 } // namespace ft

@@ -6,7 +6,7 @@
 /*   By: mleblanc <mleblanc@student.42quebec.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/02 12:33:36 by mleblanc          #+#    #+#             */
-/*   Updated: 2022/04/15 21:56:40 by mleblanc         ###   ########.fr       */
+/*   Updated: 2022/04/18 12:47:27 by mleblanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,16 +49,13 @@ struct iterator_traits<const It*> {
 template <typename It, typename Container>
 class normal_iterator
 {
-  protected:
-    typedef iterator_traits<It> traits_type;
-
   public:
     typedef It iterator_type;
-    typedef typename traits_type::iterator_category iterator_category;
-    typedef typename traits_type::value_type value_type;
-    typedef typename traits_type::difference_type difference_type;
-    typedef typename traits_type::reference reference;
-    typedef typename traits_type::pointer pointer;
+    typedef typename iterator_traits<It>::iterator_category iterator_category;
+    typedef typename iterator_traits<It>::value_type value_type;
+    typedef typename iterator_traits<It>::difference_type difference_type;
+    typedef typename iterator_traits<It>::reference reference;
+    typedef typename iterator_traits<It>::pointer pointer;
 
   public:
     normal_iterator()
@@ -269,15 +266,12 @@ class reverse_iterator
           typename iterator_traits<It>::difference_type, typename iterator_traits<It>::pointer,
           typename iterator_traits<It>::reference>
 {
-  protected:
-    typedef iterator_traits<It> traits_type;
-
   public:
     typedef It iterator_type;
-    typedef typename traits_type::value_type value_type;
-    typedef typename traits_type::difference_type difference_type;
-    typedef typename traits_type::reference reference;
-    typedef typename traits_type::pointer pointer;
+    typedef typename iterator_traits<It>::value_type value_type;
+    typedef typename iterator_traits<It>::difference_type difference_type;
+    typedef typename iterator_traits<It>::reference reference;
+    typedef typename iterator_traits<It>::pointer pointer;
 
   public:
     reverse_iterator()
