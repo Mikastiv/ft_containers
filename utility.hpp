@@ -6,7 +6,7 @@
 /*   By: mleblanc <mleblanc@student.42quebec.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/15 16:56:07 by mleblanc          #+#    #+#             */
-/*   Updated: 2022/04/18 12:45:52 by mleblanc         ###   ########.fr       */
+/*   Updated: 2022/04/18 15:14:51 by mleblanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,6 +56,42 @@ template <typename T1, typename T2>
 pair<T1, T2> make_pair(T1 x, T2 y)
 {
     return pair<T1, T2>(x, y);
+}
+
+template <typename T1, typename T2>
+inline bool operator==(const pair<T1, T2>& x, const pair<T1, T2>& y)
+{
+    return x.first == y.first && x.second == y.second;
+}
+
+template <typename T1, typename T2>
+inline bool operator!=(const pair<T1, T2>& x, const pair<T1, T2>& y)
+{
+    return !(x == y);
+}
+
+template <typename T1, typename T2>
+inline bool operator<(const pair<T1, T2>& x, const pair<T1, T2>& y)
+{
+    return (x.first < y.first) || (!(x.first < y.first) && x.second < y.second);
+}
+
+template <typename T1, typename T2>
+inline bool operator<=(const pair<T1, T2>& x, const pair<T1, T2>& y)
+{
+    return !(y < x);
+}
+
+template <typename T1, typename T2>
+inline bool operator>(const pair<T1, T2>& x, const pair<T1, T2>& y)
+{
+    return y < x;
+}
+
+template <typename T1, typename T2>
+inline bool operator>=(const pair<T1, T2>& x, const pair<T1, T2>& y)
+{
+    return !(x < y);
 }
 
 template <typename InputIt1, typename InputIt2>
@@ -118,6 +154,9 @@ struct binary_function {
 
 template <typename T>
 struct less : binary_function<T, T, bool> {
-    bool operator()(const T& lhs, const T& rhs) const { return lhs < rhs; };
+    bool operator()(const T& lhs, const T& rhs) const
+    {
+        return lhs < rhs;
+    };
 };
 } // namespace ft
