@@ -1,6 +1,0 @@
-ft_containers
-*.o
-.DS_Store
-a.out
-tests_bin
-*.dSYM
