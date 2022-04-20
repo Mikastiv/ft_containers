@@ -6,7 +6,7 @@
 /*   By: mleblanc <mleblanc@student.42quebec.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/15 16:56:07 by mleblanc          #+#    #+#             */
-/*   Updated: 2022/04/18 15:14:51 by mleblanc         ###   ########.fr       */
+/*   Updated: 2022/04/20 15:26:27 by mleblanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,39 +59,39 @@ pair<T1, T2> make_pair(T1 x, T2 y)
 }
 
 template <typename T1, typename T2>
-inline bool operator==(const pair<T1, T2>& x, const pair<T1, T2>& y)
+inline bool operator==(const pair<T1, T2>& lhs, const pair<T1, T2>& rhs)
 {
-    return x.first == y.first && x.second == y.second;
+    return lhs.first == rhs.first && lhs.second == rhs.second;
 }
 
 template <typename T1, typename T2>
-inline bool operator!=(const pair<T1, T2>& x, const pair<T1, T2>& y)
+inline bool operator!=(const pair<T1, T2>& lhs, const pair<T1, T2>& rhs)
 {
-    return !(x == y);
+    return !(lhs == rhs);
 }
 
 template <typename T1, typename T2>
-inline bool operator<(const pair<T1, T2>& x, const pair<T1, T2>& y)
+inline bool operator<(const pair<T1, T2>& lhs, const pair<T1, T2>& rhs)
 {
-    return (x.first < y.first) || (!(x.first < y.first) && x.second < y.second);
+    return (lhs.first < rhs.first) || (!(lhs.first < rhs.first) && lhs.second < rhs.second);
 }
 
 template <typename T1, typename T2>
-inline bool operator<=(const pair<T1, T2>& x, const pair<T1, T2>& y)
+inline bool operator<=(const pair<T1, T2>& lhs, const pair<T1, T2>& rhs)
 {
-    return !(y < x);
+    return !(rhs < lhs);
 }
 
 template <typename T1, typename T2>
-inline bool operator>(const pair<T1, T2>& x, const pair<T1, T2>& y)
+inline bool operator>(const pair<T1, T2>& lhs, const pair<T1, T2>& rhs)
 {
-    return y < x;
+    return rhs < lhs;
 }
 
 template <typename T1, typename T2>
-inline bool operator>=(const pair<T1, T2>& x, const pair<T1, T2>& y)
+inline bool operator>=(const pair<T1, T2>& lhs, const pair<T1, T2>& rhs)
 {
-    return !(x < y);
+    return !(lhs < rhs);
 }
 
 template <typename InputIt1, typename InputIt2>

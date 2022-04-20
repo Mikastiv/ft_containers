@@ -6,7 +6,7 @@
 /*   By: mleblanc <mleblanc@student.42quebec.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/14 16:51:59 by mleblanc          #+#    #+#             */
-/*   Updated: 2022/04/18 12:13:13 by mleblanc         ###   ########.fr       */
+/*   Updated: 2022/04/20 12:03:29 by mleblanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,14 +37,14 @@ class stack
     {
     }
 
-    ~stack()
-    {
-    }
-
     stack& operator=(const stack& other)
     {
         c = other.c;
         return *this;
+    }
+
+    ~stack()
+    {
     }
 
   public:

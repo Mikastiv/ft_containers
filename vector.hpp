@@ -6,7 +6,7 @@
 /*   By: mleblanc <mleblanc@student.42quebec.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/01 15:27:15 by mleblanc          #+#    #+#             */
-/*   Updated: 2022/04/18 19:55:13 by mleblanc         ###   ########.fr       */
+/*   Updated: 2022/04/20 15:24:35 by mleblanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -103,11 +103,6 @@ class vector
         range_init(first, last, category());
     }
 
-    ~vector()
-    {
-        deallocate_v();
-    }
-
     vector& operator=(const vector& other)
     {
         if (&other == this) {
@@ -130,6 +125,11 @@ class vector
         }
         end_ = start_ + len;
         return *this;
+    }
+
+    ~vector()
+    {
+        deallocate_v();
     }
 
   public:
@@ -563,7 +563,7 @@ class vector
 
     void destroy_range(pointer start, pointer end)
     {
-        for (; start != end; start++) {
+        for (; start != end; ++start) {
             alloc_.destroy(start);
         }
     }
@@ -619,9 +619,9 @@ class vector
 };
 
 template <typename T, typename Alloc>
-inline void swap(vector<T, Alloc>& x, vector<T, Alloc>& y)
+inline void swap(vector<T, Alloc>& lhs, vector<T, Alloc>& rhs)
 {
-    x.swap(y);
+    lhs.swap(rhs);
 }
 
 template <typename T, typename Alloc>

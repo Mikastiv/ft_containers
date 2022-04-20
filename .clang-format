@@ -3,7 +3,6 @@ AccessModifierOffset: -2
 IndentWidth: 4
 AlignArrayOfStructures: Left
 AlignConsecutiveBitFields: true
-AlignEscapedNewlines: Right
 AllowShortBlocksOnASingleLine: Empty
 AllowShortCaseLabelsOnASingleLine: false
 AllowShortEnumsOnASingleLine: false
