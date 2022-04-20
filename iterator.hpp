@@ -6,7 +6,7 @@
 /*   By: mleblanc <mleblanc@student.42quebec.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/02 12:33:36 by mleblanc          #+#    #+#             */
-/*   Updated: 2022/04/18 12:47:27 by mleblanc         ###   ########.fr       */
+/*   Updated: 2022/04/20 16:20:52 by mleblanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -124,7 +124,7 @@ class normal_iterator
 
     reference operator[](difference_type n)
     {
-        return elem_[n];
+        return *(elem_ + n);
     }
 
     normal_iterator& operator+=(difference_type n)
