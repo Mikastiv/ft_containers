@@ -6,7 +6,7 @@
 /*   By: mleblanc <mleblanc@student.42quebec.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/20 16:29:45 by mleblanc          #+#    #+#             */
-/*   Updated: 2022/04/20 17:51:38 by mleblanc         ###   ########.fr       */
+/*   Updated: 2022/04/20 17:53:11 by mleblanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,7 +75,7 @@ class set
     iterator upper_bound(const key_type& key);
     const_iterator upper_bound(const key_type& key) const;
     key_compare key_comp() const;
-    // value_compare value_comp() const;
+    value_compare value_comp() const;
 
 };
 
