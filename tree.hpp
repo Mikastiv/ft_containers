@@ -6,7 +6,7 @@
 /*   By: mleblanc <mleblanc@student.42quebec.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/21 22:03:04 by mleblanc          #+#    #+#             */
-/*   Updated: 2022/04/22 16:12:25 by mleblanc         ###   ########.fr       */
+/*   Updated: 2022/04/22 16:18:49 by mleblanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,6 +26,7 @@ struct tree_node_types {
     typedef end_node_type* parent_pointer;
     typedef tree_node<T, VoidPtr> node_type;
     typedef node_type* node_pointer;
+    typedef const node_type* const_node_pointer;
 };
 
 template <typename Ptr>
@@ -122,6 +123,7 @@ class tree
     typedef typename node_types::node_type node_type;
     typedef typename node_types::end_node_type end_node_type;
     typedef typename node_types::node_pointer node_pointer;
+    typedef typename node_types::const_node_pointer const_node_pointer;
     typedef typename node_types::parent_pointer parent_pointer;
     typedef typename allocator_type::template rebind<node_type>::other node_allocator;
 
@@ -156,7 +158,15 @@ class tree
   public:
     void insert(const T& value)
     {
-        end_node_.left = construct_node(&end_node_, value);
+        if (end_node_.left == NULL) {
+            end_node_.left = construct_node(&end_node_, value);
+            return;
+        }
+    }
+
+    const_node_pointer root() const
+    {
+        return static_cast<const_node_pointer>(end_node_.left);
     }
 
   private:
@@ -164,8 +174,8 @@ class tree
     {
         node_pointer new_node = alloc_.allocate(1);
         alloc_.construct(new_node, node_type());
+        value_alloc_.construct(&new_node->value, value);
         new_node->parent = p;
-        new_node->value = value;
         return new_node;
     }
 
