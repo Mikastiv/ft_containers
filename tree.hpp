@@ -6,7 +6,7 @@
 /*   By: mleblanc <mleblanc@student.42quebec.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/21 22:03:04 by mleblanc          #+#    #+#             */
-/*   Updated: 2022/04/22 15:32:25 by mleblanc         ###   ########.fr       */
+/*   Updated: 2022/04/22 16:12:25 by mleblanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,9 +76,9 @@ class tree_node : public tree_node_types<T, VoidPtr>::end_node_type
 
     tree_node(const T& v)
         : tree_node_types<T, VoidPtr>::end_node_type(),
-          value(v),
           parent(NULL),
           right(NULL),
+          value(v),
           is_black(false)
     {
     }
