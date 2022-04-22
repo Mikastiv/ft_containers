@@ -6,7 +6,7 @@
 /*   By: mleblanc <mleblanc@student.42quebec.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/01 15:27:15 by mleblanc          #+#    #+#             */
-/*   Updated: 2022/04/20 16:21:50 by mleblanc         ###   ########.fr       */
+/*   Updated: 2022/04/22 14:17:45 by mleblanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,18 +42,18 @@ class vector
 
   public:
     vector()
-        : alloc_(),
-          start_(),
-          end_(),
-          end_cap_()
+        : alloc_(allocator_type()),
+          start_(NULL),
+          end_(NULL),
+          end_cap_(NULL)
     {
     }
 
     vector(const vector& other)
         : alloc_(other.alloc_),
-          start_(),
-          end_(),
-          end_cap_()
+          start_(NULL),
+          end_(NULL),
+          end_cap_(NULL)
     {
         const size_type cap = other.capacity();
         if (cap == 0) {
@@ -67,18 +67,18 @@ class vector
 
     explicit vector(const allocator_type& alloc)
         : alloc_(alloc),
-          start_(),
-          end_(),
-          end_cap_()
+          start_(NULL),
+          end_(NULL),
+          end_cap_(NULL)
     {
     }
 
     explicit vector(size_type count, const value_type& value = value_type(),
                     const allocator_type& alloc = allocator_type())
         : alloc_(alloc),
-          start_(),
-          end_(),
-          end_cap_()
+          start_(NULL),
+          end_(NULL),
+          end_cap_(NULL)
     {
         if (count == 0) {
             return;
@@ -95,9 +95,9 @@ class vector
     vector(InputIt first, typename enable_if<!is_integral<InputIt>::value, InputIt>::type last,
            const allocator_type& alloc = allocator_type())
         : alloc_(alloc),
-          start_(),
-          end_(),
-          end_cap_()
+          start_(NULL),
+          end_(NULL),
+          end_cap_(NULL)
     {
         typedef typename iterator_traits<InputIt>::iterator_category category;
         range_init(first, last, category());

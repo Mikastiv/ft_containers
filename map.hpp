@@ -83,8 +83,8 @@ class map
     key_compare key_comp() const;
     // value_compare value_comp() const;
 
-    private:
-      tree<value_type, key_compare, allocator_type> tree_;
+  private:
+    tree<value_type, key_compare, allocator_type> tree_;
 };
 
 template <typename Key, typename T, typename Compare, typename Allocator>

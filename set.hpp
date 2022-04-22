@@ -76,7 +76,6 @@ class set
     const_iterator upper_bound(const key_type& key) const;
     key_compare key_comp() const;
     value_compare value_comp() const;
-
 };
 
 template <typename Key, typename Compare, typename Allocator>

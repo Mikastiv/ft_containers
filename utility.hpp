@@ -6,7 +6,7 @@
 /*   By: mleblanc <mleblanc@student.42quebec.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/15 16:56:07 by mleblanc          #+#    #+#             */
-/*   Updated: 2022/04/21 23:25:48 by mleblanc         ###   ########.fr       */
+/*   Updated: 2022/04/22 14:17:57 by mleblanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,20 +16,28 @@ namespace ft
 {
 template <typename T1, typename T2>
 struct pair {
-    pair() : first(), second()
+    pair()
+        : first(T1()),
+          second(T2())
     {
     }
 
-    pair(const T1& x, const T2& y) : first(x), second(y)
+    pair(const T1& x, const T2& y)
+        : first(x),
+          second(y)
     {
     }
 
     template <class U1, class U2>
-    pair(const pair<U1, U2>& other) : first(other.first), second(other.second)
+    pair(const pair<U1, U2>& other)
+        : first(other.first),
+          second(other.second)
     {
     }
 
-    pair(const pair& other) : first(other.first), second(other.second)
+    pair(const pair& other)
+        : first(other.first),
+          second(other.second)
     {
     }
 
