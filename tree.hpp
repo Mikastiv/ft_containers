@@ -6,13 +6,13 @@
 /*   By: mleblanc <mleblanc@student.42quebec.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/21 22:03:04 by mleblanc          #+#    #+#             */
-/*   Updated: 2022/04/22 16:18:49 by mleblanc         ###   ########.fr       */
+/*   Updated: 2022/04/22 16:19:16 by mleblanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
 
-#include <memory>
+#include <stddef.h>
 
 template <typename Ptr>
 class tree_end_node;
