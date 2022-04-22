@@ -6,7 +6,7 @@
 /*   By: mleblanc <mleblanc@student.42quebec.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/21 22:03:04 by mleblanc          #+#    #+#             */
-/*   Updated: 2022/04/22 16:19:16 by mleblanc         ###   ########.fr       */
+/*   Updated: 2022/04/22 16:33:48 by mleblanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,7 @@ struct tree_node_types {
 template <typename Ptr>
 class tree_end_node
 {
-  public:
+public:
     tree_end_node()
         : left(NULL)
     {
@@ -53,19 +53,19 @@ class tree_end_node
     {
     }
 
-  public:
+public:
     Ptr left;
 };
 
 template <typename T, typename VoidPtr = void*>
 class tree_node : public tree_node_types<T, VoidPtr>::end_node_type
 {
-  public:
+public:
     typedef tree_node_types<T, VoidPtr> node_types;
     typedef typename node_types::parent_pointer parent_pointer;
     typedef typename node_types::node_pointer node_pointer;
 
-  public:
+public:
     tree_node()
         : tree_node_types<T, VoidPtr>::end_node_type(),
           parent(NULL),
@@ -98,7 +98,7 @@ class tree_node : public tree_node_types<T, VoidPtr>::end_node_type
     {
     }
 
-  public:
+public:
     parent_pointer parent;
     node_pointer right;
     T value;
@@ -108,7 +108,7 @@ class tree_node : public tree_node_types<T, VoidPtr>::end_node_type
 template <typename T, typename Compare, typename Allocator>
 class tree
 {
-  public:
+public:
     typedef T value_type;
     typedef Compare compare_type;
     typedef Allocator allocator_type;
@@ -118,7 +118,7 @@ class tree
     typedef typename allocator_type::pointer pointer;
     typedef typename allocator_type::const_pointer const_pointer;
 
-  private:
+private:
     typedef tree_node_types<value_type> node_types;
     typedef typename node_types::node_type node_type;
     typedef typename node_types::end_node_type end_node_type;
@@ -127,7 +127,7 @@ class tree
     typedef typename node_types::parent_pointer parent_pointer;
     typedef typename allocator_type::template rebind<node_type>::other node_allocator;
 
-  public:
+public:
     tree()
         : alloc_(node_allocator()),
           value_alloc_(allocator_type()),
@@ -155,7 +155,7 @@ class tree
     {
     }
 
-  public:
+public:
     void insert(const T& value)
     {
         if (end_node_.left == NULL) {
@@ -169,7 +169,7 @@ class tree
         return static_cast<const_node_pointer>(end_node_.left);
     }
 
-  private:
+private:
     node_pointer construct_node(parent_pointer p, const T& value)
     {
         node_pointer new_node = alloc_.allocate(1);
@@ -179,7 +179,7 @@ class tree
         return new_node;
     }
 
-  private:
+private:
     node_allocator alloc_;
     allocator_type value_alloc_;
     end_node_type end_node_;

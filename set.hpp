@@ -20,7 +20,7 @@ namespace ft
 template <typename Key, typename Compare = ft::less<Key>, typename Allocator = std::allocator<Key> >
 class set
 {
-  public:
+public:
     typedef Key key_type;
     typedef Key value_type;
     typedef Compare key_compare;
@@ -33,7 +33,7 @@ class set
     typedef typename allocator_type::pointer pointer;
     typedef typename allocator_type::const_pointer const_pointer;
 
-  public:
+public:
     set();
     explicit set(const key_compare& comp, const allocator_type& alloc = allocator_type());
     template <class InputIt>
@@ -43,7 +43,7 @@ class set
     set& operator=(const set& other);
     ~set();
 
-  public:
+public:
     allocator_type get_allocator() const;
     iterator begin();
     const_iterator begin() const;

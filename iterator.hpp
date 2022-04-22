@@ -49,7 +49,7 @@ struct iterator_traits<const It*> {
 template <typename It, typename Container>
 class normal_iterator
 {
-  public:
+public:
     typedef It iterator_type;
     typedef typename iterator_traits<It>::iterator_category iterator_category;
     typedef typename iterator_traits<It>::value_type value_type;
@@ -57,7 +57,7 @@ class normal_iterator
     typedef typename iterator_traits<It>::reference reference;
     typedef typename iterator_traits<It>::pointer pointer;
 
-  public:
+public:
     normal_iterator()
         : elem_(iterator_type())
     {
@@ -84,7 +84,7 @@ class normal_iterator
         return *this;
     }
 
-  public:
+public:
     const iterator_type& base() const
     {
         return elem_;
@@ -149,7 +149,7 @@ class normal_iterator
         return normal_iterator(elem_ - n);
     }
 
-  protected:
+protected:
     It elem_;
 };
 
@@ -266,14 +266,14 @@ class reverse_iterator
           typename iterator_traits<It>::difference_type, typename iterator_traits<It>::pointer,
           typename iterator_traits<It>::reference>
 {
-  public:
+public:
     typedef It iterator_type;
     typedef typename iterator_traits<It>::value_type value_type;
     typedef typename iterator_traits<It>::difference_type difference_type;
     typedef typename iterator_traits<It>::reference reference;
     typedef typename iterator_traits<It>::pointer pointer;
 
-  public:
+public:
     reverse_iterator()
         : elem_()
     {
@@ -305,7 +305,7 @@ class reverse_iterator
         return *this;
     }
 
-  public:
+public:
     iterator_type base() const
     {
         return elem_;
@@ -371,7 +371,7 @@ class reverse_iterator
         return *(*this + n);
     }
 
-  protected:
+protected:
     It elem_;
 };
 

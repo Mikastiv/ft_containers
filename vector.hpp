@@ -26,7 +26,7 @@ namespace ft
 template <typename T, typename Allocator = std::allocator<T> >
 class vector
 {
-  public:
+public:
     typedef T value_type;
     typedef Allocator allocator_type;
     typedef typename allocator_type::size_type size_type;
@@ -40,7 +40,7 @@ class vector
     typedef ft::reverse_iterator<iterator> reverse_iterator;
     typedef ft::reverse_iterator<const_iterator> const_reverse_iterator;
 
-  public:
+public:
     vector()
         : alloc_(allocator_type()),
           start_(NULL),
@@ -132,7 +132,7 @@ class vector
         deallocate_v();
     }
 
-  public:
+public:
     template <typename InputIt>
     void assign(InputIt first, typename enable_if<!is_integral<InputIt>::value, InputIt>::type last)
     {
@@ -431,7 +431,7 @@ class vector
         other.end_cap_ = ptr_end_cap;
     }
 
-  private:
+private:
     template <typename InputIt>
     void range_init(InputIt first, InputIt last, std::input_iterator_tag)
     {
@@ -611,7 +611,7 @@ class vector
         }
     }
 
-  private:
+private:
     allocator_type alloc_;
     pointer start_;
     pointer end_;

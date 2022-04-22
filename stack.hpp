@@ -19,14 +19,14 @@ namespace ft
 template <typename T, typename Container = vector<T> >
 class stack
 {
-  public:
+public:
     typedef Container container_type;
     typedef typename container_type::value_type value_type;
     typedef typename container_type::size_type size_type;
     typedef typename container_type::reference reference;
     typedef typename container_type::const_reference const_reference;
 
-  public:
+public:
     explicit stack(const container_type& cont = container_type())
         : c(cont)
     {
@@ -47,7 +47,7 @@ class stack
     {
     }
 
-  public:
+public:
     reference top()
     {
         return c.back();
@@ -84,7 +84,7 @@ class stack
     template <typename T1, typename C1>
     friend bool operator<(const stack<T1, C1>& lhs, const stack<T1, C1>& rhs);
 
-  protected:
+protected:
     container_type c;
 };
 

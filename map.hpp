@@ -23,7 +23,7 @@ template <typename Key, typename T, typename Compare = less<Key>,
           typename Allocator = std::allocator<pair<const Key, T> > >
 class map
 {
-  public:
+public:
     typedef Key key_type;
     typedef T mapped_type;
     typedef pair<const key_type, mapped_type> value_type;
@@ -36,7 +36,7 @@ class map
     typedef typename allocator_type::pointer pointer;
     typedef typename allocator_type::const_pointer const_pointer;
 
-  public:
+public:
     map();
     explicit map(const key_compare& comp, const allocator_type& alloc = allocator_type());
     template <typename InputIt>
@@ -46,7 +46,7 @@ class map
     map& operator=(const map& other);
     ~map();
 
-  public:
+public:
     allocator_type get_allocator() const;
     reference at(const key_type& key);
     const_reference at(const key_type& key) const;
@@ -83,7 +83,7 @@ class map
     key_compare key_comp() const;
     // value_compare value_comp() const;
 
-  private:
+private:
     tree<value_type, key_compare, allocator_type> tree_;
 };
 
