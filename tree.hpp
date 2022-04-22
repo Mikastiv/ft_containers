@@ -6,7 +6,7 @@
 /*   By: mleblanc <mleblanc@student.42quebec.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/21 22:03:04 by mleblanc          #+#    #+#             */
-/*   Updated: 2022/04/22 16:33:48 by mleblanc         ###   ########.fr       */
+/*   Updated: 2022/04/22 19:09:23 by mleblanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,22 +14,21 @@
 
 #include <stddef.h>
 
-template <typename Ptr>
 class tree_end_node;
 
-template <typename T, typename VoidPtr>
+template <typename T>
 class tree_node;
 
-template <typename T, typename VoidPtr = void*>
+template <typename T>
 struct tree_node_types {
-    typedef tree_end_node<VoidPtr> end_node_type;
-    typedef end_node_type* parent_pointer;
-    typedef tree_node<T, VoidPtr> node_type;
+    typedef tree_end_node end_node_type;
+    typedef tree_end_node* parent_pointer;
+    typedef tree_end_node* iter_pointer;
+    typedef tree_node<T> node_type;
     typedef node_type* node_pointer;
     typedef const node_type* const_node_pointer;
 };
 
-template <typename Ptr>
 class tree_end_node
 {
 public:
@@ -54,20 +53,20 @@ public:
     }
 
 public:
-    Ptr left;
+    tree_end_node* left;
 };
 
-template <typename T, typename VoidPtr = void*>
-class tree_node : public tree_node_types<T, VoidPtr>::end_node_type
+template <typename T>
+class tree_node : public tree_node_types<T>::end_node_type
 {
 public:
-    typedef tree_node_types<T, VoidPtr> node_types;
+    typedef tree_node_types<T> node_types;
     typedef typename node_types::parent_pointer parent_pointer;
     typedef typename node_types::node_pointer node_pointer;
 
 public:
     tree_node()
-        : tree_node_types<T, VoidPtr>::end_node_type(),
+        : tree_node_types<T>::end_node_type(),
           parent(NULL),
           right(NULL),
           value(T()),
@@ -76,7 +75,7 @@ public:
     }
 
     tree_node(const T& v)
-        : tree_node_types<T, VoidPtr>::end_node_type(),
+        : tree_node_types<T>::end_node_type(),
           parent(NULL),
           right(NULL),
           value(v),
@@ -159,7 +158,7 @@ public:
     void insert(const T& value)
     {
         if (end_node_.left == NULL) {
-            end_node_.left = construct_node(&end_node_, value);
+            end_node_.left = construct_node(value);
             return;
         }
     }
@@ -170,12 +169,11 @@ public:
     }
 
 private:
-    node_pointer construct_node(parent_pointer p, const T& value)
+    node_pointer construct_node(const T& value)
     {
         node_pointer new_node = alloc_.allocate(1);
         alloc_.construct(new_node, node_type());
         value_alloc_.construct(&new_node->value, value);
-        new_node->parent = p;
         return new_node;
     }
 
