@@ -6,7 +6,7 @@
 /*   By: mleblanc <mleblanc@student.42quebec.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/18 12:17:41 by mleblanc          #+#    #+#             */
-/*   Updated: 2022/04/20 17:52:15 by mleblanc         ###   ########.fr       */
+/*   Updated: 2022/04/21 23:40:44 by mleblanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,7 @@
 
 #include <memory>
 
+#include "tree.hpp"
 #include "utility.hpp"
 
 namespace ft
@@ -81,6 +82,9 @@ class map
     const_iterator upper_bound(const key_type& key) const;
     key_compare key_comp() const;
     // value_compare value_comp() const;
+
+    private:
+      tree<value_type, key_compare, allocator_type> tree_;
 };
 
 template <typename Key, typename T, typename Compare, typename Allocator>
