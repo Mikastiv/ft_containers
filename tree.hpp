@@ -6,7 +6,7 @@
 /*   By: mleblanc <mleblanc@student.42quebec.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/21 22:03:04 by mleblanc          #+#    #+#             */
-/*   Updated: 2022/04/23 00:25:16 by mleblanc         ###   ########.fr       */
+/*   Updated: 2022/04/23 00:56:29 by mleblanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -184,7 +184,7 @@ public:
 public:
     reference operator*() const
     {
-        return get_node_ptr()->value;
+        return static_cast<node_pointer>(ptr)->value;
     }
 
     pointer operator->() const
@@ -207,7 +207,7 @@ public:
 
     tree_iterator& operator--()
     {
-        ptr = tree_iter_next<node_pointer>(ptr);
+        ptr = static_cast<iter_pointer>(tree_iter_next<node_pointer>(ptr));
         return *this;
     }
 
@@ -216,12 +216,6 @@ public:
         tree_iterator t = *this;
         --(*this);
         return t;
-    }
-
-private:
-    node_pointer get_node_ptr() const
-    {
-        return static_cast<node_pointer>(ptr);
     }
 
 private:
