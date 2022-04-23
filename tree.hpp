@@ -6,7 +6,7 @@
 /*   By: mleblanc <mleblanc@student.42quebec.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/21 22:03:04 by mleblanc          #+#    #+#             */
-/*   Updated: 2022/04/23 00:56:29 by mleblanc         ###   ########.fr       */
+/*   Updated: 2022/04/23 02:44:48 by mleblanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -218,6 +218,94 @@ public:
         return t;
     }
 
+    bool operator==(const tree_iterator& other) const
+    {
+        return ptr == other.ptr;
+    }
+
+    bool operator!=(const tree_iterator& other) const
+    {
+        return !(*this == other);
+    }
+
+private:
+    iter_pointer ptr;
+};
+
+template <typename T, typename DiffType>
+class tree_const_iterator
+{
+private:
+    typedef typename tree_node_types<T>::end_node_ptr end_node_ptr;
+    typedef typename tree_node_types<T>::node_pointer node_pointer;
+    typedef typename tree_node_types<T>::iter_pointer iter_pointer;
+
+public:
+    typedef std::bidirectional_iterator_tag iterator_category;
+    typedef T value_type;
+    typedef DiffType difference_type;
+    typedef const value_type& reference;
+    typedef const value_type* pointer;
+
+public:
+    tree_const_iterator() : ptr(NULL) {}
+    tree_const_iterator(const tree_const_iterator& other) : ptr(other.ptr) {}
+    tree_const_iterator(node_pointer p) : ptr(static_cast<iter_pointer>(p)) {}
+    tree_const_iterator(end_node_ptr p) : ptr(static_cast<iter_pointer>(p)) {}
+    tree_const_iterator& operator=(const tree_const_iterator& other)
+    {
+        ptr = other.ptr;
+        return *this;
+    }
+    ~tree_const_iterator(){}
+
+public:
+    reference operator*() const
+    {
+        return static_cast<node_pointer>(ptr)->value;
+    }
+
+    pointer operator->() const
+    {
+        return &(operator*());
+    }
+
+    tree_const_iterator& operator++()
+    {
+        ptr = tree_iter_next<iter_pointer>(static_cast<node_pointer>(ptr));
+        return *this;
+    }
+
+    tree_const_iterator operator++(int)
+    {
+        tree_const_iterator t = *this;
+        ++(*this);
+        return t;
+    }
+
+    tree_const_iterator& operator--()
+    {
+        ptr = static_cast<iter_pointer>(tree_iter_next<node_pointer>(ptr));
+        return *this;
+    }
+
+    tree_const_iterator operator--(int)
+    {
+        tree_const_iterator t = *this;
+        --(*this);
+        return t;
+    }
+
+    bool operator==(const tree_const_iterator& other) const
+    {
+        return ptr == other.ptr;
+    }
+
+    bool operator!=(const tree_const_iterator& other) const
+    {
+        return !(*this == other);
+    }
+
 private:
     iter_pointer ptr;
 };
@@ -235,6 +323,8 @@ public:
     typedef const value_type& const_reference;
     typedef typename allocator_type::pointer pointer;
     typedef typename allocator_type::const_pointer const_pointer;
+    typedef tree_iterator<value_type, difference_type> iterator;
+    typedef tree_const_iterator<value_type, difference_type> const_iterator;
 
 private:
     typedef typename tree_node_types<value_type>::node_type node_type;
