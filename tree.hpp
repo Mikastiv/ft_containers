@@ -6,7 +6,7 @@
 /*   By: mleblanc <mleblanc@student.42quebec.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/21 22:03:04 by mleblanc          #+#    #+#             */
-/*   Updated: 2022/04/22 23:42:26 by mleblanc         ###   ########.fr       */
+/*   Updated: 2022/04/23 00:25:16 by mleblanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -172,6 +172,8 @@ public:
 public:
     tree_iterator() : ptr(NULL) {}
     tree_iterator(const tree_iterator& other) : ptr(other.ptr) {}
+    tree_iterator(node_pointer p) : ptr(static_cast<iter_pointer>(p)) {}
+    tree_iterator(end_node_ptr p) : ptr(static_cast<iter_pointer>(p)) {}
     tree_iterator& operator=(const tree_iterator& other)
     {
         ptr = other.ptr;
