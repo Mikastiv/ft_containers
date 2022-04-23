@@ -6,7 +6,7 @@
 /*   By: mleblanc <mleblanc@student.42quebec.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/21 22:03:04 by mleblanc          #+#    #+#             */
-/*   Updated: 2022/04/23 16:08:50 by mleblanc         ###   ########.fr       */
+/*   Updated: 2022/04/23 18:08:11 by mleblanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,8 @@
 
 #include <stddef.h>
 #include <iterator>
+#include <limits>
+#include <algorithm>
 
 class tree_end_node;
 
@@ -392,6 +394,17 @@ public:
     const_iterator end() const
     {
         return const_iterator(end_node());
+    }
+
+    size_type size() const
+    {
+        return size_;
+    }
+
+    size_type max_size() const
+    {
+        return std::min(alloc_.max_size(), 
+                static_cast<size_type>(std::numeric_limits<difference_type>::max()));
     }
 
 private:
