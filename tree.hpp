@@ -6,7 +6,7 @@
 /*   By: mleblanc <mleblanc@student.42quebec.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/21 22:03:04 by mleblanc          #+#    #+#             */
-/*   Updated: 2022/04/23 02:44:48 by mleblanc         ###   ########.fr       */
+/*   Updated: 2022/04/23 16:08:50 by mleblanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,8 +23,8 @@ class tree_node;
 template <typename T>
 struct tree_node_types {
     typedef tree_end_node end_node_type;
-    typedef tree_end_node* end_node_ptr;
-    typedef tree_end_node* iter_ptr;
+    typedef tree_end_node* end_node_pointer;
+    typedef tree_end_node* iter_pointer;
     typedef tree_end_node* parent_pointer;
     typedef tree_node<T> node_type;
     typedef node_type* node_pointer;
@@ -158,7 +158,7 @@ template <typename T, typename DiffType>
 class tree_iterator
 {
 private:
-    typedef typename tree_node_types<T>::end_node_ptr end_node_ptr;
+    typedef typename tree_node_types<T>::end_node_pointer end_node_pointer;
     typedef typename tree_node_types<T>::node_pointer node_pointer;
     typedef typename tree_node_types<T>::iter_pointer iter_pointer;
 
@@ -173,7 +173,7 @@ public:
     tree_iterator() : ptr(NULL) {}
     tree_iterator(const tree_iterator& other) : ptr(other.ptr) {}
     tree_iterator(node_pointer p) : ptr(static_cast<iter_pointer>(p)) {}
-    tree_iterator(end_node_ptr p) : ptr(static_cast<iter_pointer>(p)) {}
+    tree_iterator(end_node_pointer p) : ptr(static_cast<iter_pointer>(p)) {}
     tree_iterator& operator=(const tree_iterator& other)
     {
         ptr = other.ptr;
@@ -236,7 +236,7 @@ template <typename T, typename DiffType>
 class tree_const_iterator
 {
 private:
-    typedef typename tree_node_types<T>::end_node_ptr end_node_ptr;
+    typedef typename tree_node_types<T>::end_node_pointer end_node_pointer;
     typedef typename tree_node_types<T>::node_pointer node_pointer;
     typedef typename tree_node_types<T>::iter_pointer iter_pointer;
 
@@ -251,7 +251,7 @@ public:
     tree_const_iterator() : ptr(NULL) {}
     tree_const_iterator(const tree_const_iterator& other) : ptr(other.ptr) {}
     tree_const_iterator(node_pointer p) : ptr(static_cast<iter_pointer>(p)) {}
-    tree_const_iterator(end_node_ptr p) : ptr(static_cast<iter_pointer>(p)) {}
+    tree_const_iterator(end_node_pointer p) : ptr(static_cast<iter_pointer>(p)) {}
     tree_const_iterator& operator=(const tree_const_iterator& other)
     {
         ptr = other.ptr;
@@ -332,6 +332,7 @@ private:
     typedef typename tree_node_types<value_type>::node_pointer node_pointer;
     typedef typename tree_node_types<value_type>::const_node_pointer const_node_pointer;
     typedef typename tree_node_types<value_type>::parent_pointer parent_pointer;
+    typedef typename tree_node_types<value_type>::iter_pointer iter_pointer;
     typedef typename allocator_type::template rebind<node_type>::other node_allocator;
 
 public:
@@ -341,14 +342,16 @@ public:
           end_node_(),
           size_(0)
     {
+        begin_iter_ = &end_node_;
     }
 
     tree(const tree& other)
         : alloc_(other.alloc_),
           value_alloc_(other.value_alloc_),
-          end_node_(other.end_node),
+          end_node_(),
           size_(other.size_)
     {
+        begin_iter_ = &end_node_;
     }
 
     tree& operator=(const tree& other)
@@ -371,6 +374,27 @@ public:
         }
     }
 
+    iterator begin()
+    {
+        return iterator(begin_iter_);
+    }
+
+    const_iterator begin() const
+    {
+        return const_iterator(begin_iter_);
+    }
+
+    iterator end()
+    {
+        return iterator(end_node());
+    }
+
+    const_iterator end() const
+    {
+        return const_iterator(end_node());
+    }
+
+private:
     node_pointer root()
     {
         return static_cast<node_pointer>(end_node_.left);
@@ -379,6 +403,11 @@ public:
     const_node_pointer root() const
     {
         return static_cast<const_node_pointer>(end_node_.left);
+    }
+
+    iter_pointer end_node()
+    {
+        return &end_node_;
     }
 
 private:
@@ -394,5 +423,6 @@ private:
     node_allocator alloc_;
     allocator_type value_alloc_;
     end_node_type end_node_;
+    iter_pointer begin_iter_;
     size_type size_;
 };
