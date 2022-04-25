@@ -6,7 +6,7 @@
 /*   By: mleblanc <mleblanc@student.42quebec.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/21 22:03:04 by mleblanc          #+#    #+#             */
-/*   Updated: 2022/04/25 14:27:23 by mleblanc         ###   ########.fr       */
+/*   Updated: 2022/04/25 14:34:55 by mleblanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -376,7 +376,7 @@ public:
           end_node_(),
           size_(0)
     {
-        begin_iter_ = &end_node_;
+        begin_iter_ = end_node();
     }
 
     tree(const tree& other)
@@ -386,7 +386,7 @@ public:
           end_node_(),
           size_(other.size_)
     {
-        begin_iter_ = &end_node_;
+        begin_iter_ = end_node();
     }
 
     tree& operator=(const tree& other)
@@ -398,6 +398,7 @@ public:
 
     ~tree()
     {
+        destroy(root());
     }
 
 public:
@@ -513,6 +514,16 @@ private:
         }
         parent = static_cast<node_base_pointer>(end_node());
         return parent->left;
+    }
+
+    void destroy(node_pointer node)
+    {
+        if (node != NULL) {
+            destroy(static_cast<node_pointer>(node->left));
+            destroy(static_cast<node_pointer>(node->right));
+            value_alloc_.destroy(&node->value);
+            alloc_.deallocate(node, 1);
+        }
     }
 
 private:
