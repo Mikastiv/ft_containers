@@ -6,7 +6,7 @@
 /*   By: mleblanc <mleblanc@student.42quebec.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/21 22:03:04 by mleblanc          #+#    #+#             */
-/*   Updated: 2022/04/25 17:06:45 by mleblanc         ###   ########.fr       */
+/*   Updated: 2022/04/25 17:11:54 by mleblanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,7 +60,8 @@ public:
 public:
     tree_base_node()
         : right(NULL),
-          parent(NULL)
+          parent(NULL),
+          is_black(false)
     {
     }
 
