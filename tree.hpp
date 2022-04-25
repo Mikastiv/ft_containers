@@ -6,16 +6,16 @@
 /*   By: mleblanc <mleblanc@student.42quebec.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/21 22:03:04 by mleblanc          #+#    #+#             */
-/*   Updated: 2022/04/23 18:08:11 by mleblanc         ###   ########.fr       */
+/*   Updated: 2022/04/25 14:21:29 by mleblanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
 
-#include <stddef.h>
+#include <algorithm>
 #include <iterator>
 #include <limits>
-#include <algorithm>
+#include <stddef.h>
 
 class tree_end_node;
 
@@ -28,6 +28,7 @@ struct tree_node_types {
     typedef tree_end_node* end_node_pointer;
     typedef tree_end_node* iter_pointer;
     typedef tree_end_node* parent_pointer;
+    typedef tree_end_node* node_base_pointer;
     typedef tree_node<T> node_type;
     typedef node_type* node_pointer;
     typedef const node_type* const_node_pointer;
@@ -65,7 +66,7 @@ class tree_node : public tree_node_types<T>::end_node_type
 {
 public:
     typedef typename tree_node_types<T>::parent_pointer parent_pointer;
-    typedef typename tree_node_types<T>::node_pointer node_pointer;
+    typedef typename tree_node_types<T>::node_base_pointer node_base_pointer;
 
 public:
     tree_node()
@@ -102,7 +103,7 @@ public:
 
 public:
     parent_pointer parent;
-    node_pointer right;
+    node_base_pointer right;
     T value;
     bool is_black;
 };
@@ -172,16 +173,35 @@ public:
     typedef value_type* pointer;
 
 public:
-    tree_iterator() : ptr(NULL) {}
-    tree_iterator(const tree_iterator& other) : ptr(other.ptr) {}
-    tree_iterator(node_pointer p) : ptr(static_cast<iter_pointer>(p)) {}
-    tree_iterator(end_node_pointer p) : ptr(static_cast<iter_pointer>(p)) {}
+    tree_iterator()
+        : ptr(NULL)
+    {
+    }
+
+    tree_iterator(const tree_iterator& other)
+        : ptr(other.ptr)
+    {
+    }
+
+    tree_iterator(node_pointer p)
+        : ptr(static_cast<iter_pointer>(p))
+    {
+    }
+
+    tree_iterator(end_node_pointer p)
+        : ptr(static_cast<iter_pointer>(p))
+    {
+    }
+
     tree_iterator& operator=(const tree_iterator& other)
     {
         ptr = other.ptr;
         return *this;
     }
-    ~tree_iterator(){}
+
+    ~tree_iterator()
+    {
+    }
 
 public:
     reference operator*() const
@@ -250,16 +270,35 @@ public:
     typedef const value_type* pointer;
 
 public:
-    tree_const_iterator() : ptr(NULL) {}
-    tree_const_iterator(const tree_const_iterator& other) : ptr(other.ptr) {}
-    tree_const_iterator(node_pointer p) : ptr(static_cast<iter_pointer>(p)) {}
-    tree_const_iterator(end_node_pointer p) : ptr(static_cast<iter_pointer>(p)) {}
+    tree_const_iterator()
+        : ptr(NULL)
+    {
+    }
+
+    tree_const_iterator(const tree_const_iterator& other)
+        : ptr(other.ptr)
+    {
+    }
+
+    tree_const_iterator(node_pointer p)
+        : ptr(static_cast<iter_pointer>(p))
+    {
+    }
+
+    tree_const_iterator(end_node_pointer p)
+        : ptr(static_cast<iter_pointer>(p))
+    {
+    }
+
     tree_const_iterator& operator=(const tree_const_iterator& other)
     {
         ptr = other.ptr;
         return *this;
     }
-    ~tree_const_iterator(){}
+
+    ~tree_const_iterator()
+    {
+    }
 
 public:
     reference operator*() const
@@ -317,7 +356,7 @@ class tree
 {
 public:
     typedef T value_type;
-    typedef Compare compare_type;
+    typedef Compare value_compare;
     typedef Allocator allocator_type;
     typedef typename allocator_type::size_type size_type;
     typedef typename allocator_type::difference_type difference_type;
@@ -331,8 +370,8 @@ public:
 private:
     typedef typename tree_node_types<value_type>::node_type node_type;
     typedef typename tree_node_types<value_type>::end_node_type end_node_type;
+    typedef typename tree_node_types<value_type>::node_base_pointer node_base_pointer;
     typedef typename tree_node_types<value_type>::node_pointer node_pointer;
-    typedef typename tree_node_types<value_type>::const_node_pointer const_node_pointer;
     typedef typename tree_node_types<value_type>::parent_pointer parent_pointer;
     typedef typename tree_node_types<value_type>::iter_pointer iter_pointer;
     typedef typename allocator_type::template rebind<node_type>::other node_allocator;
@@ -341,6 +380,7 @@ public:
     tree()
         : alloc_(node_allocator()),
           value_alloc_(allocator_type()),
+          comp_(value_compare()),
           end_node_(),
           size_(0)
     {
@@ -350,6 +390,7 @@ public:
     tree(const tree& other)
         : alloc_(other.alloc_),
           value_alloc_(other.value_alloc_),
+          comp_(value_compare()),
           end_node_(),
           size_(other.size_)
     {
@@ -370,9 +411,12 @@ public:
 public:
     void insert(const T& value)
     {
-        if (end_node_.left == NULL) {
-            end_node_.left = construct_node(value);
-            return;
+        parent_pointer parent;
+        node_base_pointer& child = find_equal(parent, value);
+        if (child == NULL) {
+            node_pointer ptr = construct_node(value);
+            ptr->parent = parent;
+            child = static_cast<node_base_pointer>(ptr);
         }
     }
 
@@ -403,8 +447,18 @@ public:
 
     size_type max_size() const
     {
-        return std::min(alloc_.max_size(), 
-                static_cast<size_type>(std::numeric_limits<difference_type>::max()));
+        return std::min(alloc_.max_size(),
+                        static_cast<size_type>(std::numeric_limits<difference_type>::max()));
+    }
+
+    value_compare& value_comp()
+    {
+        return comp_;
+    }
+
+    const value_compare& value_comp() const
+    {
+        return comp_;
     }
 
 private:
@@ -413,9 +467,9 @@ private:
         return static_cast<node_pointer>(end_node_.left);
     }
 
-    const_node_pointer root() const
+    node_base_pointer* root_ptr()
     {
-        return static_cast<const_node_pointer>(end_node_.left);
+        return static_cast<node_base_pointer*>(&end_node_.left);
     }
 
     iter_pointer end_node()
@@ -432,9 +486,47 @@ private:
         return new_node;
     }
 
+    template <typename Key>
+    node_base_pointer& find_equal(parent_pointer& parent, const Key& value)
+    {
+        node_pointer node = root();
+        node_base_pointer* ptr = root_ptr();
+
+        if (node != NULL) {
+            while (true) {
+                if (value_comp()(value, node->value)) {
+                    // value < node->value
+                    if (node->left != NULL) {
+                        ptr = &node->left;
+                        node = static_cast<node_pointer>(node->left);
+                    } else {
+                        parent = static_cast<parent_pointer>(node);
+                        return node->left;
+                    }
+                } else if (value_comp()(node->value, value)) {
+                    // value > node->value
+                    if (node->right != NULL) {
+                        ptr = &node->right;
+                        node = static_cast<node_pointer>(node->right);
+                    } else {
+                        parent = static_cast<parent_pointer>(node);
+                        return node->right;
+                    }
+                } else {
+                    // value == node->value
+                    parent = static_cast<parent_pointer>(node);
+                    return *ptr;
+                }
+            }
+        }
+        parent = static_cast<parent_pointer>(end_node());
+        return parent->left;
+    }
+
 private:
     node_allocator alloc_;
     allocator_type value_alloc_;
+    value_compare comp_;
     end_node_type end_node_;
     iter_pointer begin_iter_;
     size_type size_;
