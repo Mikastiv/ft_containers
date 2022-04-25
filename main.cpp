@@ -1,6 +1,7 @@
 #include "utility.hpp"
 #include "tree.hpp"
 #include <memory>
+#include <iostream>
 
 int main()
 {
@@ -8,4 +9,8 @@ int main()
 
     t.insert(45);
     t.insert(23);
+
+    for (auto it = t.begin(); it != t.end(); ++it) {
+        std::cout << *it << "\n";
+    }
 }

@@ -6,7 +6,7 @@
 /*   By: mleblanc <mleblanc@student.42quebec.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/21 22:03:04 by mleblanc          #+#    #+#             */
-/*   Updated: 2022/04/25 17:11:54 by mleblanc         ###   ########.fr       */
+/*   Updated: 2022/04/25 17:22:08 by mleblanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -108,8 +108,8 @@ NodePtr tree_min(NodePtr ptr)
     return ptr;
 }
 
-template <typename IterPtr, typename NodePtr>
-IterPtr tree_iter_next(NodePtr ptr)
+template <typename NodePtr>
+NodePtr tree_iter_next(NodePtr ptr)
 {
     if (ptr->right != NULL) {
         return tree_min(ptr->right);
@@ -117,20 +117,19 @@ IterPtr tree_iter_next(NodePtr ptr)
     while (!tree_is_left_child(ptr)) {
         ptr = ptr->parent;
     }
-    return static_cast<IterPtr>(ptr->parent);
+    return ptr->parent;
 }
 
-template <typename NodePtr, typename IterPtr>
-NodePtr tree_iter_prev(IterPtr ptr)
+template <typename NodePtr>
+NodePtr tree_iter_prev(NodePtr ptr)
 {
     if (ptr->left != NULL) {
         return tree_max(ptr->left);
     }
-    NodePtr nptr = static_cast<NodePtr>(ptr);
-    while (tree_is_left_child(nptr)) {
-        nptr = nptr->parent;
+    while (tree_is_left_child(ptr)) {
+        ptr = ptr->parent;
     }
-    return nptr->parent;
+    return ptr->parent;
 }
 
 template <typename T, typename DiffType>
@@ -191,7 +190,7 @@ public:
 
     tree_iterator& operator++()
     {
-        ptr = tree_iter_next<node_base_pointer>(static_cast<node_pointer>(ptr));
+        ptr = tree_iter_next(ptr);
         return *this;
     }
 
@@ -204,7 +203,7 @@ public:
 
     tree_iterator& operator--()
     {
-        ptr = static_cast<node_base_pointer>(tree_iter_next<node_pointer>(ptr));
+        ptr = tree_iter_next(ptr);
         return *this;
     }
 
@@ -287,7 +286,7 @@ public:
 
     tree_const_iterator& operator++()
     {
-        ptr = tree_iter_next<node_base_pointer>(static_cast<node_pointer>(ptr));
+        ptr = tree_iter_next(ptr);
         return *this;
     }
 
@@ -300,7 +299,7 @@ public:
 
     tree_const_iterator& operator--()
     {
-        ptr = static_cast<node_base_pointer>(tree_iter_next<node_pointer>(ptr));
+        ptr = tree_iter_next(ptr);
         return *this;
     }
 
@@ -390,6 +389,7 @@ public:
             node_pointer ptr = construct_node(value);
             ptr->parent = parent;
             child = static_cast<node_base_pointer>(ptr);
+            begin_iter_ = child;
         }
     }
 
