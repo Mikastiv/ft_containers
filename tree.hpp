@@ -6,7 +6,7 @@
 /*   By: mleblanc <mleblanc@student.42quebec.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/21 22:03:04 by mleblanc          #+#    #+#             */
-/*   Updated: 2022/04/25 14:21:29 by mleblanc         ###   ########.fr       */
+/*   Updated: 2022/04/25 14:27:23 by mleblanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,9 +25,6 @@ class tree_node;
 template <typename T>
 struct tree_node_types {
     typedef tree_end_node end_node_type;
-    typedef tree_end_node* end_node_pointer;
-    typedef tree_end_node* iter_pointer;
-    typedef tree_end_node* parent_pointer;
     typedef tree_end_node* node_base_pointer;
     typedef tree_node<T> node_type;
     typedef node_type* node_pointer;
@@ -65,7 +62,6 @@ template <typename T>
 class tree_node : public tree_node_types<T>::end_node_type
 {
 public:
-    typedef typename tree_node_types<T>::parent_pointer parent_pointer;
     typedef typename tree_node_types<T>::node_base_pointer node_base_pointer;
 
 public:
@@ -102,7 +98,7 @@ public:
     }
 
 public:
-    parent_pointer parent;
+    node_base_pointer parent;
     node_base_pointer right;
     T value;
     bool is_black;
@@ -161,9 +157,8 @@ template <typename T, typename DiffType>
 class tree_iterator
 {
 private:
-    typedef typename tree_node_types<T>::end_node_pointer end_node_pointer;
+    typedef typename tree_node_types<T>::node_base_pointer node_base_pointer;
     typedef typename tree_node_types<T>::node_pointer node_pointer;
-    typedef typename tree_node_types<T>::iter_pointer iter_pointer;
 
 public:
     typedef std::bidirectional_iterator_tag iterator_category;
@@ -184,12 +179,12 @@ public:
     }
 
     tree_iterator(node_pointer p)
-        : ptr(static_cast<iter_pointer>(p))
+        : ptr(static_cast<node_base_pointer>(p))
     {
     }
 
-    tree_iterator(end_node_pointer p)
-        : ptr(static_cast<iter_pointer>(p))
+    tree_iterator(node_base_pointer p)
+        : ptr(p)
     {
     }
 
@@ -216,7 +211,7 @@ public:
 
     tree_iterator& operator++()
     {
-        ptr = tree_iter_next<iter_pointer>(static_cast<node_pointer>(ptr));
+        ptr = tree_iter_next<node_base_pointer>(static_cast<node_pointer>(ptr));
         return *this;
     }
 
@@ -229,7 +224,7 @@ public:
 
     tree_iterator& operator--()
     {
-        ptr = static_cast<iter_pointer>(tree_iter_next<node_pointer>(ptr));
+        ptr = static_cast<node_base_pointer>(tree_iter_next<node_pointer>(ptr));
         return *this;
     }
 
@@ -251,16 +246,15 @@ public:
     }
 
 private:
-    iter_pointer ptr;
+    node_base_pointer ptr;
 };
 
 template <typename T, typename DiffType>
 class tree_const_iterator
 {
 private:
-    typedef typename tree_node_types<T>::end_node_pointer end_node_pointer;
+    typedef typename tree_node_types<T>::node_base_pointer node_base_pointer;
     typedef typename tree_node_types<T>::node_pointer node_pointer;
-    typedef typename tree_node_types<T>::iter_pointer iter_pointer;
 
 public:
     typedef std::bidirectional_iterator_tag iterator_category;
@@ -281,12 +275,12 @@ public:
     }
 
     tree_const_iterator(node_pointer p)
-        : ptr(static_cast<iter_pointer>(p))
+        : ptr(static_cast<node_base_pointer>(p))
     {
     }
 
-    tree_const_iterator(end_node_pointer p)
-        : ptr(static_cast<iter_pointer>(p))
+    tree_const_iterator(node_base_pointer p)
+        : ptr(p)
     {
     }
 
@@ -313,7 +307,7 @@ public:
 
     tree_const_iterator& operator++()
     {
-        ptr = tree_iter_next<iter_pointer>(static_cast<node_pointer>(ptr));
+        ptr = tree_iter_next<node_base_pointer>(static_cast<node_pointer>(ptr));
         return *this;
     }
 
@@ -326,7 +320,7 @@ public:
 
     tree_const_iterator& operator--()
     {
-        ptr = static_cast<iter_pointer>(tree_iter_next<node_pointer>(ptr));
+        ptr = static_cast<node_base_pointer>(tree_iter_next<node_pointer>(ptr));
         return *this;
     }
 
@@ -348,7 +342,7 @@ public:
     }
 
 private:
-    iter_pointer ptr;
+    node_base_pointer ptr;
 };
 
 template <typename T, typename Compare, typename Allocator>
@@ -368,12 +362,10 @@ public:
     typedef tree_const_iterator<value_type, difference_type> const_iterator;
 
 private:
-    typedef typename tree_node_types<value_type>::node_type node_type;
     typedef typename tree_node_types<value_type>::end_node_type end_node_type;
+    typedef typename tree_node_types<value_type>::node_type node_type;
     typedef typename tree_node_types<value_type>::node_base_pointer node_base_pointer;
     typedef typename tree_node_types<value_type>::node_pointer node_pointer;
-    typedef typename tree_node_types<value_type>::parent_pointer parent_pointer;
-    typedef typename tree_node_types<value_type>::iter_pointer iter_pointer;
     typedef typename allocator_type::template rebind<node_type>::other node_allocator;
 
 public:
@@ -411,7 +403,7 @@ public:
 public:
     void insert(const T& value)
     {
-        parent_pointer parent;
+        node_base_pointer parent;
         node_base_pointer& child = find_equal(parent, value);
         if (child == NULL) {
             node_pointer ptr = construct_node(value);
@@ -472,9 +464,9 @@ private:
         return static_cast<node_base_pointer*>(&end_node_.left);
     }
 
-    iter_pointer end_node()
+    node_base_pointer end_node()
     {
-        return &end_node_;
+        return static_cast<node_base_pointer>(&end_node_);
     }
 
 private:
@@ -487,7 +479,7 @@ private:
     }
 
     template <typename Key>
-    node_base_pointer& find_equal(parent_pointer& parent, const Key& value)
+    node_base_pointer& find_equal(node_base_pointer& parent, const Key& value)
     {
         node_pointer node = root();
         node_base_pointer* ptr = root_ptr();
@@ -500,7 +492,7 @@ private:
                         ptr = &node->left;
                         node = static_cast<node_pointer>(node->left);
                     } else {
-                        parent = static_cast<parent_pointer>(node);
+                        parent = static_cast<node_base_pointer>(node);
                         return node->left;
                     }
                 } else if (value_comp()(node->value, value)) {
@@ -509,17 +501,17 @@ private:
                         ptr = &node->right;
                         node = static_cast<node_pointer>(node->right);
                     } else {
-                        parent = static_cast<parent_pointer>(node);
+                        parent = static_cast<node_base_pointer>(node);
                         return node->right;
                     }
                 } else {
                     // value == node->value
-                    parent = static_cast<parent_pointer>(node);
+                    parent = static_cast<node_base_pointer>(node);
                     return *ptr;
                 }
             }
         }
-        parent = static_cast<parent_pointer>(end_node());
+        parent = static_cast<node_base_pointer>(end_node());
         return parent->left;
     }
 
@@ -528,6 +520,6 @@ private:
     allocator_type value_alloc_;
     value_compare comp_;
     end_node_type end_node_;
-    iter_pointer begin_iter_;
+    node_base_pointer begin_iter_;
     size_type size_;
 };
