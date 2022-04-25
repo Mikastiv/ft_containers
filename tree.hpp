@@ -6,7 +6,7 @@
 /*   By: mleblanc <mleblanc@student.42quebec.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/21 22:03:04 by mleblanc          #+#    #+#             */
-/*   Updated: 2022/04/25 14:34:55 by mleblanc         ###   ########.fr       */
+/*   Updated: 2022/04/25 17:06:45 by mleblanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,13 +19,19 @@
 
 class tree_end_node;
 
+class tree_base_node;
+
 template <typename T>
 class tree_node;
 
-template <typename T>
-struct tree_node_types {
+struct tree_base_node_types {
     typedef tree_end_node end_node_type;
-    typedef tree_end_node* node_base_pointer;
+    typedef tree_base_node base_node_type;
+    typedef base_node_type* node_base_pointer;
+};
+
+template <typename T>
+struct tree_node_types : tree_base_node_types {
     typedef tree_node<T> node_type;
     typedef node_type* node_pointer;
     typedef const node_type* const_node_pointer;
@@ -34,74 +40,47 @@ struct tree_node_types {
 class tree_end_node
 {
 public:
+    typedef tree_base_node_types::node_base_pointer node_base_pointer;
+
+public:
     tree_end_node()
         : left(NULL)
     {
     }
 
-    tree_end_node(const tree_end_node& other)
-        : left(other.left)
-    {
-    }
+public:
+    node_base_pointer left;
+};
 
-    tree_end_node& operator=(const tree_end_node& other)
-    {
-        left = other.left;
-        return *this;
-    }
+class tree_base_node : public tree_base_node_types::end_node_type
+{
+public:
+    typedef tree_base_node_types::node_base_pointer node_base_pointer;
 
-    ~tree_end_node()
+public:
+    tree_base_node()
+        : right(NULL),
+          parent(NULL)
     {
     }
 
 public:
-    tree_end_node* left;
+    node_base_pointer right;
+    node_base_pointer parent;
+    bool is_black;
 };
 
 template <typename T>
-class tree_node : public tree_node_types<T>::end_node_type
+class tree_node : public tree_node_types<T>::base_node_type
 {
 public:
-    typedef typename tree_node_types<T>::node_base_pointer node_base_pointer;
-
-public:
     tree_node()
-        : tree_node_types<T>::end_node_type(),
-          parent(NULL),
-          right(NULL),
-          value(T()),
-          is_black(false)
-    {
-    }
-
-    tree_node(const T& v)
-        : tree_node_types<T>::end_node_type(),
-          parent(NULL),
-          right(NULL),
-          value(v),
-          is_black(false)
-    {
-    }
-
-    tree_node& operator=(const tree_node& other)
-    {
-        this->left = other.left;
-        value = other.value;
-        parent = other.parent;
-        right = other.right;
-        is_black = other.is_black;
-        return *this;
-    }
-
-    ~tree_node()
+        : value(T())
     {
     }
 
 public:
-    node_base_pointer parent;
-    node_base_pointer right;
     T value;
-    bool is_black;
 };
 
 template <typename NodePtr>
