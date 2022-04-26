@@ -6,7 +6,7 @@
 /*   By: mleblanc <mleblanc@student.42quebec.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/21 22:03:04 by mleblanc          #+#    #+#             */
-/*   Updated: 2022/04/25 19:04:11 by mleblanc         ###   ########.fr       */
+/*   Updated: 2022/04/25 23:48:44 by mleblanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -134,7 +134,7 @@ NodePtr tree_iter_prev(IterPtr ptr)
     return nptr->parent;
 }
 
-template <typename T, typename DiffType>
+template <typename T, typename Ref, typename Pointer, typename DiffType>
 class tree_iterator
 {
 private:
@@ -145,9 +145,9 @@ private:
 public:
     typedef std::bidirectional_iterator_tag iterator_category;
     typedef T value_type;
+    typedef Ref reference;
+    typedef Pointer pointer;
     typedef DiffType difference_type;
-    typedef value_type& reference;
-    typedef value_type* pointer;
 
 public:
     tree_iterator()
@@ -211,83 +211,6 @@ private:
     iter_pointer ptr;
 };
 
-template <typename T, typename DiffType>
-class tree_const_iterator
-{
-private:
-    typedef typename tree_node_types<T>::node_base_pointer node_base_pointer;
-    typedef typename tree_node_types<T>::iter_pointer iter_pointer;
-    typedef typename tree_node_types<T>::node_pointer node_pointer;
-
-public:
-    typedef std::bidirectional_iterator_tag iterator_category;
-    typedef T value_type;
-    typedef DiffType difference_type;
-    typedef const value_type& reference;
-    typedef const value_type* pointer;
-
-public:
-    tree_const_iterator()
-        : ptr(NULL)
-    {
-    }
-
-    tree_const_iterator(iter_pointer p)
-        : ptr(p)
-    {
-    }
-
-public:
-    reference operator*() const
-    {
-        return static_cast<node_pointer>(ptr)->value;
-    }
-
-    pointer operator->() const
-    {
-        return &(operator*());
-    }
-
-    tree_const_iterator& operator++()
-    {
-        ptr = tree_iter_next(ptr);
-        return *this;
-    }
-
-    tree_const_iterator operator++(int)
-    {
-        tree_const_iterator t = *this;
-        ++(*this);
-        return t;
-    }
-
-    tree_const_iterator& operator--()
-    {
-        ptr = tree_iter_next(ptr);
-        return *this;
-    }
-
-    tree_const_iterator operator--(int)
-    {
-        tree_const_iterator t = *this;
-        --(*this);
-        return t;
-    }
-
-    bool operator==(const tree_const_iterator& other) const
-    {
-        return ptr == other.ptr;
-    }
-
-    bool operator!=(const tree_const_iterator& other) const
-    {
-        return !(*this == other);
-    }
-
-private:
-    iter_pointer ptr;
-};
-
 template <typename T, typename Compare, typename Allocator>
 class tree
 {
@@ -301,8 +224,9 @@ public:
     typedef const value_type& const_reference;
     typedef typename allocator_type::pointer pointer;
     typedef typename allocator_type::const_pointer const_pointer;
-    typedef tree_iterator<value_type, difference_type> iterator;
-    typedef tree_const_iterator<value_type, difference_type> const_iterator;
+    typedef tree_iterator<value_type, value_type&, value_type*, difference_type> iterator;
+    typedef tree_iterator<value_type, const value_type&, const value_type*, difference_type>
+        const_iterator;
 
 private:
     typedef typename tree_node_types<value_type>::end_node_type end_node_type;
