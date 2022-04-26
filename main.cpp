@@ -12,6 +12,7 @@ int main()
     }
     t.insert(45);
     t.insert(23);
+    t.insert(34);
 
     for (auto it = t.begin(); it != t.end(); ++it) {
         std::cout << *it << "\n";

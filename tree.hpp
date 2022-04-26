@@ -6,7 +6,7 @@
 /*   By: mleblanc <mleblanc@student.42quebec.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/21 22:03:04 by mleblanc          #+#    #+#             */
-/*   Updated: 2022/04/25 23:57:16 by mleblanc         ###   ########.fr       */
+/*   Updated: 2022/04/26 00:27:08 by mleblanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -116,31 +116,6 @@ NodePtr tree_min(NodePtr ptr)
     return ptr;
 }
 
-template <typename IterPtr, typename NodePtr>
-IterPtr tree_iter_next(NodePtr ptr)
-{
-    if (ptr->right != NULL) {
-        return tree_min(ptr->right);
-    }
-    while (!tree_is_left_child(ptr)) {
-        ptr = ptr->get_parent();
-    }
-    return static_cast<IterPtr>(ptr->parent);
-}
-
-template <typename NodePtr, typename IterPtr>
-NodePtr tree_iter_prev(IterPtr ptr)
-{
-    if (ptr->left != NULL) {
-        return tree_max(ptr->left);
-    }
-    NodePtr nptr = static_cast<NodePtr>(ptr);
-    while (tree_is_left_child(nptr)) {
-        nptr = nptr->get_parent();
-    }
-    return nptr->parent;
-}
-
 template <typename T, typename Ref, typename Pointer, typename DiffType>
 class tree_iterator
 {
@@ -180,7 +155,7 @@ public:
 
     tree_iterator& operator++()
     {
-        ptr = tree_iter_next<iter_pointer>(static_cast<node_base_pointer>(ptr));
+        ptr = tree_iter_next(static_cast<node_base_pointer>(ptr));
         return *this;
     }
 
@@ -193,7 +168,7 @@ public:
 
     tree_iterator& operator--()
     {
-        ptr = static_cast<iter_pointer>(tree_iter_next<node_base_pointer>(ptr));
+        ptr = tree_iter_next(ptr);
         return *this;
     }
 
@@ -212,6 +187,30 @@ public:
     bool operator!=(const tree_iterator& other) const
     {
         return !(*this == other);
+    }
+
+private:
+    iter_pointer tree_iter_next(node_base_pointer ptr)
+    {
+        if (ptr->right != NULL) {
+            return tree_min(ptr->right);
+        }
+        while (!tree_is_left_child(ptr)) {
+            ptr = ptr->get_parent();
+        }
+        return ptr->get_parent();
+    }
+
+    iter_pointer tree_iter_prev(iter_pointer ptr)
+    {
+        if (ptr->left != NULL) {
+            return tree_max(ptr->left);
+        }
+        node_base_pointer nptr = static_cast<node_base_pointer>(ptr);
+        while (tree_is_left_child(nptr)) {
+            nptr = nptr->get_parent();
+        }
+        return nptr->get_parent();
     }
 
 private:
@@ -285,7 +284,9 @@ public:
             node_pointer ptr = construct_node(value);
             ptr->parent = parent;
             child = static_cast<node_base_pointer>(ptr);
-            begin_iter_ = static_cast<iter_pointer>(child);
+            if (begin_iter_->left != NULL)
+                begin_iter_ = begin_iter_->left;
+            ++size_;
         }
     }
 
