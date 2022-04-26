@@ -6,7 +6,7 @@
 /*   By: mleblanc <mleblanc@student.42quebec.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/01 15:27:15 by mleblanc          #+#    #+#             */
-/*   Updated: 2022/04/22 14:17:45 by mleblanc         ###   ########.fr       */
+/*   Updated: 2022/04/26 19:03:30 by mleblanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -419,16 +419,9 @@ public:
 
     void swap(vector& other)
     {
-        pointer ptr_start = start_;
-        pointer ptr_end = end_;
-        pointer ptr_end_cap = end_cap_;
-
-        start_ = other.start_;
-        end_ = other.end_;
-        end_cap_ = other.end_cap_;
-        other.start_ = ptr_start;
-        other.end_ = ptr_end;
-        other.end_cap_ = ptr_end_cap;
+        std::swap(start_, other.start_);
+        std::swap(end_, other.end_);
+        std::swap(end_cap_, other.end_cap_);
     }
 
 private:

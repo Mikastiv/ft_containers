@@ -6,7 +6,7 @@
 /*   By: mleblanc <mleblanc@student.42quebec.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/21 22:03:04 by mleblanc          #+#    #+#             */
-/*   Updated: 2022/04/26 00:27:08 by mleblanc         ###   ########.fr       */
+/*   Updated: 2022/04/26 19:33:17 by mleblanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,6 @@ class tree_node;
 
 struct tree_base_node_types {
     typedef tree_end_node end_node_type;
-    typedef end_node_type* parent_pointer;
     typedef end_node_type* iter_pointer;
     typedef tree_base_node base_node_type;
     typedef base_node_type* node_base_pointer;
@@ -57,7 +56,7 @@ public:
 class tree_base_node : public tree_base_node_types::end_node_type
 {
 public:
-    typedef tree_base_node_types::parent_pointer parent_pointer;
+    typedef tree_base_node_types::iter_pointer iter_pointer;
     typedef tree_base_node_types::node_base_pointer node_base_pointer;
 
 public:
@@ -75,7 +74,7 @@ public:
 
 public:
     node_base_pointer right;
-    parent_pointer parent;
+    iter_pointer parent;
     bool is_black;
 };
 
@@ -139,6 +138,11 @@ public:
 
     tree_iterator(iter_pointer p)
         : ptr(p)
+    {
+    }
+
+    tree_iterator(node_base_pointer p)
+        : ptr(static_cast<iter_pointer>(p))
     {
     }
 
@@ -276,18 +280,9 @@ public:
     }
 
 public:
-    void insert(const T& value)
+    allocator_type get_allocator() const
     {
-        node_base_pointer parent;
-        node_base_pointer& child = find_equal(parent, value);
-        if (child == NULL) {
-            node_pointer ptr = construct_node(value);
-            ptr->parent = parent;
-            child = static_cast<node_base_pointer>(ptr);
-            if (begin_iter_->left != NULL)
-                begin_iter_ = begin_iter_->left;
-            ++size_;
-        }
+        return value_alloc_;
     }
 
     iterator begin()
@@ -310,6 +305,11 @@ public:
         return const_iterator(end_node());
     }
 
+    bool empty() const
+    {
+        return size() == 0;
+    }
+
     size_type size() const
     {
         return size_;
@@ -319,6 +319,14 @@ public:
     {
         return std::min(alloc_.max_size(),
                         static_cast<size_type>(std::numeric_limits<difference_type>::max()));
+    }
+
+    void clear()
+    {
+        destroy(root());
+        end_node_.left = NULL;
+        begin_iter_ = end_node();
+        size_ = 0;
     }
 
     value_compare& value_comp()
@@ -331,23 +339,95 @@ public:
         return comp_;
     }
 
+    template <typename InputIt>
+    void insert(InputIt first, InputIt last)
+    {
+        for (; first != last; ++first) {
+            insert(*first);
+        }
+    }
+
+    void insert(const value_type& value)
+    {
+        iter_pointer parent;
+        node_base_pointer& child = find_equal(parent, value);
+
+        if (child == NULL) {
+            node_pointer ptr = construct_node(value);
+            ptr->parent = parent;
+            child = static_cast<node_base_pointer>(ptr);
+            if (begin_iter_->left != NULL)
+                begin_iter_ = begin_iter_->left;
+            ++size_;
+        }
+    }
+
+    void swap(tree& other)
+    {
+        std::swap(begin_iter_, other.begin_iter_);
+        std::swap(end_node_, other.end_node_);
+        std::swap(size_, other.size_);
+        if (size() == 0) {
+            begin_iter_ = end_node();
+        } else {
+            end_node()->left->parent = end_node();
+        }
+        if (other.size() == 0) {
+            other.begin_iter_ = other.end_node();
+        } else {
+            other.end_node()->left->parent = other.end_node();
+        }
+    }
+
+    template <typename Key>
+    size_type count(const Key& key) const
+    {
+        return find_iter(key) == NULL ? 0 : 1;
+    }
+
+    template <typename Key>
+    iterator find(const Key& key)
+    {
+        iter_pointer ptr = find_iter(key);
+
+        if (ptr == NULL) {
+            return iterator(end_node());
+        }
+        return iterator(ptr);
+    }
+
+    template <typename Key>
+    const_iterator find(const Key& key) const
+    {
+        iter_pointer ptr = find_iter(key);
+
+        if (ptr == NULL) {
+            return const_iterator(end_node());
+        }
+        return const_iterator(ptr);
+    }
+
 private:
-    node_pointer root()
+    node_pointer root() const
     {
-        return static_cast<node_pointer>(end_node_.left);
+        return static_cast<node_pointer>(end_node()->left);
     }
 
-    node_base_pointer* root_ptr()
+    node_base_pointer* root_ptr() const
     {
-        return static_cast<node_base_pointer*>(&end_node_.left);
+        return static_cast<node_base_pointer*>(&(end_node()->left));
     }
 
-    node_base_pointer end_node()
+    iter_pointer end_node()
     {
-        return static_cast<node_base_pointer>(&end_node_);
+        return static_cast<iter_pointer>(&end_node_);
     }
 
-private:
+    iter_pointer end_node() const
+    {
+        return const_cast<iter_pointer>(&end_node_);
+    }
+
     node_pointer construct_node(const T& value)
     {
         node_pointer new_node = alloc_.allocate(1);
@@ -357,39 +437,55 @@ private:
     }
 
     template <typename Key>
-    node_base_pointer& find_equal(node_base_pointer& parent, const Key& value)
+    iter_pointer find_iter(const Key& key) const
+    {
+        node_pointer ptr = root();
+        while (ptr != NULL) {
+            if (value_comp()(key, ptr->value)) {
+                ptr = static_cast<node_pointer>(ptr->left);
+            } else if (value_comp()(ptr->value, key)) {
+                ptr = static_cast<node_pointer>(ptr->right);
+            } else {
+                return static_cast<iter_pointer>(ptr);
+            }
+        }
+        return NULL;
+    }
+
+    template <typename Key>
+    node_base_pointer& find_equal(iter_pointer& parent, const Key& key)
     {
         node_pointer node = root();
         node_base_pointer* ptr = root_ptr();
 
         if (node != NULL) {
             while (true) {
-                if (value_comp()(value, node->value)) {
-                    // value < node->value
+                if (value_comp()(key, node->value)) {
+                    // key < node->value
                     if (node->left != NULL) {
                         ptr = &node->left;
                         node = static_cast<node_pointer>(node->left);
                     } else {
-                        parent = static_cast<node_base_pointer>(node);
+                        parent = static_cast<iter_pointer>(node);
                         return node->left;
                     }
-                } else if (value_comp()(node->value, value)) {
-                    // value > node->value
+                } else if (value_comp()(node->value, key)) {
+                    // key > node->value
                     if (node->right != NULL) {
                         ptr = &node->right;
                         node = static_cast<node_pointer>(node->right);
                     } else {
-                        parent = static_cast<node_base_pointer>(node);
+                        parent = static_cast<iter_pointer>(node);
                         return node->right;
                     }
                 } else {
-                    // value == node->value
-                    parent = static_cast<node_base_pointer>(node);
+                    // key == node->value
+                    parent = static_cast<iter_pointer>(node);
                     return *ptr;
                 }
             }
         }
-        parent = static_cast<node_base_pointer>(end_node());
+        parent = static_cast<iter_pointer>(end_node());
         return parent->left;
     }
 
