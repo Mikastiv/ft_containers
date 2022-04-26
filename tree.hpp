@@ -6,7 +6,7 @@
 /*   By: mleblanc <mleblanc@student.42quebec.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/21 22:03:04 by mleblanc          #+#    #+#             */
-/*   Updated: 2022/04/25 23:48:44 by mleblanc         ###   ########.fr       */
+/*   Updated: 2022/04/25 23:57:16 by mleblanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,6 +26,7 @@ class tree_node;
 
 struct tree_base_node_types {
     typedef tree_end_node end_node_type;
+    typedef end_node_type* parent_pointer;
     typedef end_node_type* iter_pointer;
     typedef tree_base_node base_node_type;
     typedef base_node_type* node_base_pointer;
@@ -56,6 +57,7 @@ public:
 class tree_base_node : public tree_base_node_types::end_node_type
 {
 public:
+    typedef tree_base_node_types::parent_pointer parent_pointer;
     typedef tree_base_node_types::node_base_pointer node_base_pointer;
 
 public:
@@ -66,9 +68,14 @@ public:
     {
     }
 
+    node_base_pointer get_parent() const
+    {
+        return static_cast<node_base_pointer>(parent);
+    }
+
 public:
     node_base_pointer right;
-    node_base_pointer parent;
+    parent_pointer parent;
     bool is_black;
 };
 
@@ -116,7 +123,7 @@ IterPtr tree_iter_next(NodePtr ptr)
         return tree_min(ptr->right);
     }
     while (!tree_is_left_child(ptr)) {
-        ptr = ptr->parent;
+        ptr = ptr->get_parent();
     }
     return static_cast<IterPtr>(ptr->parent);
 }
@@ -129,7 +136,7 @@ NodePtr tree_iter_prev(IterPtr ptr)
     }
     NodePtr nptr = static_cast<NodePtr>(ptr);
     while (tree_is_left_child(nptr)) {
-        nptr = nptr->parent;
+        nptr = nptr->get_parent();
     }
     return nptr->parent;
 }
@@ -137,17 +144,17 @@ NodePtr tree_iter_prev(IterPtr ptr)
 template <typename T, typename Ref, typename Pointer, typename DiffType>
 class tree_iterator
 {
-private:
-    typedef typename tree_node_types<T>::node_base_pointer node_base_pointer;
-    typedef typename tree_node_types<T>::iter_pointer iter_pointer;
-    typedef typename tree_node_types<T>::node_pointer node_pointer;
-
 public:
     typedef std::bidirectional_iterator_tag iterator_category;
     typedef T value_type;
     typedef Ref reference;
     typedef Pointer pointer;
     typedef DiffType difference_type;
+
+private:
+    typedef typename tree_node_types<T>::node_base_pointer node_base_pointer;
+    typedef typename tree_node_types<T>::iter_pointer iter_pointer;
+    typedef typename tree_node_types<T>::node_pointer node_pointer;
 
 public:
     tree_iterator()
