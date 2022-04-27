@@ -6,7 +6,7 @@
 /*   By: mleblanc <mleblanc@student.42quebec.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/18 12:17:41 by mleblanc          #+#    #+#             */
-/*   Updated: 2022/04/27 02:43:05 by mleblanc         ###   ########.fr       */
+/*   Updated: 2022/04/27 02:59:31 by mleblanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -253,16 +253,6 @@ public:
     }
     // key_compare key_comp() const;
     // value_compare value_comp() const;
-
-private:
-    void check_key(const key_type& key) const
-    {
-        iterator it = find(key);
-
-        if (it == end()) {
-            throw std::out_of_range("Key is out of range");
-        }
-    }
 
 private:
     allocator_type alloc_;

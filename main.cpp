@@ -37,4 +37,26 @@ int main()
     for (auto it = t.begin(); it != t.end(); ++it) {
         std::cout << it->second << "\n";
     }
+
+    t[1];
+
+    for (auto it = t.begin(); it != t.end(); ++it) {
+        std::cout << it->second << "\n";
+    }
+
+    t[1].second = 1.324;
+    for (auto it = t.begin(); it != t.end(); ++it) {
+        std::cout << it->second << "\n";
+    }
+
+    t.at(1).second = 57.345;
+
+    for (auto it = t.begin(); it != t.end(); ++it) {
+        std::cout << it->second << "\n";
+    }
+
+    try {
+        t.at(5);
+    } catch (...) {
+    }
 }
