@@ -6,7 +6,7 @@
 /*   By: mleblanc <mleblanc@student.42quebec.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/21 22:03:04 by mleblanc          #+#    #+#             */
-/*   Updated: 2022/04/27 17:39:05 by mleblanc         ###   ########.fr       */
+/*   Updated: 2022/04/27 17:51:25 by mleblanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,8 +16,8 @@
 #include <iterator>
 #include <limits>
 
-#include "utility.hpp"
 #include "tree_iterator.hpp"
+#include "utility.hpp"
 
 namespace ft
 {
@@ -262,6 +262,13 @@ public:
     void erase(iterator pos)
     {
         (void)pos;
+    }
+
+    void erase(iterator first, iterator last)
+    {
+        for (; first != last; ++first) {
+            erase(first);
+        }
     }
 
     template <typename Key>

@@ -6,7 +6,7 @@
 /*   By: mleblanc <mleblanc@student.42quebec.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/18 12:17:41 by mleblanc          #+#    #+#             */
-/*   Updated: 2022/04/27 16:39:13 by mleblanc         ###   ########.fr       */
+/*   Updated: 2022/04/27 17:48:20 by mleblanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -262,9 +262,7 @@ public:
 
     void erase(iterator first, iterator last)
     {
-        for (; first != last; ++first) {
-            erase(*first);
-        }
+        tree_.erase(first, last);
     }
 
     size_type erase(const key_type& key)
