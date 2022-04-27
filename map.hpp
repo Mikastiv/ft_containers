@@ -6,7 +6,7 @@
 /*   By: mleblanc <mleblanc@student.42quebec.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/18 12:17:41 by mleblanc          #+#    #+#             */
-/*   Updated: 2022/04/21 23:40:44 by mleblanc         ###   ########.fr       */
+/*   Updated: 2022/04/27 02:43:05 by mleblanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,11 +14,59 @@
 
 #include <memory>
 
+#include "iterator.hpp"
 #include "tree.hpp"
 #include "utility.hpp"
 
 namespace ft
 {
+template <typename Key, typename T, typename Compare>
+class value_type_compare
+{
+public:
+    value_type_compare() : comp_()
+    {
+    }
+    value_type_compare(const Compare& c) : comp_(c)
+    {
+    }
+
+public:
+    const Compare& key_comp() const
+    {
+        return comp_;
+    }
+
+    bool operator()(const T& x, const T& y) const
+    {
+        return key_comp()(x.first, y.first);
+    }
+
+    bool operator()(const Key& x, const T& y) const
+    {
+        return key_comp()(x, y.first);
+    }
+
+    bool operator()(const T& x, const Key& y) const
+    {
+        return key_comp()(x.first, y);
+    }
+
+    void swap(value_type_compare& other)
+    {
+        std::swap(comp_, other.comp_);
+    }
+
+private:
+    Compare comp_;
+};
+
+template <typename Key, typename T, typename Compare>
+void swap(value_type_compare<Key, T, Compare>& x, value_type_compare<Key, T, Compare>& y)
+{
+    x.swap(y);
+}
+
 template <typename Key, typename T, typename Compare = less<Key>,
           typename Allocator = std::allocator<pair<const Key, T> > >
 class map
@@ -36,55 +84,189 @@ public:
     typedef typename allocator_type::pointer pointer;
     typedef typename allocator_type::const_pointer const_pointer;
 
-public:
-    map();
-    explicit map(const key_compare& comp, const allocator_type& alloc = allocator_type());
-    template <typename InputIt>
-    map(InputIt first, InputIt last, const key_compare& comp = key_compare(),
-        const allocator_type& alloc = allocator_type());
-    map(const map& other);
-    map& operator=(const map& other);
-    ~map();
+private:
+    typedef value_type_compare<key_type, value_type, key_compare> vt_compare;
+    typedef tree<value_type, vt_compare, allocator_type> base;
 
 public:
-    allocator_type get_allocator() const;
-    reference at(const key_type& key);
-    const_reference at(const key_type& key) const;
-    reference operator[](const key_type& key);
-    iterator begin();
-    const_iterator begin() const;
-    iterator end();
-    const_iterator end() const;
-    reverse_iterator rbegin();
-    const_reverse_iterator rbegin() const;
-    reverse_iterator rend();
-    const_reverse_iterator rend() const;
-    bool empty() const;
-    size_type size() const;
-    size_type max_size() const;
-    void clear();
-    pair<iterator, bool> insert(const value_type& value);
-    iterator insert(iterator hint, const value_type& value);
+    typedef typename base::iterator iterator;
+    typedef typename base::const_iterator const_iterator;
+    typedef ft::reverse_iterator<iterator> reverse_iterator;
+    typedef ft::reverse_iterator<const_iterator> const_reverse_iterator;
+
+public:
+    map() : alloc_(allocator_type()), tree_()
+    {
+    }
+
+    explicit map(const key_compare& comp, const allocator_type& alloc = allocator_type())
+        : tree_(vt_compare(comp), alloc)
+    {
+    }
+
     template <typename InputIt>
-    void insert(InputIt first, InputIt last);
+    map(InputIt first, InputIt last, const key_compare& comp = key_compare(),
+        const allocator_type& alloc = allocator_type())
+        : tree_(vt_compare(comp), alloc)
+    {
+        insert(first, last);
+    }
+    map(const map& other) : tree_(other.tree_)
+    {
+    }
+    map& operator=(const map& other)
+    {
+        tree_ = other.tree_;
+    }
+    ~map()
+    {
+    }
+
+public:
+    allocator_type get_allocator() const
+    {
+        return tree_.get_allocator();
+    }
+    reference at(const key_type& key)
+    {
+        iterator it = find(key);
+        if (it == end()) {
+            throw std::out_of_range("Key not found");
+        }
+        return *it;
+    }
+    const_reference at(const key_type& key) const
+    {
+        const_iterator it = find(key);
+        if (it == end()) {
+            throw std::out_of_range("Key not found");
+        }
+        return *it;
+    }
+    reference operator[](const key_type& key)
+    {
+        return tree_.find_or_insert(key, mapped_type());
+    }
+    iterator begin()
+    {
+        return tree_.begin();
+    }
+    const_iterator begin() const
+    {
+        return tree_.begin();
+    }
+    iterator end()
+    {
+        return tree_.end();
+    }
+    const_iterator end() const
+    {
+        return tree_.end();
+    }
+    reverse_iterator rbegin()
+    {
+        return reverse_iterator(end());
+    }
+    const_reverse_iterator rbegin() const
+    {
+        return const_reverse_iterator(end());
+    }
+    reverse_iterator rend()
+    {
+        return reverse_iterator(begin());
+    }
+    const_reverse_iterator rend() const
+    {
+        return const_reverse_iterator(begin());
+    }
+    bool empty() const
+    {
+        return tree_.empty();
+    }
+    size_type size() const
+    {
+        return tree_.size();
+    }
+    size_type max_size() const
+    {
+        return tree_.max_size();
+    }
+    void clear()
+    {
+        tree_.clear();
+    }
+    pair<iterator, bool> insert(const value_type& value)
+    {
+        return tree_.insert(value);
+    }
+    iterator insert(iterator hint, const value_type& value)
+    {
+        return tree_.insert(hint, value);
+    }
+    template <typename InputIt>
+    void insert(InputIt first, InputIt last)
+    {
+        tree_.insert(first, last);
+    }
     void erase(iterator pos);
     void erase(iterator first, iterator last);
     size_type erase(const key_type& key);
-    void swap(map& other);
-    size_type count(const key_type& key) const;
-    iterator find(const key_type& key);
-    const_iterator find(const key_type& key) const;
-    pair<iterator, iterator> equal_range(const key_type& key);
-    pair<const_iterator, const_iterator> equal_range(const key_type& key) const;
-    iterator lower_bound(const key_type& key);
-    const_iterator lower_bound(const key_type& key) const;
-    iterator upper_bound(const key_type& key);
-    const_iterator upper_bound(const key_type& key) const;
-    key_compare key_comp() const;
+    void swap(map& other)
+    {
+        tree_.swap(other);
+    }
+    size_type count(const key_type& key) const
+    {
+        return tree_.count(key);
+    }
+    iterator find(const key_type& key)
+    {
+        return tree_.find(key);
+    }
+    const_iterator find(const key_type& key) const
+    {
+        return tree_.find(key);
+    }
+    pair<iterator, iterator> equal_range(const key_type& key)
+    {
+        return tree_.equal_range(key);
+    }
+    pair<const_iterator, const_iterator> equal_range(const key_type& key) const
+    {
+        return tree_.equal_range(key);
+    }
+    iterator lower_bound(const key_type& key)
+    {
+        return tree_.lower_bound(key);
+    }
+    const_iterator lower_bound(const key_type& key) const
+    {
+        return tree_.lower_bound(key);
+    }
+    iterator upper_bound(const key_type& key)
+    {
+        return tree_.upper_bound(key);
+    }
+    const_iterator upper_bound(const key_type& key) const
+    {
+        return tree_.upper_bound(key);
+    }
+    // key_compare key_comp() const;
     // value_compare value_comp() const;
 
 private:
-    tree<value_type, key_compare, allocator_type> tree_;
+    void check_key(const key_type& key) const
+    {
+        iterator it = find(key);
+
+        if (it == end()) {
+            throw std::out_of_range("Key is out of range");
+        }
+    }
+
+private:
+    allocator_type alloc_;
+    base tree_;
 };
 
 template <typename Key, typename T, typename Compare, typename Allocator>

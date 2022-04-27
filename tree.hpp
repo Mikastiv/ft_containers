@@ -6,7 +6,7 @@
 /*   By: mleblanc <mleblanc@student.42quebec.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/21 22:03:04 by mleblanc          #+#    #+#             */
-/*   Updated: 2022/04/26 19:33:17 by mleblanc         ###   ########.fr       */
+/*   Updated: 2022/04/27 02:31:12 by mleblanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,10 @@
 #include <limits>
 #include <stddef.h>
 
+#include "utility.hpp"
+
+namespace ft
+{
 class tree_end_node;
 
 class tree_base_node;
@@ -44,8 +48,7 @@ public:
     typedef tree_base_node_types::node_base_pointer node_base_pointer;
 
 public:
-    tree_end_node()
-        : left(NULL)
+    tree_end_node() : left(NULL)
     {
     }
 
@@ -60,10 +63,7 @@ public:
     typedef tree_base_node_types::node_base_pointer node_base_pointer;
 
 public:
-    tree_base_node()
-        : right(NULL),
-          parent(NULL),
-          is_black(false)
+    tree_base_node() : right(NULL), parent(NULL), is_black(false)
     {
     }
 
@@ -82,8 +82,7 @@ template <typename T>
 class tree_node : public tree_node_types<T>::base_node_type
 {
 public:
-    tree_node()
-        : value(T())
+    tree_node() : value(T())
     {
     }
 
@@ -115,14 +114,39 @@ NodePtr tree_min(NodePtr ptr)
     return ptr;
 }
 
-template <typename T, typename Ref, typename Pointer, typename DiffType>
+template <typename IterPtr, typename NodePtr>
+IterPtr tree_iter_next(NodePtr ptr)
+{
+    if (ptr->right != NULL) {
+        return tree_min(ptr->right);
+    }
+    while (!tree_is_left_child(ptr)) {
+        ptr = ptr->get_parent();
+    }
+    return ptr->get_parent();
+}
+
+template <typename NodePtr, typename IterPtr>
+IterPtr tree_iter_prev(IterPtr ptr)
+{
+    if (ptr->left != NULL) {
+        return tree_max(ptr->left);
+    }
+    NodePtr nptr = static_cast<NodePtr>(ptr);
+    while (tree_is_left_child(nptr)) {
+        nptr = nptr->get_parent();
+    }
+    return nptr->get_parent();
+}
+
+template <typename T, typename DiffType>
 class tree_iterator
 {
 public:
     typedef std::bidirectional_iterator_tag iterator_category;
     typedef T value_type;
-    typedef Ref reference;
-    typedef Pointer pointer;
+    typedef T& reference;
+    typedef T* pointer;
     typedef DiffType difference_type;
 
 private:
@@ -131,22 +155,33 @@ private:
     typedef typename tree_node_types<T>::node_pointer node_pointer;
 
 public:
-    tree_iterator()
-        : ptr(NULL)
+    tree_iterator() : ptr(NULL)
     {
     }
 
-    tree_iterator(iter_pointer p)
-        : ptr(p)
+    tree_iterator(iter_pointer p) : ptr(p)
     {
     }
 
-    tree_iterator(node_base_pointer p)
-        : ptr(static_cast<iter_pointer>(p))
+    tree_iterator(node_base_pointer p) : ptr(static_cast<iter_pointer>(p))
+    {
+    }
+
+    tree_iterator(node_pointer p) : ptr(static_cast<iter_pointer>(p))
     {
     }
 
 public:
+    iter_pointer& base()
+    {
+        return ptr;
+    }
+
+    node_pointer node_ptr() const
+    {
+        return static_cast<node_pointer>(ptr);
+    }
+
     reference operator*() const
     {
         return static_cast<node_pointer>(ptr)->value;
@@ -159,7 +194,7 @@ public:
 
     tree_iterator& operator++()
     {
-        ptr = tree_iter_next(static_cast<node_base_pointer>(ptr));
+        ptr = tree_iter_next<iter_pointer>(static_cast<node_base_pointer>(ptr));
         return *this;
     }
 
@@ -172,7 +207,7 @@ public:
 
     tree_iterator& operator--()
     {
-        ptr = tree_iter_next(ptr);
+        ptr = tree_iter_prev<node_base_pointer>(ptr);
         return *this;
     }
 
@@ -194,27 +229,101 @@ public:
     }
 
 private:
-    iter_pointer tree_iter_next(node_base_pointer ptr)
+    iter_pointer ptr;
+};
+
+template <typename T, typename DiffType>
+class const_tree_iterator
+{
+public:
+    typedef std::bidirectional_iterator_tag iterator_category;
+    typedef T value_type;
+    typedef const T& reference;
+    typedef const T* pointer;
+    typedef DiffType difference_type;
+    typedef tree_iterator<T, DiffType> non_const_iterator;
+
+private:
+    typedef typename tree_node_types<T>::node_base_pointer node_base_pointer;
+    typedef typename tree_node_types<T>::iter_pointer iter_pointer;
+    typedef typename tree_node_types<T>::node_pointer node_pointer;
+
+public:
+    const_tree_iterator() : ptr(NULL)
     {
-        if (ptr->right != NULL) {
-            return tree_min(ptr->right);
-        }
-        while (!tree_is_left_child(ptr)) {
-            ptr = ptr->get_parent();
-        }
-        return ptr->get_parent();
     }
 
-    iter_pointer tree_iter_prev(iter_pointer ptr)
+    const_tree_iterator(iter_pointer p) : ptr(p)
     {
-        if (ptr->left != NULL) {
-            return tree_max(ptr->left);
-        }
-        node_base_pointer nptr = static_cast<node_base_pointer>(ptr);
-        while (tree_is_left_child(nptr)) {
-            nptr = nptr->get_parent();
-        }
-        return nptr->get_parent();
+    }
+
+    const_tree_iterator(node_base_pointer p) : ptr(static_cast<iter_pointer>(p))
+    {
+    }
+
+    const_tree_iterator(node_pointer p) : ptr(static_cast<iter_pointer>(p))
+    {
+    }
+
+    const_tree_iterator(non_const_iterator it) : ptr(it.base())
+    {
+    }
+
+public:
+    iter_pointer& base()
+    {
+        return ptr;
+    }
+
+    node_pointer node_ptr() const
+    {
+        return static_cast<node_pointer>(ptr);
+    }
+
+    reference operator*() const
+    {
+        return static_cast<node_pointer>(ptr)->value;
+    }
+
+    pointer operator->() const
+    {
+        return &(operator*());
+    }
+
+    const_tree_iterator& operator++()
+    {
+        ptr = tree_iter_next<iter_pointer>(static_cast<node_base_pointer>(ptr));
+        return *this;
+    }
+
+    const_tree_iterator operator++(int)
+    {
+        const_tree_iterator t = *this;
+        ++(*this);
+        return t;
+    }
+
+    const_tree_iterator& operator--()
+    {
+        ptr = tree_iter_prev<node_base_pointer>(ptr);
+        return *this;
+    }
+
+    const_tree_iterator operator--(int)
+    {
+        const_tree_iterator t = *this;
+        --(*this);
+        return t;
+    }
+
+    bool operator==(const const_tree_iterator& other) const
+    {
+        return ptr == other.ptr;
+    }
+
+    bool operator!=(const const_tree_iterator& other) const
+    {
+        return !(*this == other);
     }
 
 private:
@@ -234,9 +343,8 @@ public:
     typedef const value_type& const_reference;
     typedef typename allocator_type::pointer pointer;
     typedef typename allocator_type::const_pointer const_pointer;
-    typedef tree_iterator<value_type, value_type&, value_type*, difference_type> iterator;
-    typedef tree_iterator<value_type, const value_type&, const value_type*, difference_type>
-        const_iterator;
+    typedef tree_iterator<value_type, difference_type> iterator;
+    typedef const_tree_iterator<value_type, difference_type> const_iterator;
 
 private:
     typedef typename tree_node_types<value_type>::end_node_type end_node_type;
@@ -248,29 +356,36 @@ private:
 
 public:
     tree()
-        : alloc_(node_allocator()),
-          value_alloc_(allocator_type()),
-          comp_(value_compare()),
-          end_node_(),
-          size_(0)
+        : alloc_(node_allocator()), value_alloc_(allocator_type()), comp_(value_compare()),
+          end_node_(), size_(0)
     {
         begin_iter_ = end_node();
     }
 
     tree(const tree& other)
-        : alloc_(other.alloc_),
-          value_alloc_(other.value_alloc_),
-          comp_(value_compare()),
-          end_node_(),
-          size_(other.size_)
+        : alloc_(other.alloc_), value_alloc_(other.value_alloc_), comp_(other.comp_), end_node_(),
+          size_(0)
+    {
+        begin_iter_ = end_node();
+        insert(other.begin(), other.last());
+    }
+
+    tree(const value_compare& comp, const allocator_type& alloc)
+        : alloc_(node_allocator()), value_alloc_(alloc), comp_(comp), end_node_(), size_(0)
     {
         begin_iter_ = end_node();
     }
 
     tree& operator=(const tree& other)
     {
-        end_node_ = other.end_node_;
-        size_ = other.size_;
+        if (this == &other) {
+            return *this;
+        }
+
+        tree tmp(other);
+
+        swap(tmp);
+        insert(other.begin(), other.end());
         return *this;
     }
 
@@ -283,6 +398,20 @@ public:
     allocator_type get_allocator() const
     {
         return value_alloc_;
+    }
+
+    template <typename Key, typename Value>
+    reference find_or_insert(const Key& key, const Value& value)
+    {
+        iter_pointer parent;
+        node_base_pointer& child = find_pos(parent, key);
+
+        iterator it(child);
+        if (child == NULL) {
+            it = insert_at(child, parent, value_type(key, value));
+        }
+
+        return *it;
     }
 
     iterator begin()
@@ -339,6 +468,35 @@ public:
         return comp_;
     }
 
+    pair<iterator, bool> insert(const value_type& value)
+    {
+        iter_pointer parent;
+        node_base_pointer& child = find_pos(parent, value);
+        bool inserted = false;
+
+        iterator it(child);
+        if (child == NULL) {
+            it = insert_at(child, parent, value);
+            inserted = true;
+        }
+
+        return make_pair(it, inserted);
+    }
+
+    iterator insert(iterator hint, const value_type& value)
+    {
+        iter_pointer parent;
+        node_base_pointer dummy;
+        node_base_pointer& child = find_pos(hint, parent, value, dummy);
+
+        iterator it(child);
+        if (child == NULL) {
+            it = insert_at(child, parent, value);
+        }
+
+        return it;
+    }
+
     template <typename InputIt>
     void insert(InputIt first, InputIt last)
     {
@@ -347,31 +505,19 @@ public:
         }
     }
 
-    void insert(const value_type& value)
-    {
-        iter_pointer parent;
-        node_base_pointer& child = find_equal(parent, value);
-
-        if (child == NULL) {
-            node_pointer ptr = construct_node(value);
-            ptr->parent = parent;
-            child = static_cast<node_base_pointer>(ptr);
-            if (begin_iter_->left != NULL)
-                begin_iter_ = begin_iter_->left;
-            ++size_;
-        }
-    }
-
     void swap(tree& other)
     {
         std::swap(begin_iter_, other.begin_iter_);
         std::swap(end_node_, other.end_node_);
         std::swap(size_, other.size_);
+        std::swap(comp_, other.comp_);
+
         if (size() == 0) {
             begin_iter_ = end_node();
         } else {
             end_node()->left->parent = end_node();
         }
+
         if (other.size() == 0) {
             other.begin_iter_ = other.end_node();
         } else {
@@ -407,7 +553,80 @@ public:
         return const_iterator(ptr);
     }
 
+    template <typename Key>
+    pair<iterator, iterator> equal_range(const Key& key)
+    {
+        return make_pair(lower_bound(key), upper_bound(key));
+    }
+
+    template <typename Key>
+    pair<const_iterator, const_iterator> equal_range(const Key& key) const
+    {
+        return make_pair(lower_bound(key), upper_bound(key));
+    }
+
+    template <typename Key>
+    iterator lower_bound(const Key& key)
+    {
+        iterator it = begin();
+
+        while (it != end() && value_comp()(*it, key)) {
+            ++it;
+        }
+
+        return it;
+    }
+
+    template <typename Key>
+    const_iterator lower_bound(const Key& key) const
+    {
+        const_iterator it = begin();
+
+        while (it != end() && value_comp()(*it, key)) {
+            ++it;
+        }
+
+        return it;
+    }
+
+    template <typename Key>
+    iterator upper_bound(const Key& key)
+    {
+        iterator it = begin();
+
+        while (it != end() && !value_comp()(key, *it)) {
+            ++it;
+        }
+
+        return it;
+    }
+
+    template <typename Key>
+    const_iterator upper_bound(const Key& key) const
+    {
+        const_iterator it = begin();
+
+        while (it != end() && !value_comp()(key, *it)) {
+            ++it;
+        }
+
+        return it;
+    }
+
 private:
+    iterator insert_at(node_base_pointer& pos, iter_pointer parent, const value_type& value)
+    {
+        pos = construct_node(value);
+        pos->parent = parent;
+        if (begin_iter_->left != NULL)
+            begin_iter_ = begin_iter_->left;
+        ++size_;
+
+        // Balance tree
+
+        return iterator(pos);
+    }
+
     node_pointer root() const
     {
         return static_cast<node_pointer>(end_node()->left);
@@ -428,10 +647,12 @@ private:
         return const_cast<iter_pointer>(&end_node_);
     }
 
-    node_pointer construct_node(const T& value)
+    node_pointer construct_node(const value_type& value)
     {
         node_pointer new_node = alloc_.allocate(1);
-        alloc_.construct(new_node, node_type());
+        new_node->left = NULL;
+        new_node->right = NULL;
+        new_node->is_black = false;
         value_alloc_.construct(&new_node->value, value);
         return new_node;
     }
@@ -453,7 +674,7 @@ private:
     }
 
     template <typename Key>
-    node_base_pointer& find_equal(iter_pointer& parent, const Key& key)
+    node_base_pointer& find_pos(iter_pointer& parent, const Key& key)
     {
         node_pointer node = root();
         node_base_pointer* ptr = root_ptr();
@@ -489,6 +710,40 @@ private:
         return parent->left;
     }
 
+    node_base_pointer& find_pos(iterator hint, iter_pointer& parent, const value_type& value,
+                                node_base_pointer& dummy)
+    {
+        if (hint == end() || value_comp()(value, *hint)) {
+            const_iterator prev = hint;
+            if (prev == begin() || value_comp()(*--prev, value)) {
+                if (hint.base()->left == NULL) {
+                    parent = hint.base();
+                    return parent->left;
+                } else {
+                    parent = prev.base();
+                    return prev.node_ptr()->right;
+                }
+            }
+            return find_pos(parent, value);
+        } else if (value_comp()(*hint, value)) {
+            const_iterator next = hint;
+            ++next;
+            if (next == end() || value_comp()(value, *next)) {
+                if (hint.node_ptr()->right == NULL) {
+                    parent = hint.base();
+                    return hint.node_ptr()->right;
+                } else {
+                    parent = next.base();
+                    return parent->left;
+                }
+            }
+            return find_pos(parent, value);
+        }
+        parent = hint.base();
+        dummy = static_cast<node_base_pointer>(hint.base());
+        return dummy;
+    }
+
     void destroy(node_pointer node)
     {
         if (node != NULL) {
@@ -507,3 +762,4 @@ private:
     iter_pointer begin_iter_;
     size_type size_;
 };
+} // namespace ft

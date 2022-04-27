@@ -1,22 +1,22 @@
-#include "tree.hpp"
+#include "map.hpp"
 #include "utility.hpp"
 #include <iostream>
 #include <memory>
 
 int main()
 {
-    tree<int, ft::less<int>, std::allocator<int> > t;
+    ft::map<int, float> t;
 
     for (auto it = t.begin(); it != t.end(); ++it) {
-        std::cout << *it << "\n";
+        std::cout << it->second << "\n";
     }
-    t.insert(45);
-    t.insert(23);
-    t.insert(34);
-    t.insert(34);
+    t.insert(ft::make_pair(45, 45.0));
+    t.insert(ft::make_pair(23, 23.5));
+    t.insert(ft::make_pair(34, 34.99));
+    t.insert(ft::make_pair(34, 34.43));
 
     for (auto it = t.begin(); it != t.end(); ++it) {
-        std::cout << *it << "\n";
+        std::cout << it->second << "\n";
     }
 
     std::cout << t.count(23) << "\n";
@@ -24,8 +24,17 @@ int main()
 
     auto it = t.find(0);
     if (it != t.end()) {
-        std::cout << *it << "\n";
+        std::cout << it->second << "\n";
     }
     it = t.find(34);
-    std::cout << *it << "\n";
+    std::cout << it->second << "\n";
+    --it;
+    std::cout << it->second << "\n";
+
+    it = t.insert(t.end(), ft::make_pair(66, 66.1));
+    std::cout << it->second << "\n";
+
+    for (auto it = t.begin(); it != t.end(); ++it) {
+        std::cout << it->second << "\n";
+    }
 }
