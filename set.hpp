@@ -6,7 +6,7 @@
 /*   By: mleblanc <mleblanc@student.42quebec.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/20 16:29:45 by mleblanc          #+#    #+#             */
-/*   Updated: 2022/04/20 17:53:11 by mleblanc         ###   ########.fr       */
+/*   Updated: 2022/04/27 17:42:53 by mleblanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -79,8 +79,8 @@ public:
 };
 
 template <typename Key, typename Compare, typename Allocator>
-void swap(set<Key, Compare, Allocator>& lhs, set<Key, Compare, Allocator>& rhs)
+void swap(set<Key, Compare, Allocator>& x, set<Key, Compare, Allocator>& y)
 {
-    lhs.swap(rhs);
+    x.swap(y);
 }
 } // namespace ft

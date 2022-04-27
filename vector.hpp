@@ -6,7 +6,7 @@
 /*   By: mleblanc <mleblanc@student.42quebec.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/01 15:27:15 by mleblanc          #+#    #+#             */
-/*   Updated: 2022/04/27 16:33:08 by mleblanc         ###   ########.fr       */
+/*   Updated: 2022/04/27 17:41:01 by mleblanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,8 +18,9 @@
 #include <sstream>
 #include <stdexcept>
 
-#include "iterator.hpp"
 #include "utility.hpp"
+#include "iterator.hpp"
+#include "vector_iterator.hpp"
 
 namespace ft
 {

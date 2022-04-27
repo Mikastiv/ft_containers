@@ -6,7 +6,7 @@
 /*   By: mleblanc <mleblanc@student.42quebec.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/21 22:03:04 by mleblanc          #+#    #+#             */
-/*   Updated: 2022/04/27 16:52:31 by mleblanc         ###   ########.fr       */
+/*   Updated: 2022/04/27 17:39:05 by mleblanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,33 +15,12 @@
 #include <algorithm>
 #include <iterator>
 #include <limits>
-#include <stddef.h>
 
 #include "utility.hpp"
+#include "tree_iterator.hpp"
 
 namespace ft
 {
-class tree_end_node;
-
-class tree_base_node;
-
-template <typename T>
-class tree_node;
-
-struct tree_base_node_types {
-    typedef tree_end_node end_node_type;
-    typedef end_node_type* iter_pointer;
-    typedef tree_base_node base_node_type;
-    typedef base_node_type* node_base_pointer;
-};
-
-template <typename T>
-struct tree_node_types : tree_base_node_types {
-    typedef tree_node<T> node_type;
-    typedef node_type* node_pointer;
-    typedef const node_type* const_node_pointer;
-};
-
 class tree_end_node
 {
 public:
@@ -93,289 +72,6 @@ public:
 
 public:
     T value;
-};
-
-template <typename NodePtr>
-inline bool tree_is_left_child(NodePtr ptr)
-{
-    return ptr == ptr->parent->left;
-}
-
-template <typename NodePtr>
-NodePtr tree_max(NodePtr ptr)
-{
-    while (ptr->right != NULL) {
-        ptr = ptr->right;
-    }
-    return ptr;
-}
-
-template <typename NodePtr>
-NodePtr tree_min(NodePtr ptr)
-{
-    while (ptr->left != NULL) {
-        ptr = ptr->left;
-    }
-    return ptr;
-}
-
-template <typename IterPtr, typename NodePtr>
-IterPtr tree_iter_next(NodePtr ptr)
-{
-    if (ptr->right != NULL) {
-        return tree_min(ptr->right);
-    }
-    while (!tree_is_left_child(ptr)) {
-        ptr = ptr->get_parent();
-    }
-    return ptr->get_parent();
-}
-
-template <typename NodePtr, typename IterPtr>
-IterPtr tree_iter_prev(IterPtr ptr)
-{
-    if (ptr->left != NULL) {
-        return tree_max(ptr->left);
-    }
-    NodePtr nptr = static_cast<NodePtr>(ptr);
-    while (tree_is_left_child(nptr)) {
-        nptr = nptr->get_parent();
-    }
-    return nptr->get_parent();
-}
-
-template <typename T, typename DiffType>
-class const_tree_iterator;
-
-template <typename T, typename DiffType>
-class tree_iterator
-{
-public:
-    typedef std::bidirectional_iterator_tag iterator_category;
-    typedef T value_type;
-    typedef T& reference;
-    typedef T* pointer;
-    typedef DiffType difference_type;
-    typedef const_tree_iterator<T, DiffType> const_iterator;
-
-private:
-    typedef typename tree_node_types<T>::node_base_pointer node_base_pointer;
-    typedef typename tree_node_types<T>::iter_pointer iter_pointer;
-    typedef typename tree_node_types<T>::node_pointer node_pointer;
-
-public:
-    tree_iterator()
-        : ptr(NULL)
-    {
-    }
-
-    tree_iterator(iter_pointer p)
-        : ptr(p)
-    {
-    }
-
-    tree_iterator(node_base_pointer p)
-        : ptr(static_cast<iter_pointer>(p))
-    {
-    }
-
-    tree_iterator(node_pointer p)
-        : ptr(static_cast<iter_pointer>(p))
-    {
-    }
-
-public:
-    iter_pointer& base()
-    {
-        return ptr;
-    }
-
-    const iter_pointer& base() const
-    {
-        return ptr;
-    }
-
-    node_pointer node_ptr() const
-    {
-        return static_cast<node_pointer>(ptr);
-    }
-
-    reference operator*() const
-    {
-        return static_cast<node_pointer>(ptr)->value;
-    }
-
-    pointer operator->() const
-    {
-        return &(operator*());
-    }
-
-    tree_iterator& operator++()
-    {
-        ptr = tree_iter_next<iter_pointer>(static_cast<node_base_pointer>(ptr));
-        return *this;
-    }
-
-    tree_iterator operator++(int)
-    {
-        tree_iterator t = *this;
-        ++(*this);
-        return t;
-    }
-
-    tree_iterator& operator--()
-    {
-        ptr = tree_iter_prev<node_base_pointer>(ptr);
-        return *this;
-    }
-
-    tree_iterator operator--(int)
-    {
-        tree_iterator t = *this;
-        --(*this);
-        return t;
-    }
-
-    bool operator==(const tree_iterator& other) const
-    {
-        return ptr == other.ptr;
-    }
-
-    bool operator==(const const_iterator& other) const
-    {
-        return ptr == other.base();
-    }
-
-    bool operator!=(const tree_iterator& other) const
-    {
-        return !(*this == other);
-    }
-
-    bool operator!=(const const_iterator& other) const
-    {
-        return !(*this == other);
-    }
-
-private:
-    iter_pointer ptr;
-};
-
-template <typename T, typename DiffType>
-class const_tree_iterator
-{
-public:
-    typedef std::bidirectional_iterator_tag iterator_category;
-    typedef T value_type;
-    typedef const T& reference;
-    typedef const T* pointer;
-    typedef DiffType difference_type;
-    typedef tree_iterator<T, DiffType> non_const_iterator;
-
-private:
-    typedef typename tree_node_types<T>::node_base_pointer node_base_pointer;
-    typedef typename tree_node_types<T>::iter_pointer iter_pointer;
-    typedef typename tree_node_types<T>::node_pointer node_pointer;
-
-public:
-    const_tree_iterator()
-        : ptr(NULL)
-    {
-    }
-
-    const_tree_iterator(iter_pointer p)
-        : ptr(p)
-    {
-    }
-
-    const_tree_iterator(node_base_pointer p)
-        : ptr(static_cast<iter_pointer>(p))
-    {
-    }
-
-    const_tree_iterator(node_pointer p)
-        : ptr(static_cast<iter_pointer>(p))
-    {
-    }
-
-    const_tree_iterator(non_const_iterator it)
-        : ptr(it.base())
-    {
-    }
-
-public:
-    iter_pointer& base()
-    {
-        return ptr;
-    }
-
-    const iter_pointer& base() const
-    {
-        return ptr;
-    }
-
-    node_pointer node_ptr() const
-    {
-        return static_cast<node_pointer>(ptr);
-    }
-
-    reference operator*() const
-    {
-        return static_cast<node_pointer>(ptr)->value;
-    }
-
-    pointer operator->() const
-    {
-        return &(operator*());
-    }
-
-    const_tree_iterator& operator++()
-    {
-        ptr = tree_iter_next<iter_pointer>(static_cast<node_base_pointer>(ptr));
-        return *this;
-    }
-
-    const_tree_iterator operator++(int)
-    {
-        const_tree_iterator t = *this;
-        ++(*this);
-        return t;
-    }
-
-    const_tree_iterator& operator--()
-    {
-        ptr = tree_iter_prev<node_base_pointer>(ptr);
-        return *this;
-    }
-
-    const_tree_iterator operator--(int)
-    {
-        const_tree_iterator t = *this;
-        --(*this);
-        return t;
-    }
-
-    bool operator==(const const_tree_iterator& other) const
-    {
-        return ptr == other.ptr;
-    }
-
-    bool operator==(const non_const_iterator& other) const
-    {
-        return ptr == other.base();
-    }
-
-    bool operator!=(const const_tree_iterator& other) const
-    {
-        return !(*this == other);
-    }
-
-    bool operator!=(const non_const_iterator& other) const
-    {
-        return !(*this == other);
-    }
-
-private:
-    iter_pointer ptr;
 };
 
 template <typename T, typename Compare, typename Allocator>
@@ -494,7 +190,7 @@ public:
 
     bool empty() const
     {
-        return size() == 0;
+        return size() == static_cast<size_type>(0);
     }
 
     size_type size() const
@@ -608,23 +304,13 @@ public:
     template <typename Key>
     iterator find(const Key& key)
     {
-        iter_pointer ptr = find_pointer(key);
-
-        if (ptr == NULL) {
-            return iterator(end_node());
-        }
-        return iterator(ptr);
+        return find_key<iterator>(key);
     }
 
     template <typename Key>
     const_iterator find(const Key& key) const
     {
-        iter_pointer ptr = find_pointer(key);
-
-        if (ptr == NULL) {
-            return const_iterator(end_node());
-        }
-        return const_iterator(ptr);
+        return find_key<const_iterator>(key);
     }
 
     template <typename Key>
@@ -642,52 +328,75 @@ public:
     template <typename Key>
     iterator lower_bound(const Key& key)
     {
-        iterator it = begin();
-
-        while (it != end() && value_comp()(*it, key)) {
-            ++it;
-        }
-
-        return it;
+        return low_bound<iterator>(key);
     }
 
     template <typename Key>
     const_iterator lower_bound(const Key& key) const
     {
-        const_iterator it = begin();
-
-        while (it != end() && value_comp()(*it, key)) {
-            ++it;
-        }
-
-        return it;
+        return low_bound<const_iterator>(key);
     }
 
     template <typename Key>
     iterator upper_bound(const Key& key)
     {
-        iterator it = begin();
-
-        while (it != end() && !value_comp()(key, *it)) {
-            ++it;
-        }
-
-        return it;
+        return up_bound<iterator>(key);
     }
 
     template <typename Key>
     const_iterator upper_bound(const Key& key) const
     {
-        const_iterator it = begin();
-
-        while (it != end() && !value_comp()(key, *it)) {
-            ++it;
-        }
-
-        return it;
+        return up_bound<const_iterator>(key);
     }
 
 private:
+    template <typename Iter, typename Key>
+    Iter find_key(const Key& key) const
+    {
+        iter_pointer ptr = find_pointer(key);
+
+        if (ptr == NULL) {
+            return Iter(end_node());
+        }
+        return Iter(ptr);
+    }
+
+    template <typename Iter, typename Key>
+    Iter low_bound(const Key& key)
+    {
+        node_pointer ptr = root();
+        iter_pointer pos = end_node();
+
+        while (ptr != NULL) {
+            if (!value_comp()(ptr->value, key)) {
+                pos = static_cast<iter_pointer>(ptr);
+                ptr = static_cast<node_pointer>(ptr->left);
+            } else {
+                ptr = static_cast<node_pointer>(ptr->right);
+            }
+        }
+
+        return Iter(pos);
+    }
+
+    template <typename Iter, typename Key>
+    Iter up_bound(const Key& key)
+    {
+        node_pointer ptr = root();
+        iter_pointer pos = end_node();
+
+        while (ptr != NULL) {
+            if (value_comp()(key, ptr->value)) {
+                pos = static_cast<iter_pointer>(ptr);
+                ptr = static_cast<node_pointer>(ptr->left);
+            } else {
+                ptr = static_cast<node_pointer>(ptr->right);
+            }
+        }
+
+        return Iter(pos);
+    }
+
     iterator insert_at(node_base_pointer& pos, iter_pointer parent, const value_type& value)
     {
         pos = construct_node(value);
