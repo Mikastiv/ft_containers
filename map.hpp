@@ -6,7 +6,7 @@
 /*   By: mleblanc <mleblanc@student.42quebec.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/18 12:17:41 by mleblanc          #+#    #+#             */
-/*   Updated: 2022/04/27 17:48:20 by mleblanc         ###   ########.fr       */
+/*   Updated: 2022/04/27 18:51:27 by mleblanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -118,8 +118,7 @@ public:
 
 public:
     map()
-        : alloc_(allocator_type()),
-          tree_(vt_compare())
+        : tree_(vt_compare())
     {
     }
 
@@ -331,7 +330,6 @@ public:
     }
 
 private:
-    allocator_type alloc_;
     base tree_;
 };
 

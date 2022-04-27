@@ -1,22 +1,24 @@
 #include "map.hpp"
+#include "set.hpp"
 #include <iostream>
-#include <memory>
 #include <map>
+#include <memory>
+#include <set>
 
 int main()
 {
-    ft::map<int, float> t;
+    ft::set<int> t;
 
     for (auto it = t.begin(); it != t.end(); ++it) {
-        std::cout << it->second << "\n";
+        std::cout << *it << "\n";
     }
-    t.insert(ft::make_pair(45, 45.0));
-    t.insert(ft::make_pair(23, 23.5));
-    t.insert(ft::make_pair(34, 34.99));
-    t.insert(ft::make_pair(34, 34.43));
+    t.insert(45);
+    t.insert(23);
+    t.insert(34);
+    t.insert(34);
 
     for (auto it = t.begin(); it != t.end(); ++it) {
-        std::cout << it->second << "\n";
+        std::cout << *it << "\n";
     }
 
     std::cout << t.count(23) << "\n";
@@ -24,72 +26,61 @@ int main()
 
     auto it = t.find(0);
     if (it != t.end()) {
-        std::cout << it->second << "\n";
+        std::cout << *it << "\n";
     }
     it = t.find(34);
-    std::cout << it->second << "\n";
+    std::cout << *it << "\n";
     --it;
-    std::cout << it->second << "\n";
+    std::cout << *it << "\n";
 
-    it = t.insert(t.end(), ft::make_pair(66, 66.1));
-    std::cout << it->second << "\n";
-
-    for (auto it = t.begin(); it != t.end(); ++it) {
-        std::cout << it->second << "\n";
-    }
-
-    t[1];
+    it = t.insert(t.end(), 66);
+    std::cout << *it << "\n";
 
     for (auto it = t.begin(); it != t.end(); ++it) {
-        std::cout << it->second << "\n";
+        std::cout << *it << "\n";
     }
-
-    t[1].second = 1.324;
-    for (auto it = t.begin(); it != t.end(); ++it) {
-        std::cout << it->second << "\n";
-    }
-
-    t.at(1).second = 57.345;
 
     for (auto it = t.begin(); it != t.end(); ++it) {
-        std::cout << it->second << "\n";
+        std::cout << *it << "\n";
     }
 
-    try {
-        t.at(5);
-    } catch (...) {
+    for (auto it = t.begin(); it != t.end(); ++it) {
+        std::cout << *it << "\n";
+    }
+
+    for (auto it = t.begin(); it != t.end(); ++it) {
+        std::cout << *it << "\n";
     }
 
     t.erase(1);
 
-    ft::map<int, float>::key_compare kcomp = t.key_comp();
+    ft::set<int>::key_compare kcomp = t.key_comp();
 
-    std::cout << std::boolalpha << kcomp(t.begin()->first, it->first) << std::endl;
+    std::cout << std::boolalpha << kcomp(*t.begin(), *it) << std::endl;
 
+    std::set<int> stdset;
+    ft::set<int> ftset;
 
-    std::map<int, int> stdmap;
-    ft::map<int, int> ftmap;
-
-    stdmap.insert(std::make_pair(11, 22));
-    ftmap.insert(ft::make_pair(11, 22));
-    stdmap.insert(std::make_pair(25, 35));
-    ftmap.insert(ft::make_pair(25, 35));
-    stdmap.insert(std::make_pair(9, 5));
-    ftmap.insert(ft::make_pair(9, 5));
-    stdmap.insert(std::make_pair(100, 256));
-    ftmap.insert(ft::make_pair(100, 256));
+    stdset.insert(11);
+    ftset.insert(11);
+    stdset.insert(25);
+    ftset.insert(25);
+    stdset.insert(9);
+    ftset.insert(9);
+    stdset.insert(100);
+    ftset.insert(100);
 
     std::cout << "=========================================\n";
-    std::cout << stdmap.lower_bound(25)->first << std::endl;
-    std::cout << ftmap.lower_bound(25)->first << std::endl;
+    std::cout << *stdset.lower_bound(25) << std::endl;
+    std::cout << *ftset.lower_bound(25) << std::endl;
     std::cout << "=========================================\n";
-    std::cout << stdmap.upper_bound(25)->first << std::endl;
-    std::cout << ftmap.upper_bound(25)->first << std::endl;
+    std::cout << *stdset.upper_bound(25) << std::endl;
+    std::cout << *ftset.upper_bound(25) << std::endl;
     std::cout << "=========================================\n";
-    std::cout << stdmap.equal_range(25).first->first << std::endl;
-    std::cout << ftmap.equal_range(25).first->first << std::endl;
+    std::cout << *stdset.equal_range(25).first << std::endl;
+    std::cout << *ftset.equal_range(25).first << std::endl;
     std::cout << "=========================================\n";
-    std::cout << stdmap.equal_range(25).second->first << std::endl;
-    std::cout << ftmap.equal_range(25).second->first << std::endl;
+    std::cout << *stdset.equal_range(25).second << std::endl;
+    std::cout << *ftset.equal_range(25).second << std::endl;
     std::cout << "=========================================\n";
 }

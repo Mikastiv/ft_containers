@@ -6,7 +6,7 @@
 /*   By: mleblanc <mleblanc@student.42quebec.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/21 22:03:04 by mleblanc          #+#    #+#             */
-/*   Updated: 2022/04/27 17:51:25 by mleblanc         ###   ########.fr       */
+/*   Updated: 2022/04/27 18:54:13 by mleblanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -137,9 +137,8 @@ public:
         }
 
         tree tmp(other);
-
         swap(tmp);
-        insert(other.begin(), other.end());
+
         return *this;
     }
 
