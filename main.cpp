@@ -1,5 +1,4 @@
 #include "map.hpp"
-#include "utility.hpp"
 #include <iostream>
 #include <memory>
 
@@ -59,4 +58,10 @@ int main()
         t.at(5);
     } catch (...) {
     }
+
+    t.erase(1);
+
+    ft::map<int, float>::key_compare kcomp = t.key_comp();
+
+    std::cout << std::boolalpha << kcomp(t.begin()->first, it->first) << std::endl;
 }

@@ -6,7 +6,7 @@
 /*   By: mleblanc <mleblanc@student.42quebec.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/01 15:27:15 by mleblanc          #+#    #+#             */
-/*   Updated: 2022/04/26 19:03:30 by mleblanc         ###   ########.fr       */
+/*   Updated: 2022/04/27 16:33:08 by mleblanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -612,9 +612,9 @@ private:
 };
 
 template <typename T, typename Alloc>
-inline void swap(vector<T, Alloc>& lhs, vector<T, Alloc>& rhs)
+inline void swap(vector<T, Alloc>& x, vector<T, Alloc>& y)
 {
-    lhs.swap(rhs);
+    x.swap(y);
 }
 
 template <typename T, typename Alloc>

@@ -6,7 +6,7 @@
 /*   By: mleblanc <mleblanc@student.42quebec.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/15 16:56:07 by mleblanc          #+#    #+#             */
-/*   Updated: 2022/04/22 14:17:57 by mleblanc         ###   ########.fr       */
+/*   Updated: 2022/04/27 15:34:56 by mleblanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,9 @@ namespace ft
 {
 template <typename T1, typename T2>
 struct pair {
+    typedef T1 first_type;
+    typedef T2 second_type;
+
     pair()
         : first(T1()),
           second(T2())
