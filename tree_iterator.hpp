@@ -6,17 +6,40 @@
 /*   By: mleblanc <mleblanc@student.42quebec.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/27 17:37:17 by mleblanc          #+#    #+#             */
-/*   Updated: 2022/04/27 23:12:09 by mleblanc         ###   ########.fr       */
+/*   Updated: 2022/04/27 17:39:12 by mleblanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
 
 #include "tree_types.hpp"
-#include "tree_algos.hpp"
 
 namespace ft
 {
+template <typename NodePtr>
+inline bool tree_is_left_child(NodePtr ptr)
+{
+    return ptr == ptr->parent->left;
+}
+
+template <typename NodePtr>
+NodePtr tree_max(NodePtr ptr)
+{
+    while (ptr->right != NULL) {
+        ptr = ptr->right;
+    }
+    return ptr;
+}
+
+template <typename NodePtr>
+NodePtr tree_min(NodePtr ptr)
+{
+    while (ptr->left != NULL) {
+        ptr = ptr->left;
+    }
+    return ptr;
+}
+
 template <typename IterPtr, typename NodePtr>
 IterPtr tree_iter_next(NodePtr ptr)
 {
@@ -62,19 +85,23 @@ private:
     typedef typename tree_node_types<T>::node_pointer node_pointer;
 
 public:
-    tree_iterator() : ptr(NULL)
+    tree_iterator()
+        : ptr(NULL)
     {
     }
 
-    tree_iterator(iter_pointer p) : ptr(p)
+    tree_iterator(iter_pointer p)
+        : ptr(p)
     {
     }
 
-    tree_iterator(node_base_pointer p) : ptr(static_cast<iter_pointer>(p))
+    tree_iterator(node_base_pointer p)
+        : ptr(static_cast<iter_pointer>(p))
     {
     }
 
-    tree_iterator(node_pointer p) : ptr(static_cast<iter_pointer>(p))
+    tree_iterator(node_pointer p)
+        : ptr(static_cast<iter_pointer>(p))
     {
     }
 
@@ -171,23 +198,28 @@ private:
     typedef typename tree_node_types<T>::node_pointer node_pointer;
 
 public:
-    const_tree_iterator() : ptr(NULL)
+    const_tree_iterator()
+        : ptr(NULL)
     {
     }
 
-    const_tree_iterator(iter_pointer p) : ptr(p)
+    const_tree_iterator(iter_pointer p)
+        : ptr(p)
     {
     }
 
-    const_tree_iterator(node_base_pointer p) : ptr(static_cast<iter_pointer>(p))
+    const_tree_iterator(node_base_pointer p)
+        : ptr(static_cast<iter_pointer>(p))
     {
     }
 
-    const_tree_iterator(node_pointer p) : ptr(static_cast<iter_pointer>(p))
+    const_tree_iterator(node_pointer p)
+        : ptr(static_cast<iter_pointer>(p))
     {
     }
 
-    const_tree_iterator(non_const_iterator it) : ptr(it.base())
+    const_tree_iterator(non_const_iterator it)
+        : ptr(it.base())
     {
     }
 
