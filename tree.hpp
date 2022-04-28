@@ -6,7 +6,7 @@
 /*   By: mleblanc <mleblanc@student.42quebec.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/21 22:03:04 by mleblanc          #+#    #+#             */
-/*   Updated: 2022/04/27 18:54:13 by mleblanc         ###   ########.fr       */
+/*   Updated: 2022/04/28 01:01:42 by mleblanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,7 +39,7 @@ public:
 class tree_base_node : public tree_base_node_types::end_node_type
 {
 public:
-    typedef tree_base_node_types::iter_pointer iter_pointer;
+    typedef tree_base_node_types::end_node_pointer end_node_pointer;
     typedef tree_base_node_types::node_base_pointer node_base_pointer;
 
 public:
@@ -57,7 +57,7 @@ public:
 
 public:
     node_base_pointer right;
-    iter_pointer parent;
+    end_node_pointer parent;
     bool is_black;
 };
 
@@ -93,7 +93,7 @@ public:
 private:
     typedef typename tree_node_types<value_type>::end_node_type end_node_type;
     typedef typename tree_node_types<value_type>::node_type node_type;
-    typedef typename tree_node_types<value_type>::iter_pointer iter_pointer;
+    typedef typename tree_node_types<value_type>::end_node_pointer end_node_pointer;
     typedef typename tree_node_types<value_type>::node_base_pointer node_base_pointer;
     typedef typename tree_node_types<value_type>::node_pointer node_pointer;
     typedef typename allocator_type::template rebind<node_type>::other node_allocator;
@@ -156,7 +156,7 @@ public:
     template <typename Key, typename Value>
     reference find_or_insert(const Key& key, const Value& value)
     {
-        iter_pointer parent;
+        end_node_pointer parent;
         node_base_pointer& child = find_pos(parent, key);
 
         iterator it(child);
@@ -223,7 +223,7 @@ public:
 
     pair<iterator, bool> insert(const value_type& value)
     {
-        iter_pointer parent;
+        end_node_pointer parent;
         node_base_pointer& child = find_pos(parent, value);
         bool inserted = false;
 
@@ -238,7 +238,7 @@ public:
 
     iterator insert(iterator hint, const value_type& value)
     {
-        iter_pointer parent;
+        end_node_pointer parent;
         node_base_pointer dummy;
         node_base_pointer& child = find_pos(hint, parent, value, dummy);
 
@@ -274,7 +274,7 @@ public:
     size_type erase(const Key& key)
     {
         size_type s = size();
-        iter_pointer ptr = find_pointer(key);
+        end_node_pointer ptr = find_pointer(key);
 
         erase(iterator(ptr));
 
@@ -359,7 +359,7 @@ private:
     template <typename Iter, typename Key>
     Iter find_key(const Key& key) const
     {
-        iter_pointer ptr = find_pointer(key);
+        end_node_pointer ptr = find_pointer(key);
 
         if (ptr == NULL) {
             return Iter(end_node());
@@ -371,11 +371,11 @@ private:
     Iter low_bound(const Key& key)
     {
         node_pointer ptr = root();
-        iter_pointer pos = end_node();
+        end_node_pointer pos = end_node();
 
         while (ptr != NULL) {
             if (!value_comp()(ptr->value, key)) {
-                pos = static_cast<iter_pointer>(ptr);
+                pos = static_cast<end_node_pointer>(ptr);
                 ptr = static_cast<node_pointer>(ptr->left);
             } else {
                 ptr = static_cast<node_pointer>(ptr->right);
@@ -389,11 +389,11 @@ private:
     Iter up_bound(const Key& key)
     {
         node_pointer ptr = root();
-        iter_pointer pos = end_node();
+        end_node_pointer pos = end_node();
 
         while (ptr != NULL) {
             if (value_comp()(key, ptr->value)) {
-                pos = static_cast<iter_pointer>(ptr);
+                pos = static_cast<end_node_pointer>(ptr);
                 ptr = static_cast<node_pointer>(ptr->left);
             } else {
                 ptr = static_cast<node_pointer>(ptr->right);
@@ -403,7 +403,7 @@ private:
         return Iter(pos);
     }
 
-    iterator insert_at(node_base_pointer& pos, iter_pointer parent, const value_type& value)
+    iterator insert_at(node_base_pointer& pos, end_node_pointer parent, const value_type& value)
     {
         pos = construct_node(value);
         pos->parent = parent;
@@ -426,14 +426,14 @@ private:
         return static_cast<node_base_pointer*>(&(end_node()->left));
     }
 
-    iter_pointer end_node()
+    end_node_pointer end_node()
     {
-        return static_cast<iter_pointer>(&end_node_);
+        return static_cast<end_node_pointer>(&end_node_);
     }
 
-    iter_pointer end_node() const
+    end_node_pointer end_node() const
     {
-        return const_cast<iter_pointer>(&end_node_);
+        return const_cast<end_node_pointer>(&end_node_);
     }
 
     node_pointer construct_node(const value_type& value)
@@ -447,7 +447,7 @@ private:
     }
 
     template <typename Key>
-    iter_pointer find_pointer(const Key& key) const
+    end_node_pointer find_pointer(const Key& key) const
     {
         node_pointer ptr = root();
         while (ptr != NULL) {
@@ -456,14 +456,14 @@ private:
             } else if (value_comp()(ptr->value, key)) {
                 ptr = static_cast<node_pointer>(ptr->right);
             } else {
-                return static_cast<iter_pointer>(ptr);
+                return static_cast<end_node_pointer>(ptr);
             }
         }
         return NULL;
     }
 
     template <typename Key>
-    node_base_pointer& find_pos(iter_pointer& parent, const Key& key) const
+    node_base_pointer& find_pos(end_node_pointer& parent, const Key& key) const
     {
         node_pointer node = root();
         node_base_pointer* ptr = root_ptr();
@@ -476,7 +476,7 @@ private:
                         ptr = &node->left;
                         node = static_cast<node_pointer>(node->left);
                     } else {
-                        parent = static_cast<iter_pointer>(node);
+                        parent = static_cast<end_node_pointer>(node);
                         return node->left;
                     }
                 } else if (value_comp()(node->value, key)) {
@@ -485,21 +485,21 @@ private:
                         ptr = &node->right;
                         node = static_cast<node_pointer>(node->right);
                     } else {
-                        parent = static_cast<iter_pointer>(node);
+                        parent = static_cast<end_node_pointer>(node);
                         return node->right;
                     }
                 } else {
                     // key == node->value
-                    parent = static_cast<iter_pointer>(node);
+                    parent = static_cast<end_node_pointer>(node);
                     return *ptr;
                 }
             }
         }
-        parent = static_cast<iter_pointer>(end_node());
+        parent = static_cast<end_node_pointer>(end_node());
         return parent->left;
     }
 
-    node_base_pointer& find_pos(iterator hint, iter_pointer& parent, const value_type& value,
+    node_base_pointer& find_pos(iterator hint, end_node_pointer& parent, const value_type& value,
                                 node_base_pointer& dummy) const
     {
         if (hint == end() || value_comp()(value, *hint)) {
@@ -554,7 +554,7 @@ private:
     allocator_type value_alloc_;
     value_compare comp_;
     end_node_type end_node_;
-    iter_pointer begin_iter_;
+    end_node_pointer begin_iter_;
     size_type size_;
 };
 } // namespace ft

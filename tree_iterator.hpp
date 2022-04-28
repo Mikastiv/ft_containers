@@ -6,7 +6,7 @@
 /*   By: mleblanc <mleblanc@student.42quebec.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/27 17:37:17 by mleblanc          #+#    #+#             */
-/*   Updated: 2022/04/27 17:39:12 by mleblanc         ###   ########.fr       */
+/*   Updated: 2022/04/28 01:01:31 by mleblanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,7 +81,7 @@ public:
 
 private:
     typedef typename tree_node_types<T>::node_base_pointer node_base_pointer;
-    typedef typename tree_node_types<T>::iter_pointer iter_pointer;
+    typedef typename tree_node_types<T>::end_node_pointer end_node_pointer;
     typedef typename tree_node_types<T>::node_pointer node_pointer;
 
 public:
@@ -90,28 +90,28 @@ public:
     {
     }
 
-    tree_iterator(iter_pointer p)
+    tree_iterator(end_node_pointer p)
         : ptr(p)
     {
     }
 
     tree_iterator(node_base_pointer p)
-        : ptr(static_cast<iter_pointer>(p))
+        : ptr(static_cast<end_node_pointer>(p))
     {
     }
 
     tree_iterator(node_pointer p)
-        : ptr(static_cast<iter_pointer>(p))
+        : ptr(static_cast<end_node_pointer>(p))
     {
     }
 
 public:
-    iter_pointer& base()
+    end_node_pointer& base()
     {
         return ptr;
     }
 
-    const iter_pointer& base() const
+    const end_node_pointer& base() const
     {
         return ptr;
     }
@@ -133,7 +133,7 @@ public:
 
     tree_iterator& operator++()
     {
-        ptr = tree_iter_next<iter_pointer>(static_cast<node_base_pointer>(ptr));
+        ptr = tree_iter_next<end_node_pointer>(static_cast<node_base_pointer>(ptr));
         return *this;
     }
 
@@ -178,7 +178,7 @@ public:
     }
 
 private:
-    iter_pointer ptr;
+    end_node_pointer ptr;
 };
 
 template <typename T, typename DiffType>
@@ -194,7 +194,7 @@ public:
 
 private:
     typedef typename tree_node_types<T>::node_base_pointer node_base_pointer;
-    typedef typename tree_node_types<T>::iter_pointer iter_pointer;
+    typedef typename tree_node_types<T>::end_node_pointer end_node_pointer;
     typedef typename tree_node_types<T>::node_pointer node_pointer;
 
 public:
@@ -203,18 +203,18 @@ public:
     {
     }
 
-    const_tree_iterator(iter_pointer p)
+    const_tree_iterator(end_node_pointer p)
         : ptr(p)
     {
     }
 
     const_tree_iterator(node_base_pointer p)
-        : ptr(static_cast<iter_pointer>(p))
+        : ptr(static_cast<end_node_pointer>(p))
     {
     }
 
     const_tree_iterator(node_pointer p)
-        : ptr(static_cast<iter_pointer>(p))
+        : ptr(static_cast<end_node_pointer>(p))
     {
     }
 
@@ -224,12 +224,12 @@ public:
     }
 
 public:
-    iter_pointer& base()
+    end_node_pointer& base()
     {
         return ptr;
     }
 
-    const iter_pointer& base() const
+    const end_node_pointer& base() const
     {
         return ptr;
     }
@@ -251,7 +251,7 @@ public:
 
     const_tree_iterator& operator++()
     {
-        ptr = tree_iter_next<iter_pointer>(static_cast<node_base_pointer>(ptr));
+        ptr = tree_iter_next<end_node_pointer>(static_cast<node_base_pointer>(ptr));
         return *this;
     }
 
@@ -296,7 +296,7 @@ public:
     }
 
 private:
-    iter_pointer ptr;
+    end_node_pointer ptr;
 };
 
 } // namespace ft

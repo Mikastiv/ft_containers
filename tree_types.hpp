@@ -6,7 +6,7 @@
 /*   By: mleblanc <mleblanc@student.42quebec.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/27 17:35:55 by mleblanc          #+#    #+#             */
-/*   Updated: 2022/04/27 17:36:28 by mleblanc         ###   ########.fr       */
+/*   Updated: 2022/04/28 01:01:06 by mleblanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@ class tree_node;
 
 struct tree_base_node_types {
     typedef tree_end_node end_node_type;
-    typedef end_node_type* iter_pointer;
+    typedef end_node_type* end_node_pointer;
     typedef tree_base_node base_node_type;
     typedef base_node_type* node_base_pointer;
 };
