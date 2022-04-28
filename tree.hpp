@@ -6,7 +6,7 @@
 /*   By: mleblanc <mleblanc@student.42quebec.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/21 22:03:04 by mleblanc          #+#    #+#             */
-/*   Updated: 2022/04/28 01:01:42 by mleblanc         ###   ########.fr       */
+/*   Updated: 2022/04/28 05:14:27 by mleblanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,9 @@
 #include <algorithm>
 #include <iterator>
 #include <limits>
+
+#include <iostream>
+#include <sstream>
 
 #include "tree_iterator.hpp"
 #include "utility.hpp"
@@ -27,8 +30,7 @@ public:
     typedef tree_base_node_types::node_base_pointer node_base_pointer;
 
 public:
-    tree_end_node()
-        : left(NULL)
+    tree_end_node() : left(NULL)
     {
     }
 
@@ -43,10 +45,7 @@ public:
     typedef tree_base_node_types::node_base_pointer node_base_pointer;
 
 public:
-    tree_base_node()
-        : right(NULL),
-          parent(NULL),
-          is_black(false)
+    tree_base_node() : right(NULL), parent(NULL), is_black(false)
     {
     }
 
@@ -65,8 +64,7 @@ template <typename T>
 class tree_node : public tree_node_types<T>::base_node_type
 {
 public:
-    tree_node()
-        : value(T())
+    tree_node() : value(T())
     {
     }
 
@@ -100,20 +98,14 @@ private:
 
 public:
     tree(const value_compare& comp)
-        : alloc_(node_allocator()),
-          value_alloc_(allocator_type()),
-          comp_(comp),
-          end_node_(),
+        : alloc_(node_allocator()), value_alloc_(allocator_type()), comp_(comp), end_node_(),
           size_(0)
     {
         begin_iter_ = end_node();
     }
 
     tree(const tree& other)
-        : alloc_(other.alloc_),
-          value_alloc_(other.value_alloc_),
-          comp_(other.comp_),
-          end_node_(),
+        : alloc_(other.alloc_), value_alloc_(other.value_alloc_), comp_(other.comp_), end_node_(),
           size_(0)
     {
         begin_iter_ = end_node();
@@ -121,11 +113,7 @@ public:
     }
 
     tree(const value_compare& comp, const allocator_type& alloc)
-        : alloc_(node_allocator()),
-          value_alloc_(alloc),
-          comp_(comp),
-          end_node_(),
-          size_(0)
+        : alloc_(node_allocator()), value_alloc_(alloc), comp_(comp), end_node_(), size_(0)
     {
         begin_iter_ = end_node();
     }
@@ -353,6 +341,54 @@ public:
     const_iterator upper_bound(const Key& key) const
     {
         return up_bound<const_iterator>(key);
+    }
+
+    void print_tree() const
+    {
+        std::cout << traversePreOrder(static_cast<node_pointer>(root()));
+    }
+
+private:
+    std::string traversePreOrder(node_pointer root) const
+    {
+
+        if (root == NULL) {
+            return "";
+        }
+
+        std::stringstream sb;
+        sb << root->value;
+
+        traverseNodes(sb, "", "\\──", static_cast<node_pointer>(root->right), root->left != NULL);
+        traverseNodes(sb, "", "└──", static_cast<node_pointer>(root->left), false);
+
+        sb << "\n";
+        return sb.str();
+    }
+
+    void traverseNodes(std::stringstream& sb, const std::string& padding,
+                       const std::string& pointer, node_pointer node, bool hasLeftSibling) const
+    {
+        if (node != NULL) {
+            sb << "\n";
+            sb << padding;
+            sb << pointer;
+            sb << node->value;
+
+            std::stringstream paddingBuilder;
+            paddingBuilder << padding;
+            if (hasLeftSibling) {
+                paddingBuilder << "│  ";
+            } else {
+                paddingBuilder << "   ";
+            }
+
+            std::string paddingForBoth = paddingBuilder.str();
+
+            traverseNodes(sb, paddingForBoth, "\\──", static_cast<node_pointer>(node->right),
+                          node->left != NULL);
+            traverseNodes(sb, paddingForBoth, "└──", static_cast<node_pointer>(node->left), false);
+        }
     }
 
 private:
