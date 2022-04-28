@@ -6,7 +6,7 @@
 /*   By: mleblanc <mleblanc@student.42quebec.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/01 15:27:15 by mleblanc          #+#    #+#             */
-/*   Updated: 2022/04/27 17:41:01 by mleblanc         ###   ########.fr       */
+/*   Updated: 2022/04/28 18:15:11 by mleblanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,19 +27,21 @@ namespace ft
 template <typename T, typename Allocator = std::allocator<T> >
 class vector
 {
+//clang-format off
 public:
-    typedef T value_type;
-    typedef Allocator allocator_type;
-    typedef typename allocator_type::size_type size_type;
+    typedef T                                        value_type;
+    typedef Allocator                                allocator_type;
+    typedef typename allocator_type::size_type       size_type;
     typedef typename allocator_type::difference_type difference_type;
-    typedef value_type& reference;
-    typedef const value_type& const_reference;
-    typedef typename allocator_type::pointer pointer;
-    typedef typename allocator_type::const_pointer const_pointer;
-    typedef normal_iterator<pointer, vector> iterator;
-    typedef normal_iterator<const_pointer, vector> const_iterator;
-    typedef ft::reverse_iterator<iterator> reverse_iterator;
-    typedef ft::reverse_iterator<const_iterator> const_reverse_iterator;
+    typedef value_type&                              reference;
+    typedef const value_type&                        const_reference;
+    typedef typename allocator_type::pointer         pointer;
+    typedef typename allocator_type::const_pointer   const_pointer;
+    typedef normal_iterator<pointer, vector>         iterator;
+    typedef normal_iterator<const_pointer, vector>   const_iterator;
+    typedef ft::reverse_iterator<iterator>           reverse_iterator;
+    typedef ft::reverse_iterator<const_iterator>     const_reverse_iterator;
+//clang-format on
 
 public:
     vector()

@@ -6,7 +6,7 @@
 /*   By: mleblanc <mleblanc@student.42quebec.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/27 17:37:17 by mleblanc          #+#    #+#             */
-/*   Updated: 2022/04/28 01:01:31 by mleblanc         ###   ########.fr       */
+/*   Updated: 2022/04/28 18:23:55 by mleblanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,18 +71,20 @@ class const_tree_iterator;
 template <typename T, typename DiffType>
 class tree_iterator
 {
+//clang-format off
 public:
-    typedef std::bidirectional_iterator_tag iterator_category;
-    typedef T value_type;
-    typedef T& reference;
-    typedef T* pointer;
-    typedef DiffType difference_type;
+    typedef std::bidirectional_iterator_tag  iterator_category;
+    typedef T                                value_type;
+    typedef T&                               reference;
+    typedef T*                               pointer;
+    typedef DiffType                         difference_type;
     typedef const_tree_iterator<T, DiffType> const_iterator;
 
 private:
     typedef typename tree_node_types<T>::node_base_pointer node_base_pointer;
-    typedef typename tree_node_types<T>::end_node_pointer end_node_pointer;
-    typedef typename tree_node_types<T>::node_pointer node_pointer;
+    typedef typename tree_node_types<T>::end_node_pointer  end_node_pointer;
+    typedef typename tree_node_types<T>::node_pointer      node_pointer;
+//clang-format on
 
 public:
     tree_iterator()
@@ -184,18 +186,20 @@ private:
 template <typename T, typename DiffType>
 class const_tree_iterator
 {
+//clang-format off
 public:
     typedef std::bidirectional_iterator_tag iterator_category;
-    typedef T value_type;
-    typedef const T& reference;
-    typedef const T* pointer;
-    typedef DiffType difference_type;
-    typedef tree_iterator<T, DiffType> non_const_iterator;
+    typedef T                               value_type;
+    typedef const T&                        reference;
+    typedef const T*                        pointer;
+    typedef DiffType                        difference_type;
+    typedef tree_iterator<T, DiffType>      non_const_iterator;
 
 private:
     typedef typename tree_node_types<T>::node_base_pointer node_base_pointer;
-    typedef typename tree_node_types<T>::end_node_pointer end_node_pointer;
-    typedef typename tree_node_types<T>::node_pointer node_pointer;
+    typedef typename tree_node_types<T>::end_node_pointer  end_node_pointer;
+    typedef typename tree_node_types<T>::node_pointer      node_pointer;
+//clang-format on
 
 public:
     const_tree_iterator()

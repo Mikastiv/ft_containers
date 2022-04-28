@@ -6,7 +6,7 @@
 /*   By: mleblanc <mleblanc@student.42quebec.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/14 16:51:59 by mleblanc          #+#    #+#             */
-/*   Updated: 2022/04/20 12:03:29 by mleblanc         ###   ########.fr       */
+/*   Updated: 2022/04/28 18:24:25 by mleblanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,12 +19,14 @@ namespace ft
 template <typename T, typename Container = vector<T> >
 class stack
 {
+//clang-format off
 public:
-    typedef Container container_type;
-    typedef typename container_type::value_type value_type;
-    typedef typename container_type::size_type size_type;
-    typedef typename container_type::reference reference;
+    typedef Container                                container_type;
+    typedef typename container_type::value_type      value_type;
+    typedef typename container_type::size_type       size_type;
+    typedef typename container_type::reference       reference;
     typedef typename container_type::const_reference const_reference;
+//clang-format on
 
 public:
     explicit stack(const container_type& cont = container_type())

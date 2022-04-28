@@ -6,7 +6,7 @@
 /*   By: mleblanc <mleblanc@student.42quebec.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/18 12:17:41 by mleblanc          #+#    #+#             */
-/*   Updated: 2022/04/27 18:51:27 by mleblanc         ###   ########.fr       */
+/*   Updated: 2022/04/28 18:26:51 by mleblanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,28 +73,30 @@ template <typename Key, typename T, typename Compare = less<Key>,
           typename Allocator = std::allocator<pair<const Key, T> > >
 class map
 {
+//clang-format off
 public:
-    typedef Key key_type;
-    typedef T mapped_type;
-    typedef pair<const key_type, mapped_type> value_type;
-    typedef Compare key_compare;
-    typedef Allocator allocator_type;
-    typedef typename allocator_type::size_type size_type;
+    typedef Key                                      key_type;
+    typedef T                                        mapped_type;
+    typedef pair<const key_type, mapped_type>        value_type;
+    typedef Compare                                  key_compare;
+    typedef Allocator                                allocator_type;
+    typedef typename allocator_type::size_type       size_type;
     typedef typename allocator_type::difference_type difference_type;
-    typedef value_type& reference;
-    typedef const value_type& const_reference;
-    typedef typename allocator_type::pointer pointer;
-    typedef typename allocator_type::const_pointer const_pointer;
+    typedef value_type&                              reference;
+    typedef const value_type&                        const_reference;
+    typedef typename allocator_type::pointer         pointer;
+    typedef typename allocator_type::const_pointer   const_pointer;
 
 private:
     typedef value_type_compare<key_type, value_type, key_compare> vt_compare;
-    typedef tree<value_type, vt_compare, allocator_type> base;
+    typedef tree<value_type, vt_compare, allocator_type>          base;
 
 public:
-    typedef typename base::iterator iterator;
-    typedef typename base::const_iterator const_iterator;
-    typedef ft::reverse_iterator<iterator> reverse_iterator;
+    typedef typename base::iterator              iterator;
+    typedef typename base::const_iterator        const_iterator;
+    typedef ft::reverse_iterator<iterator>       reverse_iterator;
     typedef ft::reverse_iterator<const_iterator> const_reverse_iterator;
+//clang-format on
 
 public:
     class value_compare : public ft::binary_function<value_type, value_type, bool>

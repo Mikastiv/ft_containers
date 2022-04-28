@@ -6,7 +6,7 @@
 /*   By: mleblanc <mleblanc@student.42quebec.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/27 17:39:51 by mleblanc          #+#    #+#             */
-/*   Updated: 2022/04/27 17:40:33 by mleblanc         ###   ########.fr       */
+/*   Updated: 2022/04/28 18:18:51 by mleblanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,13 +19,15 @@ namespace ft
 template <typename It, typename Container>
 class normal_iterator
 {
+//clang-format off
 public:
-    typedef It iterator_type;
+    typedef It                                              iterator_type;
     typedef typename iterator_traits<It>::iterator_category iterator_category;
-    typedef typename iterator_traits<It>::value_type value_type;
-    typedef typename iterator_traits<It>::difference_type difference_type;
-    typedef typename iterator_traits<It>::reference reference;
-    typedef typename iterator_traits<It>::pointer pointer;
+    typedef typename iterator_traits<It>::value_type        value_type;
+    typedef typename iterator_traits<It>::difference_type   difference_type;
+    typedef typename iterator_traits<It>::reference         reference;
+    typedef typename iterator_traits<It>::pointer           pointer;
+//clang-format on
 
 public:
     normal_iterator()
