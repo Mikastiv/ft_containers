@@ -6,7 +6,7 @@
 /*   By: mleblanc <mleblanc@student.42quebec.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/21 22:03:04 by mleblanc          #+#    #+#             */
-/*   Updated: 2022/04/29 13:49:29 by mleblanc         ###   ########.fr       */
+/*   Updated: 2022/04/29 15:32:29 by mleblanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -596,6 +596,12 @@ private:
         parent = hint.base();
         dummy = static_cast<node_base_pointer>(hint.base());
         return dummy;
+    }
+
+    void delete_node(node_pointer node)
+    {
+        value_alloc.destroy(&node->value);
+        alloc_.deallocate(node, 1);
     }
 
     void destroy(node_pointer node)
