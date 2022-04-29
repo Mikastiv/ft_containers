@@ -6,7 +6,7 @@
 /*   By: mleblanc <mleblanc@student.42quebec.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/28 23:01:54 by mleblanc          #+#    #+#             */
-/*   Updated: 2022/04/28 23:02:45 by mleblanc         ###   ########.fr       */
+/*   Updated: 2022/04/29 14:11:33 by mleblanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,13 +72,13 @@ void tree_rotate_left(NodePtr node)
     if (ptr->left != NULL) {
         ptr->left->set_parent(node);
     }
-    ptr->left = node;
     ptr->parent = node->parent;
     if (tree_is_left_child(node)) {
         node->parent->left = ptr;
     } else {
         node->get_parent()->right = ptr;
     }
+    ptr->left = node;
     node->set_parent(ptr);
 }
 
@@ -91,13 +91,79 @@ void tree_rotate_right(NodePtr node)
     if (ptr->right != NULL) {
         ptr->right->set_parent(node);
     }
-    ptr->right = node;
     ptr->parent = node->parent;
     if (tree_is_left_child(node)) {
         node->parent->left = ptr;
     } else {
         node->get_parent()->right = ptr;
     }
+    ptr->right = node;
     node->set_parent(ptr);
+}
+
+template <typename NodePtr>
+bool tree_node_is_black(NodePtr node)
+{
+    if (node == NULL || node->is_black) {
+        return true;
+    }
+    return false;
+}
+
+template <typename NodePtr>
+NodePtr tree_balance_case_1(NodePtr root, NodePtr z, NodePtr uncle)
+{
+    uncle->is_black = true;
+    z = z->get_parent();
+    z->is_black = true;
+    z = z->get_parent();
+    z->is_black = z == root;
+    return z;
+}
+
+template <typename NodePtr>
+NodePtr tree_balance_case_3(NodePtr z, void (*rotate)(NodePtr))
+{
+    z = z->get_parent();
+    z->is_black = true;
+    z = z->get_parent();
+    z->is_black = false;
+    rotate(z);
+    return z;
+}
+
+template <typename NodePtr>
+void tree_balance_after_insert(NodePtr root, NodePtr z)
+{
+    z->is_black = z == root; // case 0
+    while (z != root && !tree_node_is_black(z->get_parent())) {
+        if (tree_is_left_child(z->get_parent())) {
+            NodePtr uncle = z->get_parent()->get_parent()->right;
+
+            if (!tree_node_is_black(uncle)) {
+                z = tree_balance_case_1(root, z, uncle);
+            } else {
+                if (!tree_is_left_child(z)) { // case 2
+                    z = z->get_parent();
+                    tree_rotate_left(z);
+                }
+                z = tree_balance_case_3(z, &tree_rotate_right);
+                break;
+            }
+        } else {
+            NodePtr uncle = z->get_parent()->parent->left;
+
+            if (!tree_node_is_black(uncle)) {
+                z = tree_balance_case_1(root, z, uncle);
+            } else {
+                if (tree_is_left_child(z)) { // case 2
+                    z = z->get_parent();
+                    tree_rotate_right(z);
+                }
+                z = tree_balance_case_3(z, &tree_rotate_left);
+                break;
+            }
+        }
+    }
 }
 } // namespace ft

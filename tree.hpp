@@ -6,7 +6,7 @@
 /*   By: mleblanc <mleblanc@student.42quebec.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/21 22:03:04 by mleblanc          #+#    #+#             */
-/*   Updated: 2022/04/29 11:20:18 by mleblanc         ###   ########.fr       */
+/*   Updated: 2022/04/29 13:49:29 by mleblanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -379,7 +379,7 @@ private:
         }
 
         std::stringstream sb;
-        sb << root->value;
+        sb << (root->is_black ? "B" : "R");
 
         traverseNodes(sb, "", "\\──", static_cast<node_pointer>(root->right), root->left != NULL);
         traverseNodes(sb, "", "└──", static_cast<node_pointer>(root->left), false);
@@ -395,7 +395,7 @@ private:
             sb << "\n";
             sb << padding;
             sb << pointer;
-            sb << node->value;
+            sb << (node->is_black ? "B" : "R");
 
             std::stringstream paddingBuilder;
             paddingBuilder << padding;
@@ -469,7 +469,7 @@ private:
             begin_iter_ = begin_iter_->left;
         ++size_;
 
-        // Balance tree
+        tree_balance_after_insert(end_node()->left, pos);
 
         return iterator(pos);
     }
@@ -499,6 +499,7 @@ private:
         node_pointer new_node = alloc_.allocate(1);
         new_node->left = NULL;
         new_node->right = NULL;
+        new_node->parent = NULL;
         new_node->is_black = false;
         value_alloc_.construct(&new_node->value, value);
         return new_node;
