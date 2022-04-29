@@ -6,7 +6,7 @@
 /*   By: mleblanc <mleblanc@student.42quebec.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/21 22:03:04 by mleblanc          #+#    #+#             */
-/*   Updated: 2022/04/28 20:58:59 by mleblanc         ###   ########.fr       */
+/*   Updated: 2022/04/28 22:36:04 by mleblanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -118,7 +118,7 @@ public:
 template <typename T, typename Compare, typename Allocator>
 class tree
 {
-    //clang-format off
+    // clang-format off
 
 public:
     typedef T value_type;
@@ -140,7 +140,7 @@ private:
     typedef typename tree_node_types<value_type>::node_base_pointer node_base_pointer;
     typedef typename tree_node_types<value_type>::node_pointer node_pointer;
     typedef typename allocator_type::template rebind<node_type>::other node_allocator;
-    //clang-format on
+    // clang-format on
 
 public:
     tree(const value_compare& comp)

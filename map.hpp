@@ -6,7 +6,7 @@
 /*   By: mleblanc <mleblanc@student.42quebec.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/18 12:17:41 by mleblanc          #+#    #+#             */
-/*   Updated: 2022/04/28 18:26:51 by mleblanc         ###   ########.fr       */
+/*   Updated: 2022/04/28 22:18:47 by mleblanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,16 +20,14 @@
 namespace ft
 {
 template <typename Key, typename T, typename Compare>
-class value_type_compare
+class map_value_type_compare
 {
 public:
-    value_type_compare()
-        : comp_()
+    map_value_type_compare() : comp_()
     {
     }
 
-    value_type_compare(const Compare& c)
-        : comp_(c)
+    map_value_type_compare(const Compare& c) : comp_(c)
     {
     }
 
@@ -54,7 +52,7 @@ public:
         return key_comp()(x.first, y);
     }
 
-    void swap(value_type_compare& other)
+    void swap(map_value_type_compare& other)
     {
         std::swap(comp_, other.comp_);
     }
@@ -64,7 +62,7 @@ private:
 };
 
 template <typename Key, typename T, typename Compare>
-void swap(value_type_compare<Key, T, Compare>& x, value_type_compare<Key, T, Compare>& y)
+void swap(map_value_type_compare<Key, T, Compare>& x, map_value_type_compare<Key, T, Compare>& y)
 {
     x.swap(y);
 }
@@ -73,7 +71,7 @@ template <typename Key, typename T, typename Compare = less<Key>,
           typename Allocator = std::allocator<pair<const Key, T> > >
 class map
 {
-//clang-format off
+    // clang-format off
 public:
     typedef Key                                      key_type;
     typedef T                                        mapped_type;
@@ -88,7 +86,7 @@ public:
     typedef typename allocator_type::const_pointer   const_pointer;
 
 private:
-    typedef value_type_compare<key_type, value_type, key_compare> vt_compare;
+    typedef map_value_type_compare<key_type, value_type, key_compare> vt_compare;
     typedef tree<value_type, vt_compare, allocator_type>          base;
 
 public:
@@ -96,7 +94,7 @@ public:
     typedef typename base::const_iterator        const_iterator;
     typedef ft::reverse_iterator<iterator>       reverse_iterator;
     typedef ft::reverse_iterator<const_iterator> const_reverse_iterator;
-//clang-format on
+    // clang-format on
 
 public:
     class value_compare : public ft::binary_function<value_type, value_type, bool>
@@ -104,8 +102,7 @@ public:
         friend class map;
 
     public:
-        value_compare(const key_compare& comp)
-            : comp_(comp)
+        value_compare(const key_compare& comp) : comp_(comp)
         {
         }
 
@@ -119,8 +116,7 @@ public:
     };
 
 public:
-    map()
-        : tree_(vt_compare())
+    map() : tree_(vt_compare())
     {
     }
 
@@ -137,8 +133,7 @@ public:
         insert(first, last);
     }
 
-    map(const map& other)
-        : tree_(other.tree_)
+    map(const map& other) : tree_(other.tree_)
     {
     }
 

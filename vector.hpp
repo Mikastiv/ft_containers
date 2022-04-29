@@ -6,7 +6,7 @@
 /*   By: mleblanc <mleblanc@student.42quebec.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/01 15:27:15 by mleblanc          #+#    #+#             */
-/*   Updated: 2022/04/28 18:15:11 by mleblanc         ###   ########.fr       */
+/*   Updated: 2022/04/28 22:36:04 by mleblanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,7 @@ namespace ft
 template <typename T, typename Allocator = std::allocator<T> >
 class vector
 {
-//clang-format off
+// clang-format off
 public:
     typedef T                                        value_type;
     typedef Allocator                                allocator_type;
@@ -41,7 +41,7 @@ public:
     typedef normal_iterator<const_pointer, vector>   const_iterator;
     typedef ft::reverse_iterator<iterator>           reverse_iterator;
     typedef ft::reverse_iterator<const_iterator>     const_reverse_iterator;
-//clang-format on
+// clang-format on
 
 public:
     vector()

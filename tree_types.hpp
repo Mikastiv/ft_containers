@@ -6,7 +6,7 @@
 /*   By: mleblanc <mleblanc@student.42quebec.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/27 17:35:55 by mleblanc          #+#    #+#             */
-/*   Updated: 2022/04/28 18:22:14 by mleblanc         ###   ########.fr       */
+/*   Updated: 2022/04/28 22:36:04 by mleblanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,20 +20,20 @@ template <typename T>
 class tree_node;
 
 struct tree_base_node_types {
-//clang-format off
+// clang-format off
     typedef tree_end_node   end_node_type;
     typedef end_node_type*  end_node_pointer;
     typedef tree_base_node  base_node_type;
     typedef base_node_type* node_base_pointer;
-//clang-format on
+// clang-format on
 };
 
 template <typename T>
 struct tree_node_types : tree_base_node_types {
-//clang-format off
+// clang-format off
     typedef tree_node<T>     node_type;
     typedef node_type*       node_pointer;
     typedef const node_type* const_node_pointer;
-//clang-format on
+// clang-format on
 };
 } // namespace ft
