@@ -21,38 +21,36 @@ namespace ft
 {
 template <typename It>
 struct iterator_traits {
-// clang-format off
+    // clang-format off
     typedef typename It::iterator_category iterator_category;
     typedef typename It::value_type        value_type;
     typedef typename It::difference_type   difference_type;
     typedef typename It::pointer           pointer;
     typedef typename It::reference         reference;
-// clang-format on
+    // clang-format on
 };
 
 template <typename It>
 struct iterator_traits<It*> {
-// clang-format off
+    // clang-format off
     typedef std::random_access_iterator_tag iterator_category;
     typedef It                              value_type;
     typedef std::ptrdiff_t                  difference_type;
     typedef value_type*                     pointer;
     typedef value_type&                     reference;
-// clang-format on
+    // clang-format on
 };
 
 template <typename It>
 struct iterator_traits<const It*> {
-// clang-format off
+    // clang-format off
     typedef std::random_access_iterator_tag iterator_category;
     typedef It                              value_type;
     typedef std::ptrdiff_t                  difference_type;
     typedef const value_type*               pointer;
     typedef const value_type&               reference;
-// clang-format on
+    // clang-format on
 };
-
-
 
 template <typename It>
 class reverse_iterator
@@ -61,14 +59,14 @@ class reverse_iterator
           typename iterator_traits<It>::difference_type, typename iterator_traits<It>::pointer,
           typename iterator_traits<It>::reference>
 {
-// clang-format off
+    // clang-format off
 public:
     typedef It                                            iterator_type;
     typedef typename iterator_traits<It>::value_type      value_type;
     typedef typename iterator_traits<It>::difference_type difference_type;
     typedef typename iterator_traits<It>::reference       reference;
     typedef typename iterator_traits<It>::pointer         pointer;
-// clang-format on
+    // clang-format on
 
 public:
     reverse_iterator()

@@ -6,7 +6,7 @@
 /*   By: mleblanc <mleblanc@student.42quebec.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/20 16:29:45 by mleblanc          #+#    #+#             */
-/*   Updated: 2022/04/28 22:35:12 by mleblanc         ###   ########.fr       */
+/*   Updated: 2022/04/29 11:20:50 by mleblanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,8 +22,8 @@ namespace ft
 template <typename Key, typename Compare = less<Key>, typename Allocator = std::allocator<Key> >
 class set
 {
-// clang-format off
 public:
+    // clang-format off
     typedef Key                                      key_type;
     typedef Key                                      value_type;
     typedef Compare                                  key_compare;
@@ -44,7 +44,7 @@ public:
     typedef typename base::const_iterator        const_iterator;
     typedef ft::reverse_iterator<iterator>       reverse_iterator;
     typedef ft::reverse_iterator<const_iterator> const_reverse_iterator;
-// clang-format on
+    // clang-format on
 
 public:
     set()

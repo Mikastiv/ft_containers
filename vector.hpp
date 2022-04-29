@@ -18,8 +18,8 @@
 #include <sstream>
 #include <stdexcept>
 
-#include "utility.hpp"
 #include "iterator.hpp"
+#include "utility.hpp"
 #include "vector_iterator.hpp"
 
 namespace ft
@@ -27,7 +27,7 @@ namespace ft
 template <typename T, typename Allocator = std::allocator<T> >
 class vector
 {
-// clang-format off
+    // clang-format off
 public:
     typedef T                                        value_type;
     typedef Allocator                                allocator_type;
@@ -41,7 +41,7 @@ public:
     typedef normal_iterator<const_pointer, vector>   const_iterator;
     typedef ft::reverse_iterator<iterator>           reverse_iterator;
     typedef ft::reverse_iterator<const_iterator>     const_reverse_iterator;
-// clang-format on
+    // clang-format on
 
 public:
     vector()

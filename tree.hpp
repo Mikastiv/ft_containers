@@ -6,7 +6,7 @@
 /*   By: mleblanc <mleblanc@student.42quebec.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/21 22:03:04 by mleblanc          #+#    #+#             */
-/*   Updated: 2022/04/28 23:02:40 by mleblanc         ###   ########.fr       */
+/*   Updated: 2022/04/29 11:20:18 by mleblanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,8 @@ public:
     typedef tree_base_node_types::node_base_pointer node_base_pointer;
 
 public:
-    tree_end_node() : left(NULL)
+    tree_end_node()
+        : left(NULL)
     {
     }
 
@@ -45,7 +46,10 @@ public:
     typedef tree_base_node_types::node_base_pointer node_base_pointer;
 
 public:
-    tree_base_node() : right(NULL), parent(NULL), is_black(false)
+    tree_base_node()
+        : right(NULL),
+          parent(NULL),
+          is_black(false)
     {
     }
 
@@ -69,7 +73,8 @@ template <typename T>
 class tree_node : public tree_node_types<T>::base_node_type
 {
 public:
-    tree_node() : value(T())
+    tree_node()
+        : value(T())
     {
     }
 
@@ -80,40 +85,45 @@ public:
 template <typename T, typename Compare, typename Allocator>
 class tree
 {
-    // clang-format off
-
 public:
-    typedef T value_type;
-    typedef Compare value_compare;
-    typedef Allocator allocator_type;
-    typedef typename allocator_type::size_type size_type;
-    typedef typename allocator_type::difference_type difference_type;
-    typedef value_type& reference;
-    typedef const value_type& const_reference;
-    typedef typename allocator_type::pointer pointer;
-    typedef typename allocator_type::const_pointer const_pointer;
-    typedef tree_iterator<value_type, difference_type> iterator;
+    // clang-format off
+    typedef T                                                value_type;
+    typedef Compare                                          value_compare;
+    typedef Allocator                                        allocator_type;
+    typedef typename allocator_type::size_type               size_type;
+    typedef typename allocator_type::difference_type         difference_type;
+    typedef value_type&                                      reference;
+    typedef const value_type&                                const_reference;
+    typedef typename allocator_type::pointer                 pointer;
+    typedef typename allocator_type::const_pointer           const_pointer;
+    typedef tree_iterator<value_type, difference_type>       iterator;
     typedef const_tree_iterator<value_type, difference_type> const_iterator;
 
 private:
-    typedef typename tree_node_types<value_type>::end_node_type end_node_type;
-    typedef typename tree_node_types<value_type>::node_type node_type;
-    typedef typename tree_node_types<value_type>::end_node_pointer end_node_pointer;
-    typedef typename tree_node_types<value_type>::node_base_pointer node_base_pointer;
-    typedef typename tree_node_types<value_type>::node_pointer node_pointer;
+    typedef typename tree_node_types<value_type>::end_node_type        end_node_type;
+    typedef typename tree_node_types<value_type>::node_type            node_type;
+    typedef typename tree_node_types<value_type>::end_node_pointer     end_node_pointer;
+    typedef typename tree_node_types<value_type>::node_base_pointer    node_base_pointer;
+    typedef typename tree_node_types<value_type>::node_pointer         node_pointer;
     typedef typename allocator_type::template rebind<node_type>::other node_allocator;
     // clang-format on
 
 public:
     tree(const value_compare& comp)
-        : alloc_(node_allocator()), value_alloc_(allocator_type()), comp_(comp), end_node_(),
+        : alloc_(node_allocator()),
+          value_alloc_(allocator_type()),
+          comp_(comp),
+          end_node_(),
           size_(0)
     {
         begin_iter_ = end_node();
     }
 
     tree(const tree& other)
-        : alloc_(other.alloc_), value_alloc_(other.value_alloc_), comp_(other.comp_), end_node_(),
+        : alloc_(other.alloc_),
+          value_alloc_(other.value_alloc_),
+          comp_(other.comp_),
+          end_node_(),
           size_(0)
     {
         begin_iter_ = end_node();
@@ -121,7 +131,11 @@ public:
     }
 
     tree(const value_compare& comp, const allocator_type& alloc)
-        : alloc_(node_allocator()), value_alloc_(alloc), comp_(comp), end_node_(), size_(0)
+        : alloc_(node_allocator()),
+          value_alloc_(alloc),
+          comp_(comp),
+          end_node_(),
+          size_(0)
     {
         begin_iter_ = end_node();
     }

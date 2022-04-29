@@ -6,7 +6,7 @@
 /*   By: mleblanc <mleblanc@student.42quebec.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/18 12:17:41 by mleblanc          #+#    #+#             */
-/*   Updated: 2022/04/28 22:18:47 by mleblanc         ###   ########.fr       */
+/*   Updated: 2022/04/29 11:20:20 by mleblanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,11 +23,13 @@ template <typename Key, typename T, typename Compare>
 class map_value_type_compare
 {
 public:
-    map_value_type_compare() : comp_()
+    map_value_type_compare()
+        : comp_()
     {
     }
 
-    map_value_type_compare(const Compare& c) : comp_(c)
+    map_value_type_compare(const Compare& c)
+        : comp_(c)
     {
     }
 
@@ -71,8 +73,8 @@ template <typename Key, typename T, typename Compare = less<Key>,
           typename Allocator = std::allocator<pair<const Key, T> > >
 class map
 {
-    // clang-format off
 public:
+    // clang-format off
     typedef Key                                      key_type;
     typedef T                                        mapped_type;
     typedef pair<const key_type, mapped_type>        value_type;
@@ -87,7 +89,7 @@ public:
 
 private:
     typedef map_value_type_compare<key_type, value_type, key_compare> vt_compare;
-    typedef tree<value_type, vt_compare, allocator_type>          base;
+    typedef tree<value_type, vt_compare, allocator_type>              base;
 
 public:
     typedef typename base::iterator              iterator;
@@ -102,7 +104,8 @@ public:
         friend class map;
 
     public:
-        value_compare(const key_compare& comp) : comp_(comp)
+        value_compare(const key_compare& comp)
+            : comp_(comp)
         {
         }
 
@@ -116,7 +119,8 @@ public:
     };
 
 public:
-    map() : tree_(vt_compare())
+    map()
+        : tree_(vt_compare())
     {
     }
 
@@ -133,7 +137,8 @@ public:
         insert(first, last);
     }
 
-    map(const map& other) : tree_(other.tree_)
+    map(const map& other)
+        : tree_(other.tree_)
     {
     }
 
