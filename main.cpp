@@ -11,7 +11,7 @@ int main()
     ft::set<int> t;
 
     srand(time(0));
-    for (int i = 0; i < 15; ++i) {
+    for (int i = 0; i < 5; ++i) {
         t.insert((rand()) % 100);
     }
 
