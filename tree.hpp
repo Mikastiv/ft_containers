@@ -6,7 +6,7 @@
 /*   By: mleblanc <mleblanc@student.42quebec.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/21 22:03:04 by mleblanc          #+#    #+#             */
-/*   Updated: 2022/04/28 22:36:04 by mleblanc         ###   ########.fr       */
+/*   Updated: 2022/04/28 23:02:40 by mleblanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,44 +24,6 @@
 
 namespace ft
 {
-template <typename NodePtr>
-void tree_rotate_left(NodePtr node)
-{
-    NodePtr ptr = node->right;
-
-    node->right = ptr->left;
-    if (ptr->left != NULL) {
-        ptr->left->set_parent(node);
-    }
-    ptr->left = node;
-    ptr->parent = node->parent;
-    if (tree_is_left_child(node)) {
-        node->parent->left = ptr;
-    } else {
-        node->get_parent()->right = ptr;
-    }
-    node->set_parent(ptr);
-}
-
-template <typename NodePtr>
-void tree_rotate_right(NodePtr node)
-{
-    NodePtr ptr = node->left;
-
-    node->left = ptr->right;
-    if (ptr->right != NULL) {
-        ptr->right->set_parent(node);
-    }
-    ptr->right = node;
-    ptr->parent = node->parent;
-    if (tree_is_left_child(node)) {
-        node->parent->left = ptr;
-    } else {
-        node->get_parent()->right = ptr;
-    }
-    node->set_parent(ptr);
-}
-
 class tree_end_node
 {
 public:

@@ -6,65 +6,17 @@
 /*   By: mleblanc <mleblanc@student.42quebec.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/27 17:37:17 by mleblanc          #+#    #+#             */
-/*   Updated: 2022/04/28 22:36:04 by mleblanc         ###   ########.fr       */
+/*   Updated: 2022/04/28 23:02:31 by mleblanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
 
 #include "tree_types.hpp"
+#include "tree_algos.hpp"
 
 namespace ft
 {
-template <typename NodePtr>
-inline bool tree_is_left_child(NodePtr ptr)
-{
-    return ptr == ptr->parent->left;
-}
-
-template <typename NodePtr>
-NodePtr tree_max(NodePtr ptr)
-{
-    while (ptr->right != NULL) {
-        ptr = ptr->right;
-    }
-    return ptr;
-}
-
-template <typename NodePtr>
-NodePtr tree_min(NodePtr ptr)
-{
-    while (ptr->left != NULL) {
-        ptr = ptr->left;
-    }
-    return ptr;
-}
-
-template <typename IterPtr, typename NodePtr>
-IterPtr tree_iter_next(NodePtr ptr)
-{
-    if (ptr->right != NULL) {
-        return tree_min(ptr->right);
-    }
-    while (!tree_is_left_child(ptr)) {
-        ptr = ptr->get_parent();
-    }
-    return ptr->get_parent();
-}
-
-template <typename NodePtr, typename IterPtr>
-IterPtr tree_iter_prev(IterPtr ptr)
-{
-    if (ptr->left != NULL) {
-        return tree_max(ptr->left);
-    }
-    NodePtr nptr = static_cast<NodePtr>(ptr);
-    while (tree_is_left_child(nptr)) {
-        nptr = nptr->get_parent();
-    }
-    return nptr->get_parent();
-}
-
 template <typename T, typename DiffType>
 class const_tree_iterator;
 
