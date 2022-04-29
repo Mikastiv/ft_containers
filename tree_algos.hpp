@@ -6,7 +6,7 @@
 /*   By: mleblanc <mleblanc@student.42quebec.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/28 23:01:54 by mleblanc          #+#    #+#             */
-/*   Updated: 2022/04/29 14:38:03 by mleblanc         ###   ########.fr       */
+/*   Updated: 2022/04/29 15:27:49 by mleblanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,13 +72,13 @@ void tree_rotate_left(NodePtr node)
     if (ptr->left != NULL) {
         ptr->left->set_parent(node);
     }
+    ptr->left = node;
     ptr->parent = node->parent;
     if (tree_is_left_child(node)) {
         node->parent->left = ptr;
     } else {
         node->get_parent()->right = ptr;
     }
-    ptr->left = node;
     node->set_parent(ptr);
 }
 
@@ -91,13 +91,13 @@ void tree_rotate_right(NodePtr node)
     if (ptr->right != NULL) {
         ptr->right->set_parent(node);
     }
+    ptr->right = node;
     ptr->parent = node->parent;
     if (tree_is_left_child(node)) {
         node->parent->left = ptr;
     } else {
         node->get_parent()->right = ptr;
     }
-    ptr->right = node;
     node->set_parent(ptr);
 }
 
@@ -189,5 +189,12 @@ void tree_balance_after_insert(NodePtr root, NodePtr z)
             }
         }
     }
+}
+
+template <typename NodePtr>
+NodePtr tree_remove_node(NodePtr root, NodePtr node)
+{
+    (void)root;
+    return node;
 }
 } // namespace ft
