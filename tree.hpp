@@ -6,7 +6,7 @@
 /*   By: mleblanc <mleblanc@student.42quebec.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/21 22:03:04 by mleblanc          #+#    #+#             */
-/*   Updated: 2022/04/29 15:32:29 by mleblanc         ###   ########.fr       */
+/*   Updated: 2022/04/30 00:13:56 by mleblanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -600,7 +600,7 @@ private:
 
     void delete_node(node_pointer node)
     {
-        value_alloc.destroy(&node->value);
+        value_alloc_.destroy(&node->value);
         alloc_.deallocate(node, 1);
     }
 
