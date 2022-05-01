@@ -1,0 +1,5 @@
+-Wall
+-Wextra
+-Werror
+-stdlib=libc++
+-std=c++98
