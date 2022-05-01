@@ -6,7 +6,7 @@
 /*   By: mleblanc <mleblanc@student.42quebec.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/21 22:03:04 by mleblanc          #+#    #+#             */
-/*   Updated: 2022/04/30 17:47:48 by mleblanc         ###   ########.fr       */
+/*   Updated: 2022/05/01 00:18:34 by mleblanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,8 @@
 
 #include "tree_iterator.hpp"
 #include "utility.hpp"
+
+#include "tree_print.hpp"
 
 namespace ft
 {

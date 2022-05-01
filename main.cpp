@@ -13,10 +13,9 @@ int main()
     srand(time(0));
     for (int i = 0; i < 20; ++i) {
         t.insert((rand()) % 100);
-        t.print_tree();
-        std::cout << "\n";
     }
 
+    t.print_tree();
 
     // for (auto it = t.begin(); it != t.end(); ++it) {
     //     std::cout << *it << "\n";
