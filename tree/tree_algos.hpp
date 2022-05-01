@@ -6,7 +6,7 @@
 /*   By: mleblanc <mleblanc@student.42quebec.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/28 23:01:54 by mleblanc          #+#    #+#             */
-/*   Updated: 2022/05/01 00:17:35 by mleblanc         ###   ########.fr       */
+/*   Updated: 2022/05/01 03:27:15 by mleblanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -192,9 +192,9 @@ void tree_balance_after_insert(NodePtr root, NodePtr z)
 }
 
 template <typename NodePtr>
-NodePtr tree_remove_node(NodePtr root, NodePtr node)
+void tree_remove_node(NodePtr root, NodePtr node)
 {
     (void)root;
-    return node;
+    (void)node;
 }
 } // namespace ft

@@ -20,4 +20,6 @@ int main()
     // for (auto it = t.begin(); it != t.end(); ++it) {
     //     std::cout << *it << "\n";
     // }
+
+    t.erase(t.end());
 }

@@ -6,7 +6,7 @@
 /*   By: mleblanc <mleblanc@student.42quebec.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/21 22:03:04 by mleblanc          #+#    #+#             */
-/*   Updated: 2022/05/01 00:18:34 by mleblanc         ###   ########.fr       */
+/*   Updated: 2022/05/01 06:34:43 by mleblanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@
 #include <limits>
 
 #include "tree_iterator.hpp"
-#include "utility.hpp"
+#include "../utility.hpp"
 
 #include "tree_print.hpp"
 
@@ -198,7 +198,7 @@ public:
 
     bool empty() const
     {
-        return size() == static_cast<size_type>(0);
+        return size() == size_type(0);
     }
 
     size_type size() const
@@ -269,7 +269,18 @@ public:
 
     void erase(iterator pos)
     {
-        (void)pos;
+        if (begin_iter_ == pos.base()) {
+            iterator it(pos);
+            ++it;
+            begin_iter_ = it.base();
+        }
+
+        node_pointer ptr = pos.node_ptr();
+
+        tree_remove_node(end_node()->left, static_cast<node_base_pointer>(ptr));
+        value_alloc_.destroy(&ptr->value);
+        alloc_.deallocate(ptr, 1);
+        size_--;
     }
 
     void erase(iterator first, iterator last)
@@ -282,12 +293,15 @@ public:
     template <typename Key>
     size_type erase(const Key& key)
     {
-        size_type s = size();
-        end_node_pointer ptr = find_pointer(key);
+        iterator it = find(key);
 
-        erase(iterator(ptr));
+        if (it == end()) {
+            return size_type(0);
+        }
 
-        return s == size() ? static_cast<size_type>(0) : static_cast<size_type>(1);
+        erase(it);
+
+        return size_type(1);
     }
 
     void swap(tree& other)
@@ -313,7 +327,7 @@ public:
     template <typename Key>
     size_type count(const Key& key) const
     {
-        return find_pointer(key) == NULL ? static_cast<size_type>(0) : static_cast<size_type>(1);
+        return find_pointer(key) == NULL ? size_type(0) : size_type(1);
     }
 
     template <typename Key>
