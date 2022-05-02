@@ -6,7 +6,7 @@
 /*   By: mleblanc <mleblanc@student.42quebec.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/28 23:01:54 by mleblanc          #+#    #+#             */
-/*   Updated: 2022/05/01 06:54:27 by mleblanc         ###   ########.fr       */
+/*   Updated: 2022/05/02 17:30:19 by mleblanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,6 +40,18 @@ NodePtr tree_min(NodePtr ptr)
     return ptr;
 }
 
+template <typename NodePtr>
+NodePtr tree_next(NodePtr ptr)
+{
+    if (ptr->right != NULL) {
+        return tree_min(ptr->right);
+    }
+    while (!tree_is_left_child(ptr)) {
+        ptr = ptr->get_parent();
+    }
+    return ptr->get_parent();
+}
+
 template <typename IterPtr, typename NodePtr>
 IterPtr tree_iter_next(NodePtr ptr)
 {
@@ -49,7 +61,7 @@ IterPtr tree_iter_next(NodePtr ptr)
     while (!tree_is_left_child(ptr)) {
         ptr = ptr->get_parent();
     }
-    return ptr->get_parent();
+    return ptr->parent;
 }
 
 template <typename NodePtr, typename IterPtr>
@@ -62,7 +74,7 @@ IterPtr tree_iter_prev(IterPtr ptr)
     while (tree_is_left_child(nptr)) {
         nptr = nptr->get_parent();
     }
-    return nptr->get_parent();
+    return nptr->parent;
 }
 
 template <typename NodePtr>
@@ -191,6 +203,35 @@ void tree_balance_after_insert(NodePtr root, NodePtr z)
             }
         }
     }
+}
+
+template <typename ParentPtr, typename NodePtr>
+void tree_swap_nodes(NodePtr x, NodePtr y)
+{
+    NodePtr left = x->left;
+    NodePtr right = x->right;
+    ParentPtr parent = x->parent;
+    bool is_black = x->is_black;
+
+    if (tree_is_left_child(x)) {
+        x->parent->left = y;
+    } else {
+        x->get_parent()->right = y;
+    }
+    x->parent = y->parent;
+    x->left = y->left;
+    x->right = y->right;
+    x->is_black = y->is_black;
+
+    if (tree_is_left_child(y)) {
+        y->parent->left = x;
+    } else {
+        y->get_parent()->right = x;
+    }
+    y->left = left;
+    y->right = right;
+    y->parent = parent;
+    y->is_black = is_black;
 }
 
 template <typename NodePtr>

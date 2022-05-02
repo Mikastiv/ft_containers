@@ -6,11 +6,13 @@
 /*   By: mleblanc <mleblanc@student.42quebec.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/27 17:37:17 by mleblanc          #+#    #+#             */
-/*   Updated: 2022/04/29 11:21:04 by mleblanc         ###   ########.fr       */
+/*   Updated: 2022/05/02 17:48:32 by mleblanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
+
+#include <iterator>
 
 #include "tree_algos.hpp"
 #include "tree_types.hpp"
