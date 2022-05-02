@@ -6,13 +6,12 @@
 /*   By: mleblanc <mleblanc@student.42quebec.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/02 12:33:36 by mleblanc          #+#    #+#             */
-/*   Updated: 2022/04/28 22:36:04 by mleblanc         ###   ########.fr       */
+/*   Updated: 2022/05/01 21:57:11 by mleblanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
 
-#include <cstddef>
 #include <iterator>
 
 #include "type_traits.hpp"

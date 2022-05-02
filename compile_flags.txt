@@ -1,5 +1,7 @@
 -Wall
 -Wextra
 -Werror
+-Wpedantic
+-Wsign-conversion
 -stdlib=libc++
 -std=c++98

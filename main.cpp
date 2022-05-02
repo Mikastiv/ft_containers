@@ -11,15 +11,16 @@ int main()
     ft::set<int> t;
 
     srand(time(0));
-    for (int i = 0; i < 20; ++i) {
+    for (int i = 0; i < 30; ++i) {
         t.insert((rand()) % 100);
     }
 
     t.print_tree();
 
-    // for (auto it = t.begin(); it != t.end(); ++it) {
-    //     std::cout << *it << "\n";
-    // }
+    for (auto it = t.begin(); it != t.end(); ++it) {
+        std::cout << *it << " ";
+    }
+        std::cout << "\n";
 
-    t.erase(t.end());
+    // t.erase(t.end());
 }
