@@ -6,7 +6,7 @@
 /*   By: mleblanc <mleblanc@student.42quebec.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/28 23:01:54 by mleblanc          #+#    #+#             */
-/*   Updated: 2022/05/02 17:30:19 by mleblanc         ###   ########.fr       */
+/*   Updated: 2022/05/03 00:23:13 by mleblanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,16 @@ template <typename NodePtr>
 inline bool tree_is_left_child(NodePtr ptr)
 {
     return ptr == ptr->parent->left;
+}
+
+template <typename NodePtr>
+NodePtr tree_node_sibling(NodePtr ptr)
+{
+    if (tree_is_left_child(ptr)) {
+        return ptr->get_parent()->right;
+    } else {
+        return ptr->parent->left;
+    }
 }
 
 template <typename NodePtr>
@@ -222,6 +232,12 @@ void tree_swap_nodes(NodePtr x, NodePtr y)
     x->left = y->left;
     x->right = y->right;
     x->is_black = y->is_black;
+    if (x->left) {
+        x->left->set_parent(x);
+    }
+    if (x->right) {
+        x->right->set_parent(x);
+    }
 
     if (tree_is_left_child(y)) {
         y->parent->left = x;
@@ -232,6 +248,12 @@ void tree_swap_nodes(NodePtr x, NodePtr y)
     y->right = right;
     y->parent = parent;
     y->is_black = is_black;
+    if (y->left) {
+        y->left->set_parent(y);
+    }
+    if (y->right) {
+        y->right->set_parent(y);
+    }
 }
 
 template <typename NodePtr>
