@@ -6,7 +6,7 @@
 /*   By: mleblanc <mleblanc@student.42quebec.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/01 15:27:15 by mleblanc          #+#    #+#             */
-/*   Updated: 2022/04/28 22:36:04 by mleblanc         ###   ########.fr       */
+/*   Updated: 2022/05/03 19:16:38 by mleblanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -302,6 +302,7 @@ public:
                 ++end_;
             } else {
                 alloc_.construct(end_, *(end_ - 1));
+                ++end_;
                 std::copy_backward(pos.base(), end_ - 2, end_ - 1);
                 *pos = value;
             }
