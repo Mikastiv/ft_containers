@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   tree_algos.hpp                                     :+:      :+:    :+:   */
+/*   tree_algorithm.hpp                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: mleblanc <mleblanc@student.42quebec.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/28 23:01:54 by mleblanc          #+#    #+#             */
-/*   Updated: 2022/05/04 00:35:33 by mleblanc         ###   ########.fr       */
+/*   Updated: 2022/05/04 12:18:38 by mleblanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -204,27 +204,15 @@ void tree_balance_after_insert(NodePtr root, NodePtr z)
 }
 
 template <typename NodePtr>
-void tree_transplant_node(NodePtr position, NodePtr& node)
+void tree_balance_after_remove(NodePtr root, NodePtr x)
 {
-    node->is_black = position->is_black;
-    node->parent = position->parent;
-    if (tree_is_left_child(position)) {
-        node->parent->left = node;
-    } else {
-        node->get_parent()->right = node;
-    }
-    node->left = position->left;
-    node->left->set_parent(node);
-    node->right = position->right;
-    if (node->right) {
-        node->right->set_parent(node);
-    }
+    (void)root;
+    (void)x;
 }
 
 template <typename NodePtr>
 void tree_remove_node(NodePtr root, NodePtr target)
 {
-    (void)root;
     NodePtr y = target;
     NodePtr x = NULL;
 
@@ -251,11 +239,31 @@ void tree_remove_node(NodePtr root, NodePtr target)
     }
 
     // Keep track of removed color before possibly transplanting y into target's place
-    // bool removed_black = y->is_black;
+    bool removed_black = y->is_black;
 
     // If y is target's in order successor, transplant y into target's place
     if (y != target) {
-        tree_transplant_node(target, y);
+        y->is_black = target->is_black;
+        y->parent = target->parent;
+        if (tree_is_left_child(target)) {
+            y->parent->left = y;
+        } else {
+            y->get_parent()->right = y;
+        }
+        y->left = target->left;
+        y->left->set_parent(y);
+        y->right = target->right;
+        if (y->right) {
+            y->right->set_parent(y);
+        }
+        if (target == root) {
+            root = y;
+        }
+    }
+
+    // Balance tree only if a black node was removed
+    if (removed_black) {
+        tree_balance_after_remove(root, x);
     }
 }
 } // namespace ft

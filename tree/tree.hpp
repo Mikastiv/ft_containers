@@ -6,7 +6,7 @@
 /*   By: mleblanc <mleblanc@student.42quebec.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/21 22:03:04 by mleblanc          #+#    #+#             */
-/*   Updated: 2022/05/03 23:00:13 by mleblanc         ###   ########.fr       */
+/*   Updated: 2022/05/04 12:12:43 by mleblanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -528,13 +528,14 @@ private:
         return parent->left;
     }
 
-    node_base_pointer& find_pos(iterator hint, end_node_pointer& parent, const value_type& value,
+    template <typename Key>
+    node_base_pointer& find_pos(iterator hint, end_node_pointer& parent, const Key& key,
                                 node_base_pointer& dummy) const
     {
-        if (hint == end() || value_comp()(value, *hint)) {
+        if (hint == end() || value_comp()(key, *hint)) {
             // value < *__hint
             const_iterator prev = hint;
-            if (prev == begin() || value_comp()(*--prev, value)) {
+            if (prev == begin() || value_comp()(*--prev, key)) {
                 // *prev < value < *hint
                 if (hint.base()->left == NULL) {
                     parent = hint.base();
@@ -545,12 +546,12 @@ private:
                 }
             }
             // value <= *prev
-            return find_pos(parent, value);
-        } else if (value_comp()(*hint, value)) {
+            return find_pos(parent, key);
+        } else if (value_comp()(*hint, key)) {
             // *hint < value
             const_iterator next = hint;
             ++next;
-            if (next == end() || value_comp()(value, *next)) {
+            if (next == end() || value_comp()(key, *next)) {
                 // *hint < value < *next
                 if (hint.node_ptr()->right == NULL) {
                     parent = hint.base();
@@ -561,7 +562,7 @@ private:
                 }
             }
             // *next <= value
-            return find_pos(parent, value);
+            return find_pos(parent, key);
         }
         parent = hint.base();
         dummy = static_cast<node_base_pointer>(hint.base());
