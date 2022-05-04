@@ -6,7 +6,7 @@
 /*   By: mleblanc <mleblanc@student.42quebec.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/01 00:16:52 by mleblanc          #+#    #+#             */
-/*   Updated: 2022/05/01 00:18:05 by mleblanc         ###   ########.fr       */
+/*   Updated: 2022/05/03 21:19:51 by mleblanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,7 @@ std::string traverse_root(NodePtr root)
     }
 
     std::stringstream ss;
-    ss << (root->is_black ? "B" : "R");
+    ss << root->value << (root->is_black ? "(B)" : "(R)");
 
     traverse_nodes(ss, "", "\\──", static_cast<NodePtr>(root->right), root->left != NULL);
     traverse_nodes(ss, "", "└──", static_cast<NodePtr>(root->left), false);
@@ -43,7 +43,7 @@ void traverse_nodes(std::stringstream& ss, const std::string& padding, const std
         ss << "\n";
         ss << padding;
         ss << pointer;
-        ss << (node->is_black ? "B" : "R");
+        ss << node->value << (node->is_black ? "(B)" : "(R)");
 
         std::stringstream padding_builder;
         padding_builder << padding;

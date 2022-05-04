@@ -6,7 +6,7 @@
 /*   By: mleblanc <mleblanc@student.42quebec.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/21 22:03:04 by mleblanc          #+#    #+#             */
-/*   Updated: 2022/05/02 17:42:21 by mleblanc         ###   ########.fr       */
+/*   Updated: 2022/05/03 23:00:13 by mleblanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -381,13 +381,6 @@ public:
     void print_tree() const
     {
         std::cout << traverse_root(static_cast<node_pointer>(root()));
-        const_iterator it = begin();
-        const_iterator it1 = begin();
-        ++it;
-        ++it1;
-        ++it1;
-        tree_swap_nodes<end_node_pointer>(static_cast<node_base_pointer>(it.base()),
-                                          static_cast<node_base_pointer>(it1.base()));
     }
 
 private:

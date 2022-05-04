@@ -6,7 +6,7 @@
 /*   By: mleblanc <mleblanc@student.42quebec.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/28 23:01:54 by mleblanc          #+#    #+#             */
-/*   Updated: 2022/05/03 00:23:13 by mleblanc         ###   ########.fr       */
+/*   Updated: 2022/05/04 00:35:33 by mleblanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,18 +48,6 @@ NodePtr tree_min(NodePtr ptr)
         ptr = ptr->left;
     }
     return ptr;
-}
-
-template <typename NodePtr>
-NodePtr tree_next(NodePtr ptr)
-{
-    if (ptr->right != NULL) {
-        return tree_min(ptr->right);
-    }
-    while (!tree_is_left_child(ptr)) {
-        ptr = ptr->get_parent();
-    }
-    return ptr->get_parent();
 }
 
 template <typename IterPtr, typename NodePtr>
@@ -215,51 +203,59 @@ void tree_balance_after_insert(NodePtr root, NodePtr z)
     }
 }
 
-template <typename ParentPtr, typename NodePtr>
-void tree_swap_nodes(NodePtr x, NodePtr y)
+template <typename NodePtr>
+void tree_transplant_node(NodePtr position, NodePtr& node)
 {
-    NodePtr left = x->left;
-    NodePtr right = x->right;
-    ParentPtr parent = x->parent;
-    bool is_black = x->is_black;
-
-    if (tree_is_left_child(x)) {
-        x->parent->left = y;
+    node->is_black = position->is_black;
+    node->parent = position->parent;
+    if (tree_is_left_child(position)) {
+        node->parent->left = node;
     } else {
-        x->get_parent()->right = y;
+        node->get_parent()->right = node;
     }
-    x->parent = y->parent;
-    x->left = y->left;
-    x->right = y->right;
-    x->is_black = y->is_black;
-    if (x->left) {
-        x->left->set_parent(x);
+    node->left = position->left;
+    node->left->set_parent(node);
+    node->right = position->right;
+    if (node->right) {
+        node->right->set_parent(node);
     }
-    if (x->right) {
-        x->right->set_parent(x);
+}
+
+template <typename NodePtr>
+void tree_remove_node(NodePtr root, NodePtr target)
+{
+    (void)root;
+    NodePtr y = target;
+    NodePtr x = NULL;
+
+    // Find node to replace target if target has 2 child (in order successor)
+    if (y->left != NULL && y->right != NULL) {
+        y = tree_min(target->right);
     }
 
+    // x is NULL or y's only child
+    if (y->left != NULL) {
+        x = y->left;
+    } else {
+        x = y->right;
+    }
+
+    // Replace y with x
+    if (x != NULL) {
+        x->parent = y->parent;
+    }
     if (tree_is_left_child(y)) {
         y->parent->left = x;
     } else {
         y->get_parent()->right = x;
     }
-    y->left = left;
-    y->right = right;
-    y->parent = parent;
-    y->is_black = is_black;
-    if (y->left) {
-        y->left->set_parent(y);
-    }
-    if (y->right) {
-        y->right->set_parent(y);
-    }
-}
 
-template <typename NodePtr>
-void tree_remove_node(NodePtr root, NodePtr node)
-{
-    (void)root;
-    (void)node;
+    // Keep track of removed color before possibly transplanting y into target's place
+    // bool removed_black = y->is_black;
+
+    // If y is target's in order successor, transplant y into target's place
+    if (y != target) {
+        tree_transplant_node(target, y);
+    }
 }
 } // namespace ft
