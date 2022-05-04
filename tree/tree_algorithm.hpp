@@ -6,7 +6,7 @@
 /*   By: mleblanc <mleblanc@student.42quebec.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/28 23:01:54 by mleblanc          #+#    #+#             */
-/*   Updated: 2022/05/04 12:18:38 by mleblanc         ###   ########.fr       */
+/*   Updated: 2022/05/04 16:04:29 by mleblanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -204,28 +204,34 @@ void tree_balance_after_insert(NodePtr root, NodePtr z)
 }
 
 template <typename NodePtr>
-void tree_balance_after_remove(NodePtr root, NodePtr x)
+void tree_balance_after_remove(NodePtr root, NodePtr x, NodePtr w)
 {
     (void)root;
     (void)x;
+    (void)w;
 }
 
 template <typename NodePtr>
 void tree_remove_node(NodePtr root, NodePtr target)
 {
     NodePtr y = target;
-    NodePtr x = NULL;
-
     // Find node to replace target if target has 2 child (in order successor)
     if (y->left != NULL && y->right != NULL) {
         y = tree_min(target->right);
     }
 
     // x is NULL or y's only child
+    NodePtr x;
     if (y->left != NULL) {
         x = y->left;
     } else {
         x = y->right;
+    }
+
+    // w is x's sibling
+    NodePtr w = NULL;
+    if (y != root) {
+        w = tree_node_sibling(y);
     }
 
     // Replace y with x
@@ -262,8 +268,8 @@ void tree_remove_node(NodePtr root, NodePtr target)
     }
 
     // Balance tree only if a black node was removed
-    if (removed_black) {
-        tree_balance_after_remove(root, x);
+    if (removed_black && root != NULL) {
+        tree_balance_after_remove(root, x, w);
     }
 }
 } // namespace ft

@@ -6,7 +6,7 @@
 /*   By: mleblanc <mleblanc@student.42quebec.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/01 15:27:15 by mleblanc          #+#    #+#             */
-/*   Updated: 2022/05/03 19:16:38 by mleblanc         ###   ########.fr       */
+/*   Updated: 2022/05/04 14:13:06 by mleblanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -119,7 +119,7 @@ public:
             deallocate_v();
             start_ = new_start;
             end_cap_ = start_ + len;
-        } else if (size() >= len) {
+        } else if (size() > len) {
             iterator it = std::copy(other.begin(), other.end(), begin());
             destroy_range(it.base(), end_);
         } else {
