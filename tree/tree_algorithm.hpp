@@ -6,13 +6,15 @@
 /*   By: mleblanc <mleblanc@student.42quebec.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/28 23:01:54 by mleblanc          #+#    #+#             */
-/*   Updated: 2022/05/04 16:04:29 by mleblanc         ###   ########.fr       */
+/*   Updated: 2022/05/05 01:03:47 by mleblanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
 
+#include <iostream>
 #include <cstddef>
+#include "tree_types.hpp"
 
 namespace ft
 {
@@ -173,9 +175,9 @@ void tree_balance_after_insert(NodePtr root, NodePtr z)
 {
     z->is_black = z == root; // case 0
     while (z != root && !z->get_parent()->is_black) {
-        if (tree_is_left_child(z->get_parent())) {
-            NodePtr uncle = z->get_parent()->get_parent()->right;
+        NodePtr uncle = tree_node_sibling(z->get_parent());
 
+        if (tree_is_left_child(z->get_parent())) {
             if (!tree_node_is_black(uncle)) {
                 z = tree_balance_case_1(root, z, uncle); // case 1
             } else {
@@ -187,8 +189,6 @@ void tree_balance_after_insert(NodePtr root, NodePtr z)
                 return;
             }
         } else {
-            NodePtr uncle = z->get_parent()->parent->left;
-
             if (!tree_node_is_black(uncle)) {
                 z = tree_balance_case_1(root, z, uncle); // case 1
             } else {
@@ -204,11 +204,104 @@ void tree_balance_after_insert(NodePtr root, NodePtr z)
 }
 
 template <typename NodePtr>
-void tree_balance_after_remove(NodePtr root, NodePtr x, NodePtr w)
+void tree_transplant_node(NodePtr pos, NodePtr& node)
 {
-    (void)root;
-    (void)x;
-    (void)w;
+    node->is_black = pos->is_black;
+    node->parent = pos->parent;
+    if (tree_is_left_child(pos)) {
+        node->parent->left = node;
+    } else {
+        node->get_parent()->right = node;
+    }
+    node->left = pos->left;
+    node->left->set_parent(node);
+    node->right = pos->right;
+    if (node->right) {
+        node->right->set_parent(node);
+    }
+}
+
+/// This function should only be called to fix a double black node case
+/// @param w The deleted node's sibling.
+template <typename NodePtr>
+void tree_balance_after_remove(NodePtr root, NodePtr x_parent)
+{
+    NodePtr x = NULL;
+
+    ft::tree_node<int>* z = reinterpret_cast<ft::tree_node<int>* >(x_parent);
+    std::cout << "Parent: " << z->value << std::endl;
+
+    while (root != x && tree_node_is_black(x)) {
+        if (x == x_parent->left) {
+            NodePtr w = x_parent->right;
+            if (!w->is_black) {
+                x_parent->is_black = false;
+                w->is_black = true;
+                if (root == x_parent) {
+                    root = w;
+                }
+                tree_rotate_left(x_parent);
+                w = x_parent->right;
+            }
+            if (tree_node_is_black(w->left) && tree_node_is_black(w->right)) {
+                w->is_black = false;
+                x_parent->is_black = true;
+                x = x_parent;
+                x_parent = x->get_parent();
+            } else {
+                if (tree_node_is_black(w->right)) {
+                    w->left->is_black = true;
+                    w->is_black = false;
+                    tree_rotate_right(w);
+                    w = x_parent->right;
+                }
+                w->is_black = x_parent->is_black;
+                x_parent->is_black = true;
+                if (w->right) {
+                    w->right->is_black = true;
+                }
+                if (root == x_parent) {
+                    root = w;
+                }
+                tree_rotate_left(x_parent);
+                return;
+            }
+        } else {
+            NodePtr w = x_parent->left;
+            if (!w->is_black) {
+                if (root == x_parent) {
+                    root = w;
+                }
+                x_parent->is_black = false;
+                w->is_black = true;
+                tree_rotate_right(x_parent);
+                w = x_parent->left;
+            }
+            if (tree_node_is_black(w->right) && tree_node_is_black(w->left)) {
+                w->is_black = false;
+                x_parent->is_black = true;
+                x = x_parent;
+                x_parent = x->get_parent();
+            } else {
+                if (tree_node_is_black(w->left)) {
+                    w->right->is_black = true;
+                    w->is_black = false;
+                    tree_rotate_left(w);
+                    w = x_parent->left;
+                }
+                w->is_black = x_parent->is_black;
+                x_parent->is_black = true;
+                if (w->left) {
+                    w->left->is_black = true;
+                }
+                if (root == x_parent) {
+                    root = w;
+                }
+                tree_rotate_right(x_parent);
+                return;
+            }
+        }
+    }
 }
 
 template <typename NodePtr>
@@ -228,12 +321,6 @@ void tree_remove_node(NodePtr root, NodePtr target)
         x = y->right;
     }
 
-    // w is x's sibling
-    NodePtr w = NULL;
-    if (y != root) {
-        w = tree_node_sibling(y);
-    }
-
     // Replace y with x
     if (x != NULL) {
         x->parent = y->parent;
@@ -244,32 +331,33 @@ void tree_remove_node(NodePtr root, NodePtr target)
         y->get_parent()->right = x;
     }
 
+    NodePtr x_parent = y->get_parent();
+
     // Keep track of removed color before possibly transplanting y into target's place
     bool removed_black = y->is_black;
 
     // If y is target's in order successor, transplant y into target's place
     if (y != target) {
-        y->is_black = target->is_black;
-        y->parent = target->parent;
-        if (tree_is_left_child(target)) {
-            y->parent->left = y;
-        } else {
-            y->get_parent()->right = y;
-        }
-        y->left = target->left;
-        y->left->set_parent(y);
-        y->right = target->right;
-        if (y->right) {
-            y->right->set_parent(y);
-        }
+        tree_transplant_node(target, y);
         if (target == root) {
             root = y;
         }
     }
 
     // Balance tree only if a black node was removed
-    if (removed_black && root != NULL) {
-        tree_balance_after_remove(root, x, w);
+    if (removed_black) {
+        // Tree is empty, nothing to do (root double black case)
+        if (root == NULL) {
+            return;
+        }
+
+        // x is red, color it black
+        if (x != NULL) {
+            x->is_black = true;
+            return;
+        }
+
+        tree_balance_after_remove(root, x_parent);
     }
 }
 } // namespace ft
