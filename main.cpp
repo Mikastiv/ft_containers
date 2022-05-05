@@ -70,6 +70,11 @@ int main()
 
     t.print_tree();
     std::cout << "\n";
+    std::cout << "Erase: 83" << "\n";
+    t.erase(83);
+
+    t.print_tree();
+    std::cout << "\n";
 
     for (auto it = t.begin(); it != t.end(); ++it) {
         std::cout << *it << " " << std::flush;

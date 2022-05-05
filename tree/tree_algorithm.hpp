@@ -6,15 +6,15 @@
 /*   By: mleblanc <mleblanc@student.42quebec.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/28 23:01:54 by mleblanc          #+#    #+#             */
-/*   Updated: 2022/05/05 01:03:47 by mleblanc         ###   ########.fr       */
+/*   Updated: 2022/05/05 01:55:26 by mleblanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
 
-#include <iostream>
-#include <cstddef>
 #include "tree_types.hpp"
+#include <cstddef>
+#include <iostream>
 
 namespace ft
 {
@@ -228,7 +228,7 @@ void tree_balance_after_remove(NodePtr root, NodePtr x_parent)
 {
     NodePtr x = NULL;
 
-    ft::tree_node<int>* z = reinterpret_cast<ft::tree_node<int>* >(x_parent);
+    ft::tree_node<int>* z = reinterpret_cast<ft::tree_node<int>*>(x_parent);
     std::cout << "Parent: " << z->value << std::endl;
 
     while (root != x && tree_node_is_black(x)) {
@@ -245,7 +245,6 @@ void tree_balance_after_remove(NodePtr root, NodePtr x_parent)
             }
             if (tree_node_is_black(w->left) && tree_node_is_black(w->right)) {
                 w->is_black = false;
-                x_parent->is_black = true;
                 x = x_parent;
                 x_parent = x->get_parent();
             } else {
@@ -264,7 +263,7 @@ void tree_balance_after_remove(NodePtr root, NodePtr x_parent)
                     root = w;
                 }
                 tree_rotate_left(x_parent);
-                return;
+                break;
             }
         } else {
             NodePtr w = x_parent->left;
@@ -279,7 +278,6 @@ void tree_balance_after_remove(NodePtr root, NodePtr x_parent)
             }
             if (tree_node_is_black(w->right) && tree_node_is_black(w->left)) {
                 w->is_black = false;
-                x_parent->is_black = true;
                 x = x_parent;
                 x_parent = x->get_parent();
             } else {
@@ -298,9 +296,12 @@ void tree_balance_after_remove(NodePtr root, NodePtr x_parent)
                     root = w;
                 }
                 tree_rotate_right(x_parent);
-                return;
+                break;
             }
         }
+    }
+    if (x) {
+        x->is_black = true;
     }
 }
 
