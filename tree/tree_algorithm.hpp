@@ -6,7 +6,7 @@
 /*   By: mleblanc <mleblanc@student.42quebec.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/28 23:01:54 by mleblanc          #+#    #+#             */
-/*   Updated: 2022/05/05 02:18:20 by mleblanc         ###   ########.fr       */
+/*   Updated: 2022/05/05 16:52:08 by mleblanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,6 +50,22 @@ NodePtr tree_min(NodePtr ptr)
         ptr = ptr->left;
     }
     return ptr;
+}
+
+template <typename NodePtr>
+bool tree_invariant(NodePtr root)
+{
+    bool count_left = 0;
+    if (root->left) {
+        count_left = tree_invariant(root->left);
+    }
+
+    bool count_right = 0;
+    if (root->right) {
+        count_right = tree_invariant(root->right);
+    }
+
+    return count_left == count_right;
 }
 
 template <typename IterPtr, typename NodePtr>

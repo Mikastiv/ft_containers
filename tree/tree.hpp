@@ -6,7 +6,7 @@
 /*   By: mleblanc <mleblanc@student.42quebec.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/21 22:03:04 by mleblanc          #+#    #+#             */
-/*   Updated: 2022/05/05 15:58:18 by mleblanc         ###   ########.fr       */
+/*   Updated: 2022/05/05 16:51:27 by mleblanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,7 @@
 #include <limits>
 
 #include "../utility.hpp"
+#include "tree_algorithm.hpp"
 #include "tree_iterator.hpp"
 
 #include "tree_print.hpp"
@@ -322,6 +323,11 @@ public:
     void print_tree() const
     {
         std::cout << traverse_root(root());
+    }
+
+    bool invariant() const
+    {
+        return tree_invariant(root());
     }
 
 private:

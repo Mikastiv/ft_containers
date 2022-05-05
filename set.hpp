@@ -6,7 +6,7 @@
 /*   By: mleblanc <mleblanc@student.42quebec.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/20 16:29:45 by mleblanc          #+#    #+#             */
-/*   Updated: 2022/05/01 03:42:27 by mleblanc         ###   ########.fr       */
+/*   Updated: 2022/05/05 16:51:14 by mleblanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -239,6 +239,11 @@ public:
     void print_tree() const
     {
         tree_.print_tree();
+    }
+
+    bool invariant() const
+    {
+        return tree_.invariant();
     }
 
 private:
