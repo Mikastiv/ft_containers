@@ -11,70 +11,21 @@ int main()
 {
     ft::set<int> t;
 
-    srand(time(0));
+    srand(55);
     for (int i = 0; i < 30; ++i) {
-        t.insert((rand()) % 100);
+        t.insert(rand() % 100);
     }
 
-    t.insert(5);
-    t.insert(1);
-    t.insert(7);
-
-    t.print_tree();
-    std::cout << "\n";
-    auto it = t.begin();
-    std::cout << "Erase: " << *it << "\n";
-    t.erase(it);
-
-    t.print_tree();
-    std::cout << "\n";
-    it = t.begin();
-    std::cout << "Erase: " << *it << "\n";
-    t.erase(it);
-
-    t.print_tree();
-    std::cout << "\n";
-    it = t.begin();
-    std::cout << "Erase: " << *it << "\n";
-    t.erase(it);
-
-    t.print_tree();
-    std::cout << "\n";
-    it = t.begin();
-    std::cout << "Erase: " << *it << "\n";
-    t.erase(it);
-
-    t.print_tree();
-    std::cout << "\n";
-    it = t.begin();
-    std::cout << "Erase: " << *it << "\n";
-    t.erase(it);
-
-    t.print_tree();
-    std::cout << "\n";
-    it = t.begin();
-    std::cout << "Erase: " << *it << "\n";
-    t.erase(it);
-
-    t.print_tree();
-    std::cout << "\n";
-    it = t.begin();
-    std::cout << "Erase: " << *it << "\n";
-    t.erase(it);
-
-    t.print_tree();
-    std::cout << "\n";
-    it = t.begin();
-    std::cout << "Erase: " << *it << "\n";
-    t.erase(it);
-
-    t.print_tree();
-    std::cout << "\n";
-    std::cout << "Erase: 83" << "\n";
-    t.erase(83);
-
-    t.print_tree();
-    std::cout << "\n";
+    for (int i = 0; i < 10; ++i) {
+        ft::set<int>::iterator it = t.end();
+        while (it == t.end()) {
+            it = t.find(rand() % 100);
+        }
+        std::cout << i << " Erase: " << *it << "\n";
+        t.erase(it);
+        t.print_tree();
+        std::cout << "\n";
+    }
 
     for (auto it = t.begin(); it != t.end(); ++it) {
         std::cout << *it << " " << std::flush;
