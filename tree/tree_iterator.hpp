@@ -6,7 +6,7 @@
 /*   By: mleblanc <mleblanc@student.42quebec.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/27 17:37:17 by mleblanc          #+#    #+#             */
-/*   Updated: 2022/05/04 12:10:07 by mleblanc         ###   ########.fr       */
+/*   Updated: 2022/05/05 15:55:29 by mleblanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,6 @@ public:
     typedef const_tree_iterator<T, DiffType> const_iterator;
 
 private:
-    typedef typename tree_node_types<T>::node_base_pointer node_base_pointer;
     typedef typename tree_node_types<T>::end_node_pointer  end_node_pointer;
     typedef typename tree_node_types<T>::node_pointer      node_pointer;
     // clang-format on
@@ -48,11 +47,6 @@ public:
 
     tree_iterator(end_node_pointer p)
         : ptr(p)
-    {
-    }
-
-    tree_iterator(node_base_pointer p)
-        : ptr(static_cast<end_node_pointer>(p))
     {
     }
 
@@ -89,7 +83,7 @@ public:
 
     tree_iterator& operator++()
     {
-        ptr = tree_iter_next<end_node_pointer>(static_cast<node_base_pointer>(ptr));
+        ptr = tree_iter_next<end_node_pointer>(static_cast<node_pointer>(ptr));
         return *this;
     }
 
@@ -102,7 +96,7 @@ public:
 
     tree_iterator& operator--()
     {
-        ptr = tree_iter_prev<node_base_pointer>(ptr);
+        ptr = tree_iter_prev<node_pointer>(ptr);
         return *this;
     }
 
@@ -150,7 +144,6 @@ public:
     typedef tree_iterator<T, DiffType>      non_const_iterator;
 
 private:
-    typedef typename tree_node_types<T>::node_base_pointer node_base_pointer;
     typedef typename tree_node_types<T>::end_node_pointer  end_node_pointer;
     typedef typename tree_node_types<T>::node_pointer      node_pointer;
     // clang-format on
@@ -163,11 +156,6 @@ public:
 
     const_tree_iterator(end_node_pointer p)
         : ptr(p)
-    {
-    }
-
-    const_tree_iterator(node_base_pointer p)
-        : ptr(static_cast<end_node_pointer>(p))
     {
     }
 
@@ -209,7 +197,7 @@ public:
 
     const_tree_iterator& operator++()
     {
-        ptr = tree_iter_next<end_node_pointer>(static_cast<node_base_pointer>(ptr));
+        ptr = tree_iter_next<end_node_pointer>(static_cast<node_pointer>(ptr));
         return *this;
     }
 
@@ -222,7 +210,7 @@ public:
 
     const_tree_iterator& operator--()
     {
-        ptr = tree_iter_prev<node_base_pointer>(ptr);
+        ptr = tree_iter_prev<node_pointer>(ptr);
         return *this;
     }
 

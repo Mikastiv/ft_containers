@@ -12,11 +12,11 @@ int main()
     ft::set<int> t;
 
     srand(55);
-    for (int i = 0; i < 30; ++i) {
+    for (int i = 0; i < 100; ++i) {
         t.insert(rand() % 100);
     }
 
-    for (int i = 0; i < 10; ++i) {
+    for (int i = 0; i < 50; ++i) {
         ft::set<int>::iterator it = t.end();
         while (it == t.end()) {
             it = t.find(rand() % 100);

@@ -6,7 +6,7 @@
 /*   By: mleblanc <mleblanc@student.42quebec.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/21 22:03:04 by mleblanc          #+#    #+#             */
-/*   Updated: 2022/05/05 01:03:14 by mleblanc         ###   ########.fr       */
+/*   Updated: 2022/05/05 15:58:18 by mleblanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,7 +44,6 @@ private:
     typedef typename tree_node_types<value_type>::end_node_type        end_node_type;
     typedef typename tree_node_types<value_type>::node_type            node_type;
     typedef typename tree_node_types<value_type>::end_node_pointer     end_node_pointer;
-    typedef typename tree_node_types<value_type>::node_base_pointer    node_base_pointer;
     typedef typename tree_node_types<value_type>::node_pointer         node_pointer;
     typedef typename allocator_type::template rebind<node_type>::other node_allocator;
     // clang-format on
@@ -108,7 +107,7 @@ public:
     reference find_or_insert(const Key& key, const Value& value)
     {
         end_node_pointer parent;
-        node_base_pointer& child = find_pos(parent, key);
+        node_pointer& child = find_pos(parent, key);
 
         iterator it(child);
         if (child == NULL) {
@@ -175,7 +174,7 @@ public:
     pair<iterator, bool> insert(const value_type& value)
     {
         end_node_pointer parent;
-        node_base_pointer& child = find_pos(parent, value);
+        node_pointer& child = find_pos(parent, value);
         bool inserted = false;
 
         iterator it(child);
@@ -190,8 +189,8 @@ public:
     iterator insert(iterator hint, const value_type& value)
     {
         end_node_pointer parent;
-        node_base_pointer dummy;
-        node_base_pointer& child = find_pos(hint, parent, value, dummy);
+        node_pointer dummy;
+        node_pointer& child = find_pos(hint, parent, value, dummy);
 
         iterator it(child);
         if (child == NULL) {
@@ -219,7 +218,7 @@ public:
 
         node_pointer ptr = pos.node_ptr();
 
-        tree_remove_node(end_node()->left, static_cast<node_base_pointer>(ptr));
+        tree_remove_node(end_node()->left, ptr);
         value_alloc_.destroy(&ptr->value);
         alloc_.deallocate(ptr, 1);
         size_--;
@@ -322,7 +321,7 @@ public:
 
     void print_tree() const
     {
-        std::cout << traverse_root(static_cast<node_pointer>(root()));
+        std::cout << traverse_root(root());
     }
 
 private:
@@ -346,9 +345,9 @@ private:
         while (ptr != NULL) {
             if (!value_comp()(ptr->value, key)) {
                 pos = static_cast<end_node_pointer>(ptr);
-                ptr = static_cast<node_pointer>(ptr->left);
+                ptr = ptr->left;
             } else {
-                ptr = static_cast<node_pointer>(ptr->right);
+                ptr = ptr->right;
             }
         }
 
@@ -364,16 +363,16 @@ private:
         while (ptr != NULL) {
             if (value_comp()(key, ptr->value)) {
                 pos = static_cast<end_node_pointer>(ptr);
-                ptr = static_cast<node_pointer>(ptr->left);
+                ptr = ptr->left;
             } else {
-                ptr = static_cast<node_pointer>(ptr->right);
+                ptr = ptr->right;
             }
         }
 
         return Iter(pos);
     }
 
-    iterator insert_at(node_base_pointer& pos, end_node_pointer parent, const value_type& value)
+    iterator insert_at(node_pointer& pos, end_node_pointer parent, const value_type& value)
     {
         pos = construct_node(value);
         pos->parent = parent;
@@ -388,12 +387,12 @@ private:
 
     node_pointer root() const
     {
-        return static_cast<node_pointer>(end_node()->left);
+        return end_node()->left;
     }
 
-    node_base_pointer* root_ptr() const
+    node_pointer* root_ptr() const
     {
-        return static_cast<node_base_pointer*>(&(end_node()->left));
+        return static_cast<node_pointer*>(&(end_node()->left));
     }
 
     end_node_pointer end_node()
@@ -423,9 +422,9 @@ private:
         node_pointer ptr = root();
         while (ptr != NULL) {
             if (value_comp()(key, ptr->value)) {
-                ptr = static_cast<node_pointer>(ptr->left);
+                ptr = ptr->left;
             } else if (value_comp()(ptr->value, key)) {
-                ptr = static_cast<node_pointer>(ptr->right);
+                ptr = ptr->right;
             } else {
                 return static_cast<end_node_pointer>(ptr);
             }
@@ -434,10 +433,10 @@ private:
     }
 
     template <typename Key>
-    node_base_pointer& find_pos(end_node_pointer& parent, const Key& key) const
+    node_pointer& find_pos(end_node_pointer& parent, const Key& key) const
     {
         node_pointer node = root();
-        node_base_pointer* ptr = root_ptr();
+        node_pointer* ptr = root_ptr();
 
         if (node != NULL) {
             while (true) {
@@ -445,7 +444,7 @@ private:
                     // key < node->value
                     if (node->left != NULL) {
                         ptr = &node->left;
-                        node = static_cast<node_pointer>(node->left);
+                        node = node->left;
                     } else {
                         parent = static_cast<end_node_pointer>(node);
                         return node->left;
@@ -454,7 +453,7 @@ private:
                     // key > node->value
                     if (node->right != NULL) {
                         ptr = &node->right;
-                        node = static_cast<node_pointer>(node->right);
+                        node = node->right;
                     } else {
                         parent = static_cast<end_node_pointer>(node);
                         return node->right;
@@ -471,8 +470,8 @@ private:
     }
 
     template <typename Key>
-    node_base_pointer& find_pos(iterator hint, end_node_pointer& parent, const Key& key,
-                                node_base_pointer& dummy) const
+    node_pointer& find_pos(iterator hint, end_node_pointer& parent, const Key& key,
+                           node_pointer& dummy) const
     {
         if (hint == end() || value_comp()(key, *hint)) {
             // value < *__hint
@@ -507,7 +506,7 @@ private:
             return find_pos(parent, key);
         }
         parent = hint.base();
-        dummy = static_cast<node_base_pointer>(hint.base());
+        dummy = static_cast<node_pointer>(hint.base());
         return dummy;
     }
 
@@ -520,8 +519,8 @@ private:
     void destroy(node_pointer node)
     {
         if (node != NULL) {
-            destroy(static_cast<node_pointer>(node->left));
-            destroy(static_cast<node_pointer>(node->right));
+            destroy(node->left);
+            destroy(node->right);
             value_alloc_.destroy(&node->value);
             alloc_.deallocate(node, 1);
         }
