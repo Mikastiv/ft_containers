@@ -6,7 +6,7 @@
 /*   By: mleblanc <mleblanc@student.42quebec.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/28 23:01:54 by mleblanc          #+#    #+#             */
-/*   Updated: 2022/05/05 16:52:08 by mleblanc         ###   ########.fr       */
+/*   Updated: 2022/05/05 16:55:19 by mleblanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,7 @@
 
 #include "tree_types.hpp"
 #include <cstddef>
+#include <ios>
 #include <iostream>
 
 namespace ft
@@ -132,7 +133,7 @@ void tree_rotate_right(NodePtr node)
 }
 
 template <typename NodePtr>
-bool tree_node_is_black(NodePtr node)
+inline bool tree_node_is_black(NodePtr node)
 {
     if (node == NULL || node->is_black) {
         return true;
@@ -141,7 +142,7 @@ bool tree_node_is_black(NodePtr node)
 }
 
 template <typename NodePtr>
-NodePtr tree_balance_case_1(NodePtr root, NodePtr z, NodePtr uncle)
+NodePtr tree_balance_insert_case_1(NodePtr root, NodePtr z, NodePtr uncle)
 {
     uncle->is_black = true;
     z = z->get_parent();
@@ -152,7 +153,7 @@ NodePtr tree_balance_case_1(NodePtr root, NodePtr z, NodePtr uncle)
 }
 
 template <typename NodePtr>
-void tree_balance_case_3(NodePtr z, void (*rotate)(NodePtr))
+void tree_balance_insert_case_3(NodePtr z, void (*rotate)(NodePtr))
 {
     z = z->get_parent();
     z->is_black = true;
@@ -195,27 +196,135 @@ void tree_balance_after_insert(NodePtr root, NodePtr z)
 
         if (tree_is_left_child(z->get_parent())) {
             if (!tree_node_is_black(uncle)) {
-                z = tree_balance_case_1(root, z, uncle); // case 1
+                z = tree_balance_insert_case_1(root, z, uncle); // case 1
             } else {
                 if (!tree_is_left_child(z)) { // case 2
                     z = z->get_parent();
                     tree_rotate_left(z);
                 }
-                tree_balance_case_3(z, &tree_rotate_right); // case 3
+                tree_balance_insert_case_3(z, &tree_rotate_right); // case 3
                 return;
             }
         } else {
             if (!tree_node_is_black(uncle)) {
-                z = tree_balance_case_1(root, z, uncle); // case 1
+                z = tree_balance_insert_case_1(root, z, uncle); // case 1
             } else {
                 if (tree_is_left_child(z)) { // case 2
                     z = z->get_parent();
                     tree_rotate_right(z);
                 }
-                tree_balance_case_3(z, &tree_rotate_left); // case 3
+                tree_balance_insert_case_3(z, &tree_rotate_left); // case 3
                 return;
             }
         }
+    }
+}
+
+template <typename NodePtr>
+void tree_balance_remove_case_1(NodePtr& root, NodePtr& w, NodePtr x_parent, const bool x_is_left,
+                                void (*rotate)(NodePtr))
+{
+    x_parent->is_black = false;
+    w->is_black = true;
+    if (root == x_parent) {
+        root = w;
+    }
+    rotate(x_parent);
+    if (x_is_left) {
+        w = x_parent->right;
+    } else {
+        w = x_parent->left;
+    }
+}
+
+template <typename NodePtr>
+bool tree_balance_remove_case_2_3(NodePtr w, NodePtr& x, NodePtr& x_parent)
+{
+    w->is_black = false;
+    if (!x_parent->is_black) {
+        x_parent->is_black = true;
+        return true; // case 3
+    }
+    x = x_parent;
+    x_parent = x->get_parent();
+    return false; // case 2
+}
+
+template <typename NodePtr>
+void tree_balance_remove_case_4(NodePtr& w, NodePtr x_parent, const bool x_is_left,
+                                void (*rotate)(NodePtr))
+{
+    w->left->is_black = true;
+    w->is_black = false;
+    rotate(w);
+    if (x_is_left) {
+        w = x_parent->right;
+    } else {
+        w = x_parent->left;
+    }
+}
+
+template <typename NodePtr>
+void tree_balance_remove_case_5(NodePtr w, NodePtr x_parent, const bool x_is_left,
+                                void (*rotate)(NodePtr))
+{
+    w->is_black = x_parent->is_black;
+    x_parent->is_black = true;
+    if (x_is_left) {
+        w->right->is_black = true;
+    } else {
+        w->left->is_black = true;
+    }
+    rotate(x_parent);
+}
+
+/// This function should only be called to fix a double black node case
+template <typename NodePtr>
+void tree_balance_after_remove(NodePtr root, NodePtr x_parent)
+{
+    NodePtr x = NULL;
+
+    while (root != x && tree_node_is_black(x)) {
+        if (x == x_parent->left) {
+            NodePtr w = x_parent->right;
+
+            if (!w->is_black) {
+                tree_balance_remove_case_1(root, w, x_parent, true, &tree_rotate_left);
+            }
+
+            if (tree_node_is_black(w->left) && tree_node_is_black(w->right)) {
+                if (tree_balance_remove_case_2_3(w, x, x_parent)) {
+                    return;
+                }
+            } else {
+                if (tree_node_is_black(w->right)) {
+                    tree_balance_remove_case_4(w, x_parent, true, &tree_rotate_right);
+                }
+                tree_balance_remove_case_5(w, x_parent, true, &tree_rotate_left);
+                break;
+            }
+        } else {
+            NodePtr w = x_parent->left;
+
+            if (!w->is_black) {
+                tree_balance_remove_case_1(root, w, x_parent, false, &tree_rotate_right);
+            }
+
+            if (tree_node_is_black(w->right) && tree_node_is_black(w->left)) {
+                if (tree_balance_remove_case_2_3(w, x, x_parent)) {
+                    return;
+                }
+            } else {
+                if (tree_node_is_black(w->left)) {
+                    tree_balance_remove_case_4(w, x_parent, false, &tree_rotate_left);
+                }
+                tree_balance_remove_case_5(w, x_parent, false, &tree_rotate_right);
+                break;
+            }
+        }
+    }
+    if (root) { // case 0
+        root->is_black = true;
     }
 }
 
@@ -237,79 +346,6 @@ void tree_transplant_node(NodePtr pos, NodePtr& node)
     }
 }
 
-/// This function should only be called to fix a double black node case
-template <typename NodePtr>
-void tree_balance_after_remove(NodePtr root, NodePtr x_parent)
-{
-    NodePtr x = NULL;
-
-    ft::tree_node<int>* z = reinterpret_cast<ft::tree_node<int>*>(x_parent);
-    std::cout << "Parent: " << z->value << std::endl;
-
-    while (root != x && tree_node_is_black(x)) {
-        if (x == x_parent->left) {
-            NodePtr w = x_parent->right;
-            if (!w->is_black) {
-                x_parent->is_black = false;
-                w->is_black = true;
-                if (root == x_parent) {
-                    root = w;
-                }
-                tree_rotate_left(x_parent);
-                w = x_parent->right;
-            }
-            if (tree_node_is_black(w->left) && tree_node_is_black(w->right)) {
-                w->is_black = false;
-                x = x_parent;
-                x_parent = x->get_parent();
-            } else {
-                if (tree_node_is_black(w->right)) {
-                    w->left->is_black = true;
-                    w->is_black = false;
-                    tree_rotate_right(w);
-                    w = x_parent->right;
-                }
-                w->is_black = x_parent->is_black;
-                x_parent->is_black = true;
-                w->right->is_black = true;
-                tree_rotate_left(x_parent);
-                break;
-            }
-        } else {
-            NodePtr w = x_parent->left;
-            if (!w->is_black) {
-                if (root == x_parent) {
-                    root = w;
-                }
-                x_parent->is_black = false;
-                w->is_black = true;
-                tree_rotate_right(x_parent);
-                w = x_parent->left;
-            }
-            if (tree_node_is_black(w->right) && tree_node_is_black(w->left)) {
-                w->is_black = false;
-                x = x_parent;
-                x_parent = x->get_parent();
-            } else {
-                if (tree_node_is_black(w->left)) {
-                    w->right->is_black = true;
-                    w->is_black = false;
-                    tree_rotate_left(w);
-                    w = x_parent->left;
-                }
-                w->is_black = x_parent->is_black;
-                x_parent->is_black = true;
-                w->left->is_black = true;
-                tree_rotate_right(x_parent);
-                break;
-            }
-        }
-    }
-    if (x) {
-        x->is_black = true;
-    }
-}
-
 template <typename NodePtr>
 void tree_remove_node(NodePtr root, NodePtr target)
 {
@@ -327,6 +363,9 @@ void tree_remove_node(NodePtr root, NodePtr target)
         x = y->right;
     }
 
+    // Keep track of x's parent
+    NodePtr x_parent = y->get_parent();
+
     // Replace y with x
     if (x != NULL) {
         x->parent = y->parent;
@@ -334,10 +373,13 @@ void tree_remove_node(NodePtr root, NodePtr target)
     if (tree_is_left_child(y)) {
         y->parent->left = x;
     } else {
+        // If y is target's right child, update x_parent because target will be replaced by y later
+        if (target->right == y) {
+            x_parent = y;
+        }
         y->get_parent()->right = x;
     }
 
-    NodePtr x_parent = y->get_parent();
 
     // Keep track of removed color before possibly transplanting y into target's place
     bool removed_black = y->is_black;
