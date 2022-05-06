@@ -6,7 +6,7 @@
 /*   By: mleblanc <mleblanc@student.42quebec.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/28 23:01:54 by mleblanc          #+#    #+#             */
-/*   Updated: 2022/05/05 16:55:19 by mleblanc         ###   ########.fr       */
+/*   Updated: 2022/05/05 21:39:43 by mleblanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,19 +54,55 @@ NodePtr tree_min(NodePtr ptr)
 }
 
 template <typename NodePtr>
-bool tree_invariant(NodePtr root)
+std::size_t tree_black_height(NodePtr ptr)
 {
-    bool count_left = 0;
-    if (root->left) {
-        count_left = tree_invariant(root->left);
+    if (ptr == NULL) {
+        return 1;
     }
 
-    bool count_right = 0;
-    if (root->right) {
-        count_right = tree_invariant(root->right);
+    if (ptr->left != NULL && ptr->left->parent != ptr)
+        return 0;
+    if (ptr->right != NULL && ptr->right->parent != ptr)
+        return 0;
+    if (ptr->left == ptr->right && ptr->left != NULL)
+        return 0;
+
+    if (!ptr->is_black) {
+        if (ptr->left && !ptr->left->is_black)
+            return 0;
+        if (ptr->right && !ptr->right->is_black)
+            return 0;
     }
 
-    return count_left == count_right;
+    std::size_t h = tree_black_height(ptr->left);
+    if (h == 0)
+        return 0;
+    if (h != tree_black_height(ptr->right))
+        return 0;
+
+    return h + ptr->is_black;
+}
+
+template <typename NodePtr>
+bool tree_is_red_black_tree(NodePtr root)
+{
+    if (root == NULL) {
+        return true;
+    }
+
+    if (root->parent == NULL) {
+        return false;
+    }
+
+    if (!tree_is_left_child(root)) {
+        return false;
+    }
+
+    if (!root->is_black) {
+        return false;
+    }
+
+    return tree_black_height(root) != 0;
 }
 
 template <typename IterPtr, typename NodePtr>
@@ -254,13 +290,14 @@ template <typename NodePtr>
 void tree_balance_remove_case_4(NodePtr& w, NodePtr x_parent, const bool x_is_left,
                                 void (*rotate)(NodePtr))
 {
-    w->left->is_black = true;
     w->is_black = false;
     rotate(w);
     if (x_is_left) {
         w = x_parent->right;
+        w->is_black = true;
     } else {
         w = x_parent->left;
+        w->is_black = true;
     }
 }
 
@@ -372,6 +409,9 @@ void tree_remove_node(NodePtr root, NodePtr target)
     }
     if (tree_is_left_child(y)) {
         y->parent->left = x;
+        if (root == y) {
+            root = x;
+        }
     } else {
         // If y is target's right child, update x_parent because target will be replaced by y later
         if (target->right == y) {
@@ -379,7 +419,6 @@ void tree_remove_node(NodePtr root, NodePtr target)
         }
         y->get_parent()->right = x;
     }
-
 
     // Keep track of removed color before possibly transplanting y into target's place
     bool removed_black = y->is_black;

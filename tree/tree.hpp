@@ -6,7 +6,7 @@
 /*   By: mleblanc <mleblanc@student.42quebec.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/21 22:03:04 by mleblanc          #+#    #+#             */
-/*   Updated: 2022/05/05 16:51:27 by mleblanc         ###   ########.fr       */
+/*   Updated: 2022/05/05 19:50:24 by mleblanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -325,9 +325,9 @@ public:
         std::cout << traverse_root(root());
     }
 
-    bool invariant() const
+    bool is_red_black_tree() const
     {
-        return tree_invariant(root());
+        return tree_is_red_black_tree(root());
     }
 
 private:
