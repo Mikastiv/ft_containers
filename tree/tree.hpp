@@ -6,7 +6,7 @@
 /*   By: mleblanc <mleblanc@student.42quebec.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/21 22:03:04 by mleblanc          #+#    #+#             */
-/*   Updated: 2022/05/05 19:50:24 by mleblanc         ###   ########.fr       */
+/*   Updated: 2022/05/05 22:51:46 by mleblanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -398,7 +398,7 @@ private:
 
     node_pointer* root_ptr() const
     {
-        return static_cast<node_pointer*>(&(end_node()->left));
+        return &(end_node()->left);
     }
 
     end_node_pointer end_node()
@@ -512,7 +512,7 @@ private:
             return find_pos(parent, key);
         }
         parent = hint.base();
-        dummy = static_cast<node_pointer>(hint.base());
+        dummy = hint.node_ptr();
         return dummy;
     }
 
