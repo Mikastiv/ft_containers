@@ -6,7 +6,7 @@
 /*   By: mleblanc <mleblanc@student.42quebec.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/28 23:01:54 by mleblanc          #+#    #+#             */
-/*   Updated: 2022/05/06 11:17:33 by mleblanc         ###   ########.fr       */
+/*   Updated: 2022/05/06 11:57:27 by mleblanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -231,7 +231,7 @@ void tree_insert_fix_case_3(NodePtr z, void (*rotate)(NodePtr))
 //                     \   \
 //                  Z-> O   \
 //
-// All cases can be mirrored
+// All cases apply to the mirrored cases
 */
 
 template <typename NodePtr>
@@ -269,6 +269,72 @@ void tree_insert_fix(NodePtr root, NodePtr z)
         }
     }
 }
+
+/*
+// P: Parent
+// X: Double black node
+// W: X's sibling
+//
+// Case 0: Root is double black node (terminal case)
+// Case 1: Black parent (P), red sibling (W) with two black child
+//
+//     - Left rotation on parent
+//     - Recolor parent and W
+//
+//        P-> B                        W-> B
+//           / \                          / \
+//     X->  DB  R <-W     ==>        P-> R   B <-Z
+//             / \                      / \
+//        Y-> B   B <-Z            X-> DB  B <-Y
+//
+// Case 2: Black parent (P), black sibling (W) with two black child
+//
+//     - Recolor W
+//     - Parent becomes X
+//
+//        P-> B                    New X-> B
+//           / \                          / \
+//     X->  DB  B <-W     ==>    Old X-> B   R <-W
+//             / \                          / \
+//        Y-> B   B <-Z               Y->  B   B <-Z
+//
+// Case 3: Red parent (P), black sibling (W) with two black child (terminal case)
+//
+//     - Recolor parent and W
+//
+//        P-> R                        P-> B
+//           / \                          / \
+//     X->  DB  B <-W     ==>        X-> B   R <-W
+//             / \                          / \
+//        Y-> B   B <-Z               Y->  B   B <-Z
+//
+// Case 4: Black parent (P), black sibling (W) with red left child (Y) and black right child (B)
+//
+//     - Right rotation on W
+//     - Recolor Y and W
+//
+//        P-> B                        P-> B
+//           / \                          / \
+//     X->  DB  B <-W     ==>        X-> DB  B <-Y
+//             / \                            \
+//        Y-> R   B <-Z                        R <-W
+//                                              \
+//                                               B <-Z
+//
+// Case 5: Red or black parent (P), black sibling (W) with red or black left child (Y)
+//         and red right child (B) (terminal case)
+//
+//     - Left rotation on parent
+//     - Color W with parent's color
+//     - Color parent and Z black
+//
+//        P-> RB                       W-> RB
+//           / \                          / \
+//     X->  DB  B <-W     ==>        P-> B   B <-Z
+//             / \                      / \
+//        Y-> RB  R <-Z            X-> B  RB <-Y
+//
+*/
 
 /// This function should only be called to fix a double black node case
 template <typename NodePtr>
