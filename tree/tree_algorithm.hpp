@@ -6,7 +6,7 @@
 /*   By: mleblanc <mleblanc@student.42quebec.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/28 23:01:54 by mleblanc          #+#    #+#             */
-/*   Updated: 2022/05/05 21:39:43 by mleblanc         ###   ########.fr       */
+/*   Updated: 2022/05/05 22:37:56 by mleblanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -169,6 +169,26 @@ void tree_rotate_right(NodePtr node)
 }
 
 template <typename NodePtr>
+void tree_rotate_left(NodePtr& root, NodePtr node)
+{
+    if (node == root) {
+        root = node->right;
+    }
+
+    tree_rotate_left(node);
+}
+
+template <typename NodePtr>
+void tree_rotate_right(NodePtr& root, NodePtr node)
+{
+    if (node == root) {
+        root = node->left;
+    }
+
+    tree_rotate_right(node);
+}
+
+template <typename NodePtr>
 inline bool tree_node_is_black(NodePtr node)
 {
     if (node == NULL || node->is_black) {
@@ -257,51 +277,6 @@ void tree_balance_after_insert(NodePtr root, NodePtr z)
 }
 
 template <typename NodePtr>
-void tree_balance_remove_case_1(NodePtr& root, NodePtr& w, NodePtr x_parent, const bool x_is_left,
-                                void (*rotate)(NodePtr))
-{
-    x_parent->is_black = false;
-    w->is_black = true;
-    if (root == x_parent) {
-        root = w;
-    }
-    rotate(x_parent);
-    if (x_is_left) {
-        w = x_parent->right;
-    } else {
-        w = x_parent->left;
-    }
-}
-
-template <typename NodePtr>
-bool tree_balance_remove_case_2_3(NodePtr w, NodePtr& x, NodePtr& x_parent)
-{
-    w->is_black = false;
-    if (!x_parent->is_black) {
-        x_parent->is_black = true;
-        return true; // case 3
-    }
-    x = x_parent;
-    x_parent = x->get_parent();
-    return false; // case 2
-}
-
-template <typename NodePtr>
-void tree_balance_remove_case_4(NodePtr& w, NodePtr x_parent, const bool x_is_left,
-                                void (*rotate)(NodePtr))
-{
-    w->is_black = false;
-    rotate(w);
-    if (x_is_left) {
-        w = x_parent->right;
-        w->is_black = true;
-    } else {
-        w = x_parent->left;
-        w->is_black = true;
-    }
-}
-
-template <typename NodePtr>
 void tree_balance_remove_case_5(NodePtr w, NodePtr x_parent, const bool x_is_left,
                                 void (*rotate)(NodePtr))
 {
@@ -319,49 +294,72 @@ void tree_balance_remove_case_5(NodePtr w, NodePtr x_parent, const bool x_is_lef
 template <typename NodePtr>
 void tree_balance_after_remove(NodePtr root, NodePtr x_parent)
 {
+    // Double black nodes always start as a null pointer
     NodePtr x = NULL;
 
     while (root != x && tree_node_is_black(x)) {
         if (x == x_parent->left) {
             NodePtr w = x_parent->right;
 
-            if (!w->is_black) {
-                tree_balance_remove_case_1(root, w, x_parent, true, &tree_rotate_left);
+            if (!w->is_black) { // case 1
+                x_parent->is_black = false;
+                w->is_black = true;
+                tree_rotate_left(root, x_parent);
+                w = x_parent->right;
             }
 
-            if (tree_node_is_black(w->left) && tree_node_is_black(w->right)) {
-                if (tree_balance_remove_case_2_3(w, x, x_parent)) {
-                    return;
-                }
+            if (tree_node_is_black(w->left) && tree_node_is_black(w->right)) { // case 2
+                w->is_black = false;
+                x = x_parent;
+                x_parent = x->get_parent();
             } else {
-                if (tree_node_is_black(w->right)) {
-                    tree_balance_remove_case_4(w, x_parent, true, &tree_rotate_right);
+                if (tree_node_is_black(w->right)) { // case 3
+                    w->is_black = false;
+                    tree_rotate_right(root, w);
+                    w = x_parent->right;
+                    w->is_black = true;
                 }
-                tree_balance_remove_case_5(w, x_parent, true, &tree_rotate_left);
+
+                // case 4
+                w->is_black = x_parent->is_black;
+                x_parent->is_black = true;
+                w->right->is_black = true;
+                tree_rotate_left(root, x_parent);
                 break;
             }
         } else {
             NodePtr w = x_parent->left;
 
-            if (!w->is_black) {
-                tree_balance_remove_case_1(root, w, x_parent, false, &tree_rotate_right);
+            if (!w->is_black) { // case 1
+                x_parent->is_black = false;
+                w->is_black = true;
+                tree_rotate_right(root, x_parent);
+                w = x_parent->left;
             }
 
-            if (tree_node_is_black(w->right) && tree_node_is_black(w->left)) {
-                if (tree_balance_remove_case_2_3(w, x, x_parent)) {
-                    return;
-                }
+            if (tree_node_is_black(w->right) && tree_node_is_black(w->left)) { // case 2
+                w->is_black = false;
+                x = x_parent;
+                x_parent = x->get_parent();
             } else {
-                if (tree_node_is_black(w->left)) {
-                    tree_balance_remove_case_4(w, x_parent, false, &tree_rotate_left);
+                if (tree_node_is_black(w->left)) { // case 3
+                    w->is_black = false;
+                    tree_rotate_left(root, w);
+                    w = x_parent->left;
+                    w->is_black = true;
                 }
-                tree_balance_remove_case_5(w, x_parent, false, &tree_rotate_right);
+
+                // case 4
+                w->is_black = x_parent->is_black;
+                x_parent->is_black = true;
+                w->left->is_black = true;
+                tree_rotate_right(root, x_parent);
                 break;
             }
         }
     }
-    if (root) { // case 0
-        root->is_black = true;
+    if (x) { // case 0 + 2 when parent was red
+        x->is_black = true;
     }
 }
 

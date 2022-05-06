@@ -12,15 +12,15 @@ int main()
 {
     ft::set<int> t;
 
-    srand(1);
-    for (int i = 0; i < 500; ++i) {
-        t.insert(rand() % 500);
+    srand(time(0));
+    for (int i = 0; i < 1500; ++i) {
+        t.insert(rand() % 1500);
     }
 
-    for (int i = 0; i < 350; ++i) {
+    for (int i = 0; i < 1350; ++i) {
         ft::set<int>::iterator it = t.end();
         while (it == t.end() && !t.empty()) {
-            it = t.find(rand() % 500);
+            it = t.find(rand() % 1500);
         }
 
         if (t.empty()) {
