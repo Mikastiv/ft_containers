@@ -6,7 +6,7 @@
 /*   By: mleblanc <mleblanc@student.42quebec.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/28 23:01:54 by mleblanc          #+#    #+#             */
-/*   Updated: 2022/05/06 11:57:27 by mleblanc         ###   ########.fr       */
+/*   Updated: 2022/05/06 13:11:22 by mleblanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -187,49 +187,37 @@ inline bool tree_node_is_black(NodePtr node)
     return false;
 }
 
-template <typename NodePtr>
-NodePtr tree_insert_fix_case_1(NodePtr root, NodePtr z, NodePtr uncle)
-{
-    uncle->is_black = true;
-    z = z->get_parent();
-    z->is_black = true;
-    z = z->get_parent();
-    z->is_black = z == root;
-    return z;
-}
-
-template <typename NodePtr>
-void tree_insert_fix_case_3(NodePtr z, void (*rotate)(NodePtr))
-{
-    z = z->get_parent();
-    z->is_black = true;
-    z = z->get_parent();
-    z->is_black = false;
-    rotate(z);
-}
-
 /*
 // Case 0: Z == root
 // Case 1: Z->uncle == RED
+//
+// - Color Z's uncle and parent black
+// - Color Z's grandparent red
+//
 // Case 2: Z->uncle == BLACK (triangle)
+// Triangle: Right->Left || Left->Right relation
 //
-// -Triangle: Right->Left || Left->Right relation
+// - Right rotation on Z's parent
 //
-//                  O   \
-//                 / \   \
-//       Uncle->  O   O   \
-//                   /    /
-//              Z-> O    /
+//                  O   \                     O
+//                 / \   \                   / \
+//       Uncle->  O   O   \    =>   Uncle-> O   O
+//                   /    /                      \
+//              Z-> O    /                        O <-Z
 //
 // Case 3: Z->uncle == BLACK (line)
+// Line: Left->Left || Right->Right relation
 //
-// -Line: Left->Left || Right->Right relation
+// - Color Z's parent black
+// - Color Z's grandparent red
+// - Left rotation on Z's grandparent
 //
-//                  O   \
-//                 / \   \
-//       Uncle->  O   O   \
-//                     \   \
-//                  Z-> O   \
+//
+//                  O   \                     O
+//                 / \   \                   / \
+//       Uncle->  O   O   \    =>           O   O <-Z
+//                     \   \               /
+//                  Z-> O   \     Uncle-> O
 //
 // All cases apply to the mirrored cases
 */
@@ -239,31 +227,50 @@ void tree_insert_fix(NodePtr root, NodePtr z)
 {
     z->is_black = z == root; // case 0
     while (z != root && !z->get_parent()->is_black) {
-
         if (tree_is_left_child(z->get_parent())) {
             NodePtr uncle = z->get_parent()->get_parent()->right;
 
-            if (!tree_node_is_black(uncle)) {
-                z = tree_insert_fix_case_1(root, z, uncle); // case 1
+            if (!tree_node_is_black(uncle)) { // case 1
+                uncle->is_black = true;
+                z = z->get_parent();
+                z->is_black = true;
+                z = z->get_parent();
+                z->is_black = z == root; // Color red except if z's grandparent is root
             } else {
                 if (!tree_is_left_child(z)) { // case 2
                     z = z->get_parent();
                     tree_rotate_left(z);
                 }
-                tree_insert_fix_case_3(z, &tree_rotate_right); // case 3
+
+                // case 3
+                z = z->get_parent();
+                z->is_black = true;
+                z = z->get_parent();
+                z->is_black = false;
+                tree_rotate_right(z);
                 return;
             }
         } else {
             NodePtr uncle = z->get_parent()->parent->left;
 
-            if (!tree_node_is_black(uncle)) {
-                z = tree_insert_fix_case_1(root, z, uncle); // case 1
+            if (!tree_node_is_black(uncle)) { // case 1
+                uncle->is_black = true;
+                z = z->get_parent();
+                z->is_black = true;
+                z = z->get_parent();
+                z->is_black = z == root; // Color red except if z's grandparent is root
             } else {
                 if (tree_is_left_child(z)) { // case 2
                     z = z->get_parent();
                     tree_rotate_right(z);
                 }
-                tree_insert_fix_case_3(z, &tree_rotate_left); // case 3
+
+                // case 3
+                z = z->get_parent();
+                z->is_black = true;
+                z = z->get_parent();
+                z->is_black = false;
+                tree_rotate_left(z);
                 return;
             }
         }
@@ -336,7 +343,7 @@ void tree_insert_fix(NodePtr root, NodePtr z)
 //
 */
 
-/// This function should only be called to fix a double black node case
+// This function should only be called to fix a double black node case
 template <typename NodePtr>
 void tree_delete_fix(NodePtr root, NodePtr x_parent)
 {
