@@ -6,7 +6,7 @@
 /*   By: mleblanc <mleblanc@student.42quebec.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/28 23:01:54 by mleblanc          #+#    #+#             */
-/*   Updated: 2022/05/05 22:37:56 by mleblanc         ###   ########.fr       */
+/*   Updated: 2022/05/06 11:17:33 by mleblanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,16 +23,6 @@ template <typename NodePtr>
 inline bool tree_is_left_child(NodePtr ptr)
 {
     return ptr == ptr->parent->left;
-}
-
-template <typename NodePtr>
-NodePtr tree_node_sibling(NodePtr ptr)
-{
-    if (tree_is_left_child(ptr)) {
-        return ptr->get_parent()->right;
-    } else {
-        return ptr->parent->left;
-    }
 }
 
 template <typename NodePtr>
@@ -198,7 +188,7 @@ inline bool tree_node_is_black(NodePtr node)
 }
 
 template <typename NodePtr>
-NodePtr tree_balance_insert_case_1(NodePtr root, NodePtr z, NodePtr uncle)
+NodePtr tree_insert_fix_case_1(NodePtr root, NodePtr z, NodePtr uncle)
 {
     uncle->is_black = true;
     z = z->get_parent();
@@ -209,7 +199,7 @@ NodePtr tree_balance_insert_case_1(NodePtr root, NodePtr z, NodePtr uncle)
 }
 
 template <typename NodePtr>
-void tree_balance_insert_case_3(NodePtr z, void (*rotate)(NodePtr))
+void tree_insert_fix_case_3(NodePtr z, void (*rotate)(NodePtr))
 {
     z = z->get_parent();
     z->is_black = true;
@@ -241,58 +231,48 @@ void tree_balance_insert_case_3(NodePtr z, void (*rotate)(NodePtr))
 //                     \   \
 //                  Z-> O   \
 //
+// All cases can be mirrored
 */
 
 template <typename NodePtr>
-void tree_balance_after_insert(NodePtr root, NodePtr z)
+void tree_insert_fix(NodePtr root, NodePtr z)
 {
     z->is_black = z == root; // case 0
     while (z != root && !z->get_parent()->is_black) {
-        NodePtr uncle = tree_node_sibling(z->get_parent());
 
         if (tree_is_left_child(z->get_parent())) {
+            NodePtr uncle = z->get_parent()->get_parent()->right;
+
             if (!tree_node_is_black(uncle)) {
-                z = tree_balance_insert_case_1(root, z, uncle); // case 1
+                z = tree_insert_fix_case_1(root, z, uncle); // case 1
             } else {
                 if (!tree_is_left_child(z)) { // case 2
                     z = z->get_parent();
                     tree_rotate_left(z);
                 }
-                tree_balance_insert_case_3(z, &tree_rotate_right); // case 3
+                tree_insert_fix_case_3(z, &tree_rotate_right); // case 3
                 return;
             }
         } else {
+            NodePtr uncle = z->get_parent()->parent->left;
+
             if (!tree_node_is_black(uncle)) {
-                z = tree_balance_insert_case_1(root, z, uncle); // case 1
+                z = tree_insert_fix_case_1(root, z, uncle); // case 1
             } else {
                 if (tree_is_left_child(z)) { // case 2
                     z = z->get_parent();
                     tree_rotate_right(z);
                 }
-                tree_balance_insert_case_3(z, &tree_rotate_left); // case 3
+                tree_insert_fix_case_3(z, &tree_rotate_left); // case 3
                 return;
             }
         }
     }
 }
 
-template <typename NodePtr>
-void tree_balance_remove_case_5(NodePtr w, NodePtr x_parent, const bool x_is_left,
-                                void (*rotate)(NodePtr))
-{
-    w->is_black = x_parent->is_black;
-    x_parent->is_black = true;
-    if (x_is_left) {
-        w->right->is_black = true;
-    } else {
-        w->left->is_black = true;
-    }
-    rotate(x_parent);
-}
-
 /// This function should only be called to fix a double black node case
 template <typename NodePtr>
-void tree_balance_after_remove(NodePtr root, NodePtr x_parent)
+void tree_delete_fix(NodePtr root, NodePtr x_parent)
 {
     // Double black nodes always start as a null pointer
     NodePtr x = NULL;
@@ -442,7 +422,7 @@ void tree_remove_node(NodePtr root, NodePtr target)
             return;
         }
 
-        tree_balance_after_remove(root, x_parent);
+        tree_delete_fix(root, x_parent);
     }
 }
 } // namespace ft

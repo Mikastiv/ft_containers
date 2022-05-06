@@ -6,7 +6,7 @@
 /*   By: mleblanc <mleblanc@student.42quebec.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/21 22:03:04 by mleblanc          #+#    #+#             */
-/*   Updated: 2022/05/05 22:51:46 by mleblanc         ###   ########.fr       */
+/*   Updated: 2022/05/06 11:15:29 by mleblanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -386,7 +386,7 @@ private:
             begin_iter_ = begin_iter_->left;
         ++size_;
 
-        tree_balance_after_insert(end_node()->left, pos);
+        tree_insert_fix(end_node()->left, pos);
 
         return iterator(pos);
     }

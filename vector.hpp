@@ -6,7 +6,7 @@
 /*   By: mleblanc <mleblanc@student.42quebec.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/01 15:27:15 by mleblanc          #+#    #+#             */
-/*   Updated: 2022/05/04 14:13:06 by mleblanc         ###   ########.fr       */
+/*   Updated: 2022/05/06 11:24:31 by mleblanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -112,21 +112,8 @@ public:
             return *this;
         }
 
-        const size_type len = other.size();
-        if (len > capacity()) {
-            pointer new_start = alloc_.allocate(len);
-            construct_range(new_start, other.start_, other.end_);
-            deallocate_v();
-            start_ = new_start;
-            end_cap_ = start_ + len;
-        } else if (size() > len) {
-            iterator it = std::copy(other.begin(), other.end(), begin());
-            destroy_range(it.base(), end_);
-        } else {
-            std::copy(other.start_, other.start_ + size(), start_);
-            construct_range(end_, other.start_ + size(), other.end_);
-        }
-        end_ = start_ + len;
+        assign(other.begin(), other.end());
+
         return *this;
     }
 
@@ -296,31 +283,7 @@ public:
     {
         const size_type index = pos - begin();
 
-        if (!should_grow()) {
-            if (pos == end()) {
-                alloc_.construct(end_, value);
-                ++end_;
-            } else {
-                alloc_.construct(end_, *(end_ - 1));
-                ++end_;
-                std::copy_backward(pos.base(), end_ - 2, end_ - 1);
-                *pos = value;
-            }
-        } else {
-            const size_type new_size = calculate_growth(static_cast<size_type>(1));
-            pointer new_start = alloc_.allocate(new_size);
-            pointer new_end;
-
-            new_end = construct_range(new_start, start_, start_ + index);
-            alloc_.construct(new_end, value);
-            ++new_end;
-            new_end = construct_range(new_end, start_ + index, end_);
-
-            deallocate_v();
-            start_ = new_start;
-            end_ = new_end;
-            end_cap_ = new_start + new_size;
-        }
+        insert(pos, 1, value);
 
         return iterator(start_ + index);
     }
