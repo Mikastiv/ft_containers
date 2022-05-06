@@ -6,7 +6,7 @@
 /*   By: mleblanc <mleblanc@student.42quebec.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/18 12:17:41 by mleblanc          #+#    #+#             */
-/*   Updated: 2022/05/01 03:42:19 by mleblanc         ###   ########.fr       */
+/*   Updated: 2022/05/06 16:49:19 by mleblanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -157,27 +157,27 @@ public:
         return tree_.get_allocator();
     }
 
-    reference at(const key_type& key)
+    T& at(const key_type& key)
     {
         iterator it = find(key);
         if (it == end()) {
             throw std::out_of_range("Key not found");
         }
-        return *it;
+        return it->second;
     }
 
-    const_reference at(const key_type& key) const
+    const T& at(const key_type& key) const
     {
         const_iterator it = find(key);
         if (it == end()) {
             throw std::out_of_range("Key not found");
         }
-        return *it;
+        return it->second;
     }
 
-    reference operator[](const key_type& key)
+    T& operator[](const key_type& key)
     {
-        return tree_.find_or_insert(key, mapped_type());
+        return insert(make_pair(key, T())).first->second;
     }
 
     iterator begin()

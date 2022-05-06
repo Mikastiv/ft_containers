@@ -6,7 +6,7 @@
 /*   By: mleblanc <mleblanc@student.42quebec.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/21 22:03:04 by mleblanc          #+#    #+#             */
-/*   Updated: 2022/05/06 11:15:29 by mleblanc         ###   ########.fr       */
+/*   Updated: 2022/05/06 16:47:08 by mleblanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,7 +68,7 @@ public:
           size_(0)
     {
         begin_iter_ = end_node();
-        insert(other.begin(), other.last());
+        insert(other.begin(), other.end());
     }
 
     tree(const value_compare& comp, const allocator_type& alloc)
@@ -102,20 +102,6 @@ public:
     allocator_type get_allocator() const
     {
         return value_alloc_;
-    }
-
-    template <typename Key, typename Value>
-    reference find_or_insert(const Key& key, const Value& value)
-    {
-        end_node_pointer parent;
-        node_pointer& child = find_pos(parent, key);
-
-        iterator it(child);
-        if (child == NULL) {
-            it = insert_at(child, parent, value_type(key, value));
-        }
-
-        return *it;
     }
 
     iterator begin()
@@ -386,9 +372,10 @@ private:
             begin_iter_ = begin_iter_->left;
         ++size_;
 
-        tree_insert_fix(end_node()->left, pos);
+        node_pointer ptr = pos;
+        tree_insert_fix(end_node()->left, ptr);
 
-        return iterator(pos);
+        return iterator(ptr);
     }
 
     node_pointer root() const
