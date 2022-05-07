@@ -6,7 +6,7 @@
 /*   By: mleblanc <mleblanc@student.42quebec.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/21 22:03:04 by mleblanc          #+#    #+#             */
-/*   Updated: 2022/05/06 16:47:08 by mleblanc         ###   ########.fr       */
+/*   Updated: 2022/05/06 20:14:11 by mleblanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -273,13 +273,13 @@ public:
     template <typename Key>
     pair<iterator, iterator> equal_range(const Key& key)
     {
-        return make_pair(lower_bound(key), upper_bound(key));
+        return eq_range<iterator>(key);
     }
 
     template <typename Key>
     pair<const_iterator, const_iterator> equal_range(const Key& key) const
     {
-        return make_pair(lower_bound(key), upper_bound(key));
+        return eq_range<const_iterator>(key);
     }
 
     template <typename Key>
@@ -362,6 +362,31 @@ private:
         }
 
         return Iter(pos);
+    }
+
+    template <typename Iter, typename Key>
+    pair<Iter, Iter> eq_range(const Key& key)
+    {
+        node_pointer ptr = root();
+        end_node_pointer low = end_node();
+        end_node_pointer high = end_node();
+
+        while (ptr != NULL) {
+            if (value_comp()(key, ptr->value)) {
+                high = low = static_cast<end_node_pointer>(ptr);
+                ptr = ptr->left;
+            } else if (value_comp()(ptr->value, key)) {
+                ptr = ptr->right;
+            } else {
+                low = static_cast<end_node_pointer>(ptr);
+                if (ptr->right != NULL) {
+                    high = static_cast<end_node_pointer>(tree_min(ptr->right));
+                }
+                break;
+            }
+        }
+
+        return make_pair(Iter(low), Iter(high));
     }
 
     iterator insert_at(node_pointer& pos, end_node_pointer parent, const value_type& value)
