@@ -11,44 +11,21 @@
 int main()
 {
     ft::set<int> t;
+    std::set<int> s;
 
     srand(time(0));
     for (int i = 0; i < 1500; ++i) {
-        t.insert(rand() % 1500);
+        int n = rand() % 1500;
+        t.insert(n);
+        s.insert(n);
     }
 
-    for (int i = 0; i < 1350; ++i) {
-        ft::set<int>::iterator it = t.end();
-        while (it == t.end() && !t.empty()) {
-            it = t.find(rand() % 1500);
-        }
-
-        if (t.empty()) {
-            break;
-        }
-        std::cout << i << " Erase: " << *it << "\n";
-        t.erase(it);
-        t.print_tree();
-        std::cout << "\n";
-
-        bool valid_tree = t.is_red_black_tree();
-        std::cout << std::boolalpha << valid_tree << "\n";
-        if(!valid_tree) {
-            exit(1);
-        }
-    }
-
-    for (auto it = t.begin(); it != t.end(); ++it) {
-        std::cout << *it << " " << std::flush;
-    }
-
-    for (int i = 0; i < 500; ++i) {
-        t.insert(rand() % 500);
-    }
-
-
-    for (auto it = t.begin(); it != t.end(); ++it) {
-        std::cout << *it << " " << std::flush;
-    }
-    std::cout << "\n";
+    std::cout << *t.equal_range(6).first << std::endl;
+    std::cout << *t.equal_range(6).second << std::endl;
+    std::cout << *t.equal_range(6).first << std::endl;
+    std::cout << *t.equal_range(6).second << std::endl;
+    std::cout << *s.equal_range(6).first << std::endl;
+    std::cout << *s.equal_range(6).second << std::endl;
+    std::cout << *s.equal_range(6).first << std::endl;
+    std::cout << *s.equal_range(6).second << std::endl;
 }

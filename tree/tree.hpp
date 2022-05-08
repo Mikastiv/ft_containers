@@ -6,7 +6,7 @@
 /*   By: mleblanc <mleblanc@student.42quebec.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/21 22:03:04 by mleblanc          #+#    #+#             */
-/*   Updated: 2022/05/06 20:14:11 by mleblanc         ###   ########.fr       */
+/*   Updated: 2022/05/08 17:13:34 by mleblanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -369,24 +369,24 @@ private:
     {
         node_pointer ptr = root();
         end_node_pointer low = end_node();
-        end_node_pointer high = end_node();
+        end_node_pointer up = end_node();
 
         while (ptr != NULL) {
             if (value_comp()(key, ptr->value)) {
-                high = low = static_cast<end_node_pointer>(ptr);
+                up = low = static_cast<end_node_pointer>(ptr);
                 ptr = ptr->left;
             } else if (value_comp()(ptr->value, key)) {
                 ptr = ptr->right;
             } else {
                 low = static_cast<end_node_pointer>(ptr);
                 if (ptr->right != NULL) {
-                    high = static_cast<end_node_pointer>(tree_min(ptr->right));
+                    up = static_cast<end_node_pointer>(tree_min(ptr->right));
                 }
                 break;
             }
         }
 
-        return make_pair(Iter(low), Iter(high));
+        return make_pair(Iter(low), Iter(up));
     }
 
     iterator insert_at(node_pointer& pos, end_node_pointer parent, const value_type& value)
