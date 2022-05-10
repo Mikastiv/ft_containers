@@ -28,4 +28,13 @@ int main()
     std::cout << *s.equal_range(6).second << std::endl;
     std::cout << *s.equal_range(6).first << std::endl;
     std::cout << *s.equal_range(6).second << std::endl;
+
+    for (int i = 0; i < 1000; ++i) {
+        int n = rand() % 1500;
+        t.erase(n);
+        s.erase(n);
+    }
+
+    t.print_tree();
+    std::cout << std::boolalpha << t.is_red_black_tree() << std::endl;
 }

@@ -6,7 +6,7 @@
 /*   By: mleblanc <mleblanc@student.42quebec.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/21 22:03:04 by mleblanc          #+#    #+#             */
-/*   Updated: 2022/05/08 17:13:34 by mleblanc         ###   ########.fr       */
+/*   Updated: 2022/05/10 13:51:28 by mleblanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -206,8 +206,7 @@ public:
         node_pointer ptr = pos.node_ptr();
 
         tree_remove_node(end_node()->left, ptr);
-        value_alloc_.destroy(&ptr->value);
-        alloc_.deallocate(ptr, 1);
+        delete_node(ptr);
         size_--;
     }
 
