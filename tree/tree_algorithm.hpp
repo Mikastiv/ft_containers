@@ -6,7 +6,7 @@
 /*   By: mleblanc <mleblanc@student.42quebec.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/28 23:01:54 by mleblanc          #+#    #+#             */
-/*   Updated: 2022/05/06 13:11:22 by mleblanc         ###   ########.fr       */
+/*   Updated: 2022/05/10 10:39:31 by mleblanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -378,6 +378,7 @@ void tree_delete_fix(NodePtr root, NodePtr x_parent)
                 x_parent->is_black = true;
                 w->right->is_black = true;
                 tree_rotate_left(root, x_parent);
+                x = root;
                 break;
             }
         } else {
@@ -407,6 +408,7 @@ void tree_delete_fix(NodePtr root, NodePtr x_parent)
                 x_parent->is_black = true;
                 w->left->is_black = true;
                 tree_rotate_right(root, x_parent);
+                x = root;
                 break;
             }
         }

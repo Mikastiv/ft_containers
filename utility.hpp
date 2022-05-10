@@ -6,7 +6,7 @@
 /*   By: mleblanc <mleblanc@student.42quebec.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/15 16:56:07 by mleblanc          #+#    #+#             */
-/*   Updated: 2022/04/27 15:34:56 by mleblanc         ###   ########.fr       */
+/*   Updated: 2022/05/10 10:10:35 by mleblanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,7 +76,7 @@ inline bool operator!=(const pair<T1, T2>& lhs, const pair<T1, T2>& rhs)
 template <typename T1, typename T2>
 inline bool operator<(const pair<T1, T2>& lhs, const pair<T1, T2>& rhs)
 {
-    return (lhs.first < rhs.first) || (!(lhs.first < rhs.first) && lhs.second < rhs.second);
+    return (lhs.first < rhs.first) || (!(rhs.first < lhs.first) && lhs.second < rhs.second);
 }
 
 template <typename T1, typename T2>
@@ -147,19 +147,4 @@ bool lexicographical_compare(InputIt1 first1, InputIt1 last1, InputIt2 first2, I
     }
     return false;
 }
-
-template <typename Arg1, typename Arg2, typename Result>
-struct binary_function {
-    typedef Arg1 first_argument_type;
-    typedef Arg2 second_argument_type;
-    typedef Result result_type;
-};
-
-template <typename T>
-struct less : binary_function<T, T, bool> {
-    bool operator()(const T& lhs, const T& rhs) const
-    {
-        return lhs < rhs;
-    };
-};
 } // namespace ft

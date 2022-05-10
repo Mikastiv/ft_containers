@@ -6,7 +6,7 @@
 /*   By: mleblanc <mleblanc@student.42quebec.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/18 12:17:41 by mleblanc          #+#    #+#             */
-/*   Updated: 2022/05/06 16:49:19 by mleblanc         ###   ########.fr       */
+/*   Updated: 2022/05/10 10:03:54 by mleblanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,7 @@
 namespace ft
 {
 template <typename Key, typename T, typename Compare>
-class map_value_type_compare
+class map_value_type_compare : std::binary_function<Key, Key, bool>
 {
 public:
     map_value_type_compare()
@@ -69,7 +69,7 @@ void swap(map_value_type_compare<Key, T, Compare>& x, map_value_type_compare<Key
     x.swap(y);
 }
 
-template <typename Key, typename T, typename Compare = less<Key>,
+template <typename Key, typename T, typename Compare = std::less<Key>,
           typename Allocator = std::allocator<pair<const Key, T> > >
 class map
 {
@@ -99,7 +99,7 @@ public:
     // clang-format on
 
 public:
-    class value_compare : public ft::binary_function<value_type, value_type, bool>
+    class value_compare : public std::binary_function<value_type, value_type, bool>
     {
         friend class map;
 

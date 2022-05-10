@@ -6,7 +6,7 @@
 /*   By: mleblanc <mleblanc@student.42quebec.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/20 16:29:45 by mleblanc          #+#    #+#             */
-/*   Updated: 2022/05/05 19:49:07 by mleblanc         ###   ########.fr       */
+/*   Updated: 2022/05/10 09:57:22 by mleblanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@
 
 namespace ft
 {
-template <typename Key, typename Compare = less<Key>, typename Allocator = std::allocator<Key> >
+template <typename Key, typename Compare = std::less<Key>, typename Allocator = std::allocator<Key> >
 class set
 {
 public:
