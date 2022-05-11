@@ -6,7 +6,7 @@
 /*   By: mleblanc <mleblanc@student.42quebec.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/01 15:27:15 by mleblanc          #+#    #+#             */
-/*   Updated: 2022/05/06 11:24:31 by mleblanc         ###   ########.fr       */
+/*   Updated: 2022/05/10 22:44:41 by mleblanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -457,6 +457,7 @@ private:
     {
         if (first != last) {
             const size_type count = std::distance(first, last);
+            check_size(count);
             const size_type extra_space = end_cap_ - end_;
 
             if (extra_space >= count) {
