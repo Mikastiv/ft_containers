@@ -6,7 +6,7 @@
 /*   By: mleblanc <mleblanc@student.42quebec.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/01 15:27:15 by mleblanc          #+#    #+#             */
-/*   Updated: 2022/05/10 22:44:41 by mleblanc         ###   ########.fr       */
+/*   Updated: 2022/05/12 12:05:26 by mleblanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,8 +37,8 @@ public:
     typedef const value_type&                        const_reference;
     typedef typename allocator_type::pointer         pointer;
     typedef typename allocator_type::const_pointer   const_pointer;
-    typedef normal_iterator<pointer, vector>         iterator;
-    typedef normal_iterator<const_pointer, vector>   const_iterator;
+    typedef vector_iterator<pointer, vector>         iterator;
+    typedef vector_iterator<const_pointer, vector>   const_iterator;
     typedef ft::reverse_iterator<iterator>           reverse_iterator;
     typedef ft::reverse_iterator<const_iterator>     const_reverse_iterator;
     // clang-format on
