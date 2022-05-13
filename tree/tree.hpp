@@ -6,7 +6,7 @@
 /*   By: mleblanc <mleblanc@student.42quebec.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/21 22:03:04 by mleblanc          #+#    #+#             */
-/*   Updated: 2022/05/10 13:51:28 by mleblanc         ###   ########.fr       */
+/*   Updated: 2022/05/13 18:48:11 by mleblanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -321,10 +321,7 @@ private:
     {
         end_node_pointer ptr = find_pointer(key);
 
-        if (ptr == NULL) {
-            return Iter(end_node());
-        }
-        return Iter(ptr);
+        return ptr == NULL ? Iter(end_node()) : Iter(ptr);
     }
 
     template <typename Iter, typename Key>
@@ -428,7 +425,6 @@ private:
         new_node->left = NULL;
         new_node->right = NULL;
         new_node->parent = NULL;
-        new_node->is_black = false;
         value_alloc_.construct(&new_node->value, value);
         return new_node;
     }
