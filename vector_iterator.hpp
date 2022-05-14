@@ -6,7 +6,7 @@
 /*   By: mleblanc <mleblanc@student.42quebec.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/27 17:39:51 by mleblanc          #+#    #+#             */
-/*   Updated: 2022/05/14 15:56:26 by mleblanc         ###   ########.fr       */
+/*   Updated: 2022/05/14 16:00:16 by mleblanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -121,7 +121,7 @@ public:
         return vector_iterator(elem_ - n);
     }
 
-private:
+protected:
     It elem_;
 };
 

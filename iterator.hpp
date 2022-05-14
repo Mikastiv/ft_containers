@@ -6,7 +6,7 @@
 /*   By: mleblanc <mleblanc@student.42quebec.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/02 12:33:36 by mleblanc          #+#    #+#             */
-/*   Updated: 2022/05/01 21:57:11 by mleblanc         ###   ########.fr       */
+/*   Updated: 2022/05/14 15:59:52 by mleblanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,23 +69,23 @@ public:
 
 public:
     reverse_iterator()
-        : elem_()
+        : current()
     {
     }
 
     reverse_iterator(const reverse_iterator& it)
-        : elem_(it.elem_)
+        : current(it.current)
     {
     }
 
     explicit reverse_iterator(iterator_type it)
-        : elem_(it)
+        : current(it)
     {
     }
 
     template <typename Iter>
     reverse_iterator(const reverse_iterator<Iter>& it)
-        : elem_(it.base())
+        : current(it.base())
     {
     }
 
@@ -95,19 +95,19 @@ public:
 
     reverse_iterator& operator=(const reverse_iterator& other)
     {
-        elem_ = other.elem_;
+        current = other.current;
         return *this;
     }
 
 public:
     iterator_type base() const
     {
-        return elem_;
+        return current;
     }
 
     reference operator*() const
     {
-        It tmp = elem_;
+        It tmp = current;
         return *--tmp;
     }
 
@@ -118,45 +118,45 @@ public:
 
     reverse_iterator& operator++()
     {
-        --elem_;
+        --current;
         return *this;
     }
 
     reverse_iterator operator++(int)
     {
-        return reverse_iterator(elem_--);
+        return reverse_iterator(current--);
     }
 
     reverse_iterator& operator--()
     {
-        ++elem_;
+        ++current;
         return *this;
     }
 
     reverse_iterator operator--(int)
     {
-        return reverse_iterator(elem_++);
+        return reverse_iterator(current++);
     }
 
     reverse_iterator operator+(difference_type n) const
     {
-        return reverse_iterator(elem_ - n);
+        return reverse_iterator(current - n);
     }
 
     reverse_iterator& operator+=(difference_type n)
     {
-        elem_ -= n;
+        current -= n;
         return *this;
     }
 
     reverse_iterator operator-(difference_type n) const
     {
-        return reverse_iterator(elem_ + n);
+        return reverse_iterator(current + n);
     }
 
     reverse_iterator& operator-=(difference_type n)
     {
-        elem_ += n;
+        current += n;
         return *this;
     }
 
@@ -166,7 +166,7 @@ public:
     }
 
 protected:
-    It elem_;
+    It current;
 };
 
 template <typename ItL, typename ItR>
