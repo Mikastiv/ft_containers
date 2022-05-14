@@ -6,7 +6,7 @@
 /*   By: mleblanc <mleblanc@student.42quebec.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/27 17:35:55 by mleblanc          #+#    #+#             */
-/*   Updated: 2022/05/05 15:59:24 by mleblanc         ###   ########.fr       */
+/*   Updated: 2022/05/14 15:58:52 by mleblanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,13 +39,13 @@ public:
     typedef typename tree_node_types<T>::node_pointer node_pointer;
 
 public:
+    node_pointer left;
+
+public:
     tree_end_node()
         : left(NULL)
     {
     }
-
-public:
-    node_pointer left;
 };
 
 template <typename T>
@@ -54,6 +54,12 @@ class tree_node : public tree_node_types<T>::end_node_type
 public:
     typedef typename tree_node_types<T>::end_node_pointer end_node_pointer;
     typedef typename tree_node_types<T>::node_pointer node_pointer;
+
+public:
+    node_pointer right;
+    end_node_pointer parent;
+    bool is_black;
+    T value;
 
 public:
     tree_node()
@@ -72,11 +78,5 @@ public:
     {
         parent = static_cast<end_node_pointer>(ptr);
     }
-
-public:
-    node_pointer right;
-    end_node_pointer parent;
-    bool is_black;
-    T value;
 };
 } // namespace ft

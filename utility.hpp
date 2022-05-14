@@ -6,7 +6,7 @@
 /*   By: mleblanc <mleblanc@student.42quebec.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/15 16:56:07 by mleblanc          #+#    #+#             */
-/*   Updated: 2022/05/10 10:10:35 by mleblanc         ###   ########.fr       */
+/*   Updated: 2022/05/14 15:57:10 by mleblanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,13 +19,16 @@ struct pair {
     typedef T1 first_type;
     typedef T2 second_type;
 
+    first_type first;
+    second_type second;
+
     pair()
-        : first(T1()),
-          second(T2())
+        : first(first_type()),
+          second(second_type())
     {
     }
 
-    pair(const T1& x, const T2& y)
+    pair(const first_type& x, const second_type& y)
         : first(x),
           second(y)
     {
@@ -50,9 +53,6 @@ struct pair {
         second = other.second;
         return *this;
     }
-
-    T1 first;
-    T2 second;
 };
 
 template <typename T1, typename T2>
