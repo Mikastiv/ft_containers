@@ -6,7 +6,7 @@
 /*   By: mleblanc <mleblanc@student.42quebec.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/28 23:01:54 by mleblanc          #+#    #+#             */
-/*   Updated: 2022/05/10 10:39:31 by mleblanc         ###   ########.fr       */
+/*   Updated: 2022/05/16 01:50:47 by mleblanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -192,7 +192,7 @@ inline bool tree_node_is_black(NodePtr node)
 // Case 1: Z->uncle == RED
 //
 // - Color Z's uncle and parent black
-// - Color Z's grandparent red
+// - Color Z's grandparent red (black if root)
 //
 // Case 2: Z->uncle == BLACK (triangle)
 // Triangle: Right->Left || Left->Right relation
@@ -283,6 +283,8 @@ void tree_insert_fix(NodePtr root, NodePtr z)
 // W: X's sibling
 //
 // Case 0: Root is double black node (terminal case)
+//     - Nothing to do
+//
 // Case 1: Black parent (P), red sibling (W) with two black child
 //
 //     - Left rotation on parent
@@ -341,6 +343,7 @@ void tree_insert_fix(NodePtr root, NodePtr z)
 //             / \                      / \
 //        Y-> RB  R <-Z            X-> B  RB <-Y
 //
+// All cases apply to the mirrored cases
 */
 
 // This function should only be called to fix a double black node case

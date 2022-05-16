@@ -6,7 +6,7 @@
 /*   By: mleblanc <mleblanc@student.42quebec.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/18 12:17:41 by mleblanc          #+#    #+#             */
-/*   Updated: 2022/05/10 10:03:54 by mleblanc         ###   ########.fr       */
+/*   Updated: 2022/05/16 01:46:51 by mleblanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -145,6 +145,7 @@ public:
     map& operator=(const map& other)
     {
         tree_ = other.tree_;
+        return *this;
     }
 
     ~map()
