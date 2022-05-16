@@ -6,7 +6,7 @@
 /*   By: mleblanc <mleblanc@student.42quebec.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/18 12:17:41 by mleblanc          #+#    #+#             */
-/*   Updated: 2022/05/16 01:46:51 by mleblanc         ###   ########.fr       */
+/*   Updated: 2022/05/16 10:18:11 by mleblanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -178,7 +178,7 @@ public:
 
     T& operator[](const key_type& key)
     {
-        return insert(make_pair(key, T())).first->second;
+        return insert(ft::make_pair(key, T())).first->second;
     }
 
     iterator begin()

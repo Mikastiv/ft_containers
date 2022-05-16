@@ -6,7 +6,7 @@
 /*   By: mleblanc <mleblanc@student.42quebec.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/21 22:03:04 by mleblanc          #+#    #+#             */
-/*   Updated: 2022/05/13 18:48:11 by mleblanc         ###   ########.fr       */
+/*   Updated: 2022/05/16 10:18:22 by mleblanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -170,7 +170,7 @@ public:
             inserted = true;
         }
 
-        return make_pair(it, inserted);
+        return ft::make_pair(it, inserted);
     }
 
     iterator insert(iterator hint, const value_type& value)
@@ -382,7 +382,7 @@ private:
             }
         }
 
-        return make_pair(Iter(low), Iter(up));
+        return ft::make_pair(Iter(low), Iter(up));
     }
 
     iterator insert_at(node_pointer& pos, end_node_pointer parent, const value_type& value)
