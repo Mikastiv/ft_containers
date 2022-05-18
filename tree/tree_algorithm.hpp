@@ -6,7 +6,7 @@
 /*   By: mleblanc <mleblanc@student.42quebec.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/28 23:01:54 by mleblanc          #+#    #+#             */
-/*   Updated: 2022/05/16 01:50:47 by mleblanc         ###   ########.fr       */
+/*   Updated: 2022/05/18 16:44:40 by mleblanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,8 +14,6 @@
 
 #include "tree_types.hpp"
 #include <cstddef>
-#include <ios>
-#include <iostream>
 
 namespace ft
 {
@@ -41,58 +39,6 @@ NodePtr tree_min(NodePtr ptr)
         ptr = ptr->left;
     }
     return ptr;
-}
-
-template <typename NodePtr>
-std::size_t tree_black_height(NodePtr ptr)
-{
-    if (ptr == NULL) {
-        return 1;
-    }
-
-    if (ptr->left != NULL && ptr->left->parent != ptr)
-        return 0;
-    if (ptr->right != NULL && ptr->right->parent != ptr)
-        return 0;
-    if (ptr->left == ptr->right && ptr->left != NULL)
-        return 0;
-
-    if (!ptr->is_black) {
-        if (ptr->left && !ptr->left->is_black)
-            return 0;
-        if (ptr->right && !ptr->right->is_black)
-            return 0;
-    }
-
-    std::size_t h = tree_black_height(ptr->left);
-    if (h == 0)
-        return 0;
-    if (h != tree_black_height(ptr->right))
-        return 0;
-
-    return h + ptr->is_black;
-}
-
-template <typename NodePtr>
-bool tree_is_red_black_tree(NodePtr root)
-{
-    if (root == NULL) {
-        return true;
-    }
-
-    if (root->parent == NULL) {
-        return false;
-    }
-
-    if (!tree_is_left_child(root)) {
-        return false;
-    }
-
-    if (!root->is_black) {
-        return false;
-    }
-
-    return tree_black_height(root) != 0;
 }
 
 template <typename IterPtr, typename NodePtr>
