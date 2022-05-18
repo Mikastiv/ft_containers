@@ -6,7 +6,7 @@
 /*   By: mleblanc <mleblanc@student.42quebec.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/18 12:17:41 by mleblanc          #+#    #+#             */
-/*   Updated: 2022/05/16 10:18:11 by mleblanc         ###   ########.fr       */
+/*   Updated: 2022/05/18 14:26:54 by mleblanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -274,7 +274,7 @@ public:
 
     void swap(map& other)
     {
-        tree_.swap(other);
+        tree_.swap(other.tree_);
     }
 
     size_type count(const key_type& key) const
