@@ -6,7 +6,7 @@
 /*   By: mleblanc <mleblanc@student.42quebec.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/21 22:03:04 by mleblanc          #+#    #+#             */
-/*   Updated: 2022/05/16 10:18:22 by mleblanc         ###   ########.fr       */
+/*   Updated: 2022/05/18 13:36:07 by mleblanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -195,12 +195,13 @@ public:
         }
     }
 
-    void erase(iterator pos)
+    iterator erase(iterator pos)
     {
+        iterator next(pos);
+        ++next;
+
         if (begin_iter_ == pos.base()) {
-            iterator it(pos);
-            ++it;
-            begin_iter_ = it.base();
+            begin_iter_ = next.base();
         }
 
         node_pointer ptr = pos.node_ptr();
@@ -208,12 +209,14 @@ public:
         tree_remove_node(end_node()->left, ptr);
         delete_node(ptr);
         size_--;
+
+        return next;
     }
 
     void erase(iterator first, iterator last)
     {
-        for (; first != last; ++first) {
-            erase(first);
+        while (first != last) {
+            first = erase(first);
         }
     }
 
