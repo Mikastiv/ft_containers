@@ -6,7 +6,7 @@
 /*   By: mleblanc <mleblanc@student.42quebec.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/21 22:03:04 by mleblanc          #+#    #+#             */
-/*   Updated: 2022/05/18 16:45:22 by mleblanc         ###   ########.fr       */
+/*   Updated: 2022/05/18 17:05:12 by mleblanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -275,37 +275,41 @@ public:
     template <typename Key>
     pair<iterator, iterator> equal_range(const Key& key)
     {
-        return eq_range<iterator>(key);
+        pair<end_node_pointer, end_node_pointer> range = eq_range(key);
+
+        return ft::make_pair(iterator(range.first), iterator(range.second));
     }
 
     template <typename Key>
     pair<const_iterator, const_iterator> equal_range(const Key& key) const
     {
-        return eq_range<const_iterator>(key);
+        pair<end_node_pointer, end_node_pointer> range = eq_range(key);
+
+        return ft::make_pair(const_iterator(range.first), const_iterator(range.second));
     }
 
     template <typename Key>
     iterator lower_bound(const Key& key)
     {
-        return low_bound<iterator>(key);
+        return iterator(low_bound(key));
     }
 
     template <typename Key>
     const_iterator lower_bound(const Key& key) const
     {
-        return low_bound<const_iterator>(key);
+        return const_iterator(low_bound(key));
     }
 
     template <typename Key>
     iterator upper_bound(const Key& key)
     {
-        return up_bound<iterator>(key);
+        return iterator(up_bound(key));
     }
 
     template <typename Key>
     const_iterator upper_bound(const Key& key) const
     {
-        return up_bound<const_iterator>(key);
+        return const_iterator(up_bound(key));
     }
 
     void print_tree() const
@@ -327,8 +331,8 @@ private:
         return ptr == NULL ? Iter(end_node()) : Iter(ptr);
     }
 
-    template <typename Iter, typename Key>
-    Iter low_bound(const Key& key)
+    template <typename Key>
+    end_node_pointer low_bound(const Key& key) const
     {
         node_pointer ptr = root();
         end_node_pointer pos = end_node();
@@ -342,11 +346,11 @@ private:
             }
         }
 
-        return Iter(pos);
+        return pos;
     }
 
-    template <typename Iter, typename Key>
-    Iter up_bound(const Key& key)
+    template <typename Key>
+    end_node_pointer up_bound(const Key& key) const
     {
         node_pointer ptr = root();
         end_node_pointer pos = end_node();
@@ -360,11 +364,11 @@ private:
             }
         }
 
-        return Iter(pos);
+        return pos;
     }
 
-    template <typename Iter, typename Key>
-    pair<Iter, Iter> eq_range(const Key& key)
+    template <typename Key>
+    pair<end_node_pointer, end_node_pointer> eq_range(const Key& key) const
     {
         node_pointer ptr = root();
         end_node_pointer low = end_node();
@@ -385,7 +389,7 @@ private:
             }
         }
 
-        return ft::make_pair(Iter(low), Iter(up));
+        return ft::make_pair(low, up);
     }
 
     iterator insert_at(node_pointer& pos, end_node_pointer parent, const value_type& value)
