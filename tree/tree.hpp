@@ -6,7 +6,7 @@
 /*   By: mleblanc <mleblanc@student.42quebec.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/21 22:03:04 by mleblanc          #+#    #+#             */
-/*   Updated: 2022/05/18 17:05:12 by mleblanc         ###   ########.fr       */
+/*   Updated: 2022/05/19 15:22:07 by mleblanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,8 +19,6 @@
 #include "../utility.hpp"
 #include "tree_algorithm.hpp"
 #include "tree_iterator.hpp"
-
-#include "tree_debug.hpp"
 
 namespace ft
 {
@@ -310,16 +308,6 @@ public:
     const_iterator upper_bound(const Key& key) const
     {
         return const_iterator(up_bound(key));
-    }
-
-    void print_tree() const
-    {
-        std::cout << traverse_root(root());
-    }
-
-    bool is_red_black_tree() const
-    {
-        return tree_is_red_black_tree(root());
     }
 
 private:

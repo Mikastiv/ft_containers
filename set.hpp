@@ -6,7 +6,7 @@
 /*   By: mleblanc <mleblanc@student.42quebec.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/20 16:29:45 by mleblanc          #+#    #+#             */
-/*   Updated: 2022/05/10 09:57:22 by mleblanc         ###   ########.fr       */
+/*   Updated: 2022/05/19 15:21:48 by mleblanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -234,16 +234,6 @@ public:
     value_compare value_comp() const
     {
         return tree_.value_comp();
-    }
-
-    void print_tree() const
-    {
-        tree_.print_tree();
-    }
-
-    bool is_red_black_tree() const
-    {
-        return tree_.is_red_black_tree();
     }
 
 private:
