@@ -6,7 +6,7 @@
 /*   By: mleblanc <mleblanc@student.42quebec.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/18 12:17:41 by mleblanc          #+#    #+#             */
-/*   Updated: 2022/05/18 14:26:54 by mleblanc         ###   ########.fr       */
+/*   Updated: 2022/05/19 22:10:32 by mleblanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,8 +20,13 @@
 namespace ft
 {
 template <typename Key, typename T, typename Compare>
-class map_value_type_compare : std::binary_function<Key, Key, bool>
+class map_value_type_compare : public std::binary_function<Key, Key, bool>
 {
+public:
+    typedef Key  first_argument_type;
+    typedef Key  second_argument_type;
+    typedef bool result_type;
+
 public:
     map_value_type_compare()
         : comp_()
@@ -59,7 +64,7 @@ public:
         std::swap(comp_, other.comp_);
     }
 
-private:
+protected:
     Compare comp_;
 };
 
@@ -104,17 +109,23 @@ public:
         friend class map;
 
     public:
-        value_compare(const key_compare& comp)
-            : comp_(comp)
-        {
-        }
+        typedef value_type first_argument_type;
+        typedef value_type second_argument_type;
+        typedef bool       result_type;
 
+    public:
         bool operator()(const value_type& x, const value_type& y) const
         {
             return comp_(x.first, y.first);
         }
 
-    private:
+    protected:
+        value_compare(const key_compare& comp)
+            : comp_(comp)
+        {
+        }
+
+    protected:
         key_compare comp_;
     };
 
