@@ -6,7 +6,7 @@
 /*   By: mleblanc <mleblanc@student.42quebec.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/20 16:29:45 by mleblanc          #+#    #+#             */
-/*   Updated: 2022/05/19 15:21:48 by mleblanc         ###   ########.fr       */
+/*   Updated: 2022/05/19 23:38:42 by mleblanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,6 +73,7 @@ public:
     set& operator=(const set& other)
     {
         tree_ = other.tree_;
+        return *this;
     }
 
     ~set()
@@ -178,7 +179,7 @@ public:
 
     void swap(set& other)
     {
-        tree_.swap(other);
+        tree_.swap(other.tree_);
     }
 
     size_type count(const key_type& key) const
