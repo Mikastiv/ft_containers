@@ -6,7 +6,7 @@
 /*   By: mleblanc <mleblanc@student.42quebec.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/20 16:29:45 by mleblanc          #+#    #+#             */
-/*   Updated: 2022/05/23 20:53:15 by mleblanc         ###   ########.fr       */
+/*   Updated: 2022/05/23 21:45:00 by mleblanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -164,7 +164,7 @@ public:
 
     void erase(iterator pos)
     {
-        tree_.erase(pos);
+        tree_.erase(const_iterator(pos));
     }
 
     void erase(iterator first, iterator last)

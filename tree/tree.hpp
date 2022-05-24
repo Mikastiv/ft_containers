@@ -6,7 +6,7 @@
 /*   By: mleblanc <mleblanc@student.42quebec.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/21 22:03:04 by mleblanc          #+#    #+#             */
-/*   Updated: 2022/05/23 21:40:24 by mleblanc         ###   ########.fr       */
+/*   Updated: 2022/05/23 21:48:52 by mleblanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -221,7 +221,7 @@ public:
     template <typename Key>
     size_type erase(const Key& key)
     {
-        iterator it = find(key);
+        const_iterator it = find(key);
 
         if (it == end()) {
             return size_type(0);
