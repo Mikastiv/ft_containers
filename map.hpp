@@ -6,7 +6,7 @@
 /*   By: mleblanc <mleblanc@student.42quebec.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/18 12:17:41 by mleblanc          #+#    #+#             */
-/*   Updated: 2022/05/23 21:33:44 by mleblanc         ###   ########.fr       */
+/*   Updated: 2022/05/24 13:15:34 by mleblanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -116,17 +116,17 @@ public:
     public:
         bool operator()(const value_type& x, const value_type& y) const
         {
-            return comp_(x.first, y.first);
+            return comp(x.first, y.first);
         }
 
     protected:
-        value_compare(const key_compare& comp)
-            : comp_(comp)
+        value_compare(const key_compare& c)
+            : comp(c)
         {
         }
 
     protected:
-        key_compare comp_;
+        key_compare comp;
     };
 
 public:
