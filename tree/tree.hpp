@@ -6,7 +6,7 @@
 /*   By: mleblanc <mleblanc@student.42quebec.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/21 22:03:04 by mleblanc          #+#    #+#             */
-/*   Updated: 2022/05/19 15:22:07 by mleblanc         ###   ########.fr       */
+/*   Updated: 2022/05/23 21:40:24 by mleblanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -171,11 +171,11 @@ public:
         return ft::make_pair(it, inserted);
     }
 
-    iterator insert(iterator hint, const value_type& value)
+    iterator insert(const_iterator hint, const value_type& value)
     {
         end_node_pointer parent;
         node_pointer dummy;
-        node_pointer& child = find_pos(hint, parent, value, dummy);
+        node_pointer& child = find_pos(iterator(hint.base()), parent, value, dummy);
 
         iterator it(child);
         if (child == NULL) {
@@ -193,9 +193,9 @@ public:
         }
     }
 
-    iterator erase(iterator pos)
+    iterator erase(const_iterator pos)
     {
-        iterator next(pos);
+        const_iterator next(pos);
         ++next;
 
         if (begin_iter_ == pos.base()) {
@@ -208,10 +208,10 @@ public:
         delete_node(ptr);
         size_--;
 
-        return next;
+        return iterator(next.base());
     }
 
-    void erase(iterator first, iterator last)
+    void erase(const_iterator first, const_iterator last)
     {
         while (first != last) {
             first = erase(first);
@@ -482,7 +482,7 @@ private:
                            node_pointer& dummy) const
     {
         if (hint == end() || value_comp()(key, *hint)) {
-            // value < *__hint
+            // value < *hint
             const_iterator prev = hint;
             if (prev == begin() || value_comp()(*--prev, key)) {
                 // *prev < value < *hint

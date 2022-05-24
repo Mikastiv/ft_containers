@@ -6,7 +6,7 @@
 /*   By: mleblanc <mleblanc@student.42quebec.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/20 16:29:45 by mleblanc          #+#    #+#             */
-/*   Updated: 2022/05/19 23:38:42 by mleblanc         ###   ########.fr       */
+/*   Updated: 2022/05/23 20:53:15 by mleblanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,7 +40,7 @@ private:
     typedef tree<value_type, value_compare, Allocator> base;
 
 public:
-    typedef typename base::iterator              iterator;
+    typedef typename base::const_iterator              iterator;
     typedef typename base::const_iterator        const_iterator;
     typedef ft::reverse_iterator<iterator>       reverse_iterator;
     typedef ft::reverse_iterator<const_iterator> const_reverse_iterator;
