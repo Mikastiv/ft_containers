@@ -23,8 +23,8 @@ template <typename Key, typename T, typename Compare>
 class map_value_type_compare : public std::binary_function<Key, Key, bool>
 {
 public:
-    typedef Key  first_argument_type;
-    typedef Key  second_argument_type;
+    typedef Key first_argument_type;
+    typedef Key second_argument_type;
     typedef bool result_type;
 
 public:
@@ -111,7 +111,7 @@ public:
     public:
         typedef value_type first_argument_type;
         typedef value_type second_argument_type;
-        typedef bool       result_type;
+        typedef bool result_type;
 
     public:
         bool operator()(const value_type& x, const value_type& y) const

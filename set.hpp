@@ -19,7 +19,8 @@
 
 namespace ft
 {
-template <typename Key, typename Compare = std::less<Key>, typename Allocator = std::allocator<Key> >
+template <typename Key, typename Compare = std::less<Key>,
+          typename Allocator = std::allocator<Key> >
 class set
 {
 public:
