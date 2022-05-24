@@ -6,7 +6,7 @@
 /*   By: mleblanc <mleblanc@student.42quebec.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/28 23:01:54 by mleblanc          #+#    #+#             */
-/*   Updated: 2022/05/18 16:44:40 by mleblanc         ###   ########.fr       */
+/*   Updated: 2022/05/24 15:26:03 by mleblanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -310,19 +310,19 @@ void tree_delete_fix(NodePtr root, NodePtr x_parent)
                 w = x_parent->right;
             }
 
-            if (tree_node_is_black(w->left) && tree_node_is_black(w->right)) { // case 2
+            if (tree_node_is_black(w->left) && tree_node_is_black(w->right)) { // case 2 && case 3
                 w->is_black = false;
                 x = x_parent;
                 x_parent = x->get_parent();
             } else {
-                if (tree_node_is_black(w->right)) { // case 3
+                if (tree_node_is_black(w->right)) { // case 4
                     w->is_black = false;
                     tree_rotate_right(root, w);
                     w = x_parent->right;
                     w->is_black = true;
                 }
 
-                // case 4
+                // case 5
                 w->is_black = x_parent->is_black;
                 x_parent->is_black = true;
                 w->right->is_black = true;
@@ -340,19 +340,19 @@ void tree_delete_fix(NodePtr root, NodePtr x_parent)
                 w = x_parent->left;
             }
 
-            if (tree_node_is_black(w->right) && tree_node_is_black(w->left)) { // case 2
+            if (tree_node_is_black(w->right) && tree_node_is_black(w->left)) { // case 2 && case 3
                 w->is_black = false;
                 x = x_parent;
                 x_parent = x->get_parent();
             } else {
-                if (tree_node_is_black(w->left)) { // case 3
+                if (tree_node_is_black(w->left)) { // case 4
                     w->is_black = false;
                     tree_rotate_left(root, w);
                     w = x_parent->left;
                     w->is_black = true;
                 }
 
-                // case 4
+                // case 5
                 w->is_black = x_parent->is_black;
                 x_parent->is_black = true;
                 w->left->is_black = true;
