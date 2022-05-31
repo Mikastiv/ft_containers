@@ -6,7 +6,7 @@
 /*   By: mleblanc <mleblanc@student.42quebec.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/21 22:03:04 by mleblanc          #+#    #+#             */
-/*   Updated: 2022/05/23 21:48:52 by mleblanc         ###   ########.fr       */
+/*   Updated: 2022/05/31 15:35:15 by mleblanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -446,31 +446,29 @@ private:
         node_pointer node = root();
         node_pointer* ptr = root_ptr();
 
-        if (node != NULL) {
-            while (true) {
-                if (value_comp()(key, node->value)) {
-                    // key < node->value
-                    if (node->left != NULL) {
-                        ptr = &node->left;
-                        node = node->left;
-                    } else {
-                        parent = static_cast<end_node_pointer>(node);
-                        return node->left;
-                    }
-                } else if (value_comp()(node->value, key)) {
-                    // key > node->value
-                    if (node->right != NULL) {
-                        ptr = &node->right;
-                        node = node->right;
-                    } else {
-                        parent = static_cast<end_node_pointer>(node);
-                        return node->right;
-                    }
+        while (node != NULL) {
+            if (value_comp()(key, node->value)) {
+                // key < node->value
+                if (node->left != NULL) {
+                    ptr = &node->left;
+                    node = node->left;
                 } else {
-                    // key == node->value
                     parent = static_cast<end_node_pointer>(node);
-                    return *ptr;
+                    return node->left;
                 }
+            } else if (value_comp()(node->value, key)) {
+                // key > node->value
+                if (node->right != NULL) {
+                    ptr = &node->right;
+                    node = node->right;
+                } else {
+                    parent = static_cast<end_node_pointer>(node);
+                    return node->right;
+                }
+            } else {
+                // key == node->value
+                parent = static_cast<end_node_pointer>(node);
+                return *ptr;
             }
         }
         parent = static_cast<end_node_pointer>(end_node());
