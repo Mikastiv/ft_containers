@@ -33,21 +33,10 @@ template <typename It>
 struct iterator_traits<It*> {
     // clang-format off
     typedef std::random_access_iterator_tag iterator_category;
-    typedef It                              value_type;
+    typedef typename remove_cv<It>::type    value_type;
     typedef std::ptrdiff_t                  difference_type;
-    typedef value_type*                     pointer;
-    typedef value_type&                     reference;
-    // clang-format on
-};
-
-template <typename It>
-struct iterator_traits<const It*> {
-    // clang-format off
-    typedef std::random_access_iterator_tag iterator_category;
-    typedef It                              value_type;
-    typedef std::ptrdiff_t                  difference_type;
-    typedef const value_type*               pointer;
-    typedef const value_type&               reference;
+    typedef It*                             pointer;
+    typedef It&                             reference;
     // clang-format on
 };
 
